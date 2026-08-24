@@ -19,7 +19,7 @@ object Ui {
 
     fun chip(parent: android.content.Context, text: String): TextView {
         val c = TextView(parent).apply {
-            text = text
+            this.text = text
             textSize = 12f
             setTextColor(0xFFF2F2F7.toInt())
             setBackgroundResource(R.drawable.bg_chip)
