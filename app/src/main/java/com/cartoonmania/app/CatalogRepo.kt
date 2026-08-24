@@ -1,9 +1,11 @@
 package com.cartoonmania.app
 
 import android.content.Context
-import org.json.JSONObject
-import java.io.ByteArrayOutputStream
+import android.util.JsonReader
+import android.util.JsonToken
 import java.io.File
+import java.io.InputStream
+import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.zip.GZIPInputStream
@@ -25,16 +27,24 @@ object CatalogRepo {
     private fun cacheFile(ctx: Context) = File(ctx.filesDir, "catalog.json.gz")
     private fun versionFile(ctx: Context) = File(ctx.filesDir, "catalog.version")
 
+    /**
+     * Parsing in streaming direttamente dal gzip: nessun file/stringa gigante in RAM.
+     */
     @Synchronized
     fun loadLocal(ctx: Context): List<Title> {
         val f = cacheFile(ctx)
-        val source: GZIPInputStream = if (f.exists() && f.length() > 0) {
-            GZIPInputStream(f.inputStream())
+        val input: InputStream = if (f.exists() && f.length() > 0) {
+            f.inputStream()
         } else {
-            GZIPInputStream(ctx.assets.open("catalog.json.gz"))
+            ctx.assets.open("catalog.json.gz")
         }
-        val text = source.use { readAll(it) }
-        titles = parse(text)
+        GZIPInputStream(input, 1 shl 16).use { gz ->
+            InputStreamReader(gz, Charsets.UTF_8).use { isr ->
+                JsonReader(isr).use { reader ->
+                    titles = parseStream(reader)
+                }
+            }
+        }
         return titles
     }
 
@@ -53,56 +63,105 @@ object CatalogRepo {
             ?: return "Rete non disponibile"
         if (remoteVer.isEmpty()) return "Nessun aggiornamento"
         if (cacheFile(ctx).exists() && remoteVer == currentVersion(ctx)) {
-            return "Catalogo gia' aggiornato (v$remoteVer)"
+            return "Catalogo gia' aggiornato"
         }
         val tmp = File(ctx.filesDir, "catalog.tmp.gz")
-        downloadTo(CATALOG_URL, tmp)
-        if (!isGzip(tmp)) {
-            tmp.delete()
-            return "File remoto non valido"
+        try {
+            downloadTo(CATALOG_URL, tmp)
+            if (!isGzip(tmp)) return "File remoto non valido"
+
+            // valida e parsa in streaming dal file temporaneo
+            val newTitles = GZIPInputStream(tmp.inputStream(), 1 shl 16).use { gz ->
+                InputStreamReader(gz, Charsets.UTF_8).use { isr ->
+                    JsonReader(isr).use { reader -> parseStream(reader) }
+                }
+            }
+            tmp.renameTo(cacheFile(ctx))
+            versionFile(ctx).writeText(remoteVer)
+            titles = newTitles
+            return "Aggiornato: ${titles.size} titoli"
+        } finally {
+            if (tmp.exists()) tmp.delete()
         }
-        // valida il parsing prima di sostituire
-        val newText = GZIPInputStream(tmp.inputStream()).use { readAll(it) }
-        val newTitles = parse(newText)
-        cacheFile(ctx).outputStream().use { out -> tmp.inputStream().use { it.copyTo(out) } }
-        tmp.delete()
-        versionFile(ctx).writeText(remoteVer)
-        titles = newTitles
-        return "Aggiornato: ${titles.size} titoli (v$remoteVer)"
     }
 
-    internal fun parse(jsonText: String): List<Title> {
-        val root = JSONObject(jsonText)
-        val arr = root.getJSONArray("s")
-        val list = ArrayList<Title>(arr.length())
-        for (i in 0 until arr.length()) {
-            val o = arr.getJSONObject(i)
-            val epsArr = o.getJSONArray("e")
-            val eps = ArrayList<Episode>(epsArr.length())
-            for (j in 0 until epsArr.length()) {
-                val eo = epsArr.getJSONObject(j)
-                val pArr = eo.getJSONArray("p")
-                val players = ArrayList<Player>(pArr.length())
-                for (k in 0 until pArr.length()) {
-                    val po = pArr.getJSONObject(k)
-                    players.add(Player(po.optString("n", "PLAYER"), po.getString("u")))
+    internal fun parseStream(reader: JsonReader): List<Title> {
+        val list = ArrayList<Title>(3200)
+        reader.beginObject()
+        while (reader.hasNext()) {
+            when (reader.nextName()) {
+                "s" -> {
+                    reader.beginArray()
+                    while (reader.hasNext()) list.add(readTitle(reader))
+                    reader.endArray()
                 }
-                eps.add(Episode(eo.getString("l"), players))
+                else -> reader.skipValue()
             }
-            list.add(
-                Title(
-                    slug = o.getString("u"),
-                    title = o.getString("t"),
-                    img = if (o.isNull("i")) null else o.optString("i"),
-                    episodes = eps
-                )
-            )
         }
+        reader.endObject()
         return list
     }
 
-    private fun readAll(input: java.io.InputStream): String =
-        ByteArrayOutputStream().also { input.copyTo(it, 1 shl 16) }.toString("UTF-8")
+    private fun readTitle(r: JsonReader): Title {
+        var slug = ""
+        var title = ""
+        var img: String? = null
+        var eps: List<Episode> = emptyList()
+        r.beginObject()
+        while (r.hasNext()) {
+            when (r.nextName()) {
+                "u" -> slug = r.nextString()
+                "t" -> title = r.nextString()
+                "i" -> img = if (r.peek() == JsonToken.NULL) { r.nextNull(); null } else r.nextString()
+                "e" -> {
+                    val list = ArrayList<Episode>()
+                    r.beginArray()
+                    while (r.hasNext()) list.add(readEpisode(r))
+                    r.endArray()
+                    eps = list
+                }
+                else -> r.skipValue()
+            }
+        }
+        r.endObject()
+        return Title(slug, title, img, eps)
+    }
+
+    private fun readEpisode(r: JsonReader): Episode {
+        var label = ""
+        var players: List<Player> = emptyList()
+        r.beginObject()
+        while (r.hasNext()) {
+            when (r.nextName()) {
+                "l" -> label = r.nextString()
+                "p" -> {
+                    val list = ArrayList<Player>()
+                    r.beginArray()
+                    while (r.hasNext()) list.add(readPlayer(r))
+                    r.endArray()
+                    players = list
+                }
+                else -> r.skipValue()
+            }
+        }
+        r.endObject()
+        return Episode(label, players)
+    }
+
+    private fun readPlayer(r: JsonReader): Player {
+        var name = "PLAYER"
+        var url = ""
+        r.beginObject()
+        while (r.hasNext()) {
+            when (r.nextName()) {
+                "n" -> name = r.nextString()
+                "u" -> url = r.nextString()
+                else -> r.skipValue()
+            }
+        }
+        r.endObject()
+        return Player(name, url)
+    }
 
     private fun isGzip(f: File): Boolean =
         f.length() > 2 && f.inputStream().use { s ->

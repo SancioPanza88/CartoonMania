@@ -4,7 +4,7 @@ $dataDir = Join-Path $PSScriptRoot "data"
 $assetsDir = Join-Path $PSScriptRoot "app\src\main\assets"
 New-Item -ItemType Directory -Path $assetsDir -Force | Out-Null
 
-$src = Get-Content -Raw (Join-Path $dataDir "streaming_links.json") | ConvertFrom-Json
+$src = Get-Content -Raw -Encoding UTF8 (Join-Path $dataDir "streaming_links.json") | ConvertFrom-Json
 
 $version = [long](Get-Date -Format yyyyMMddHHmm)
 $titles = New-Object System.Collections.Generic.List[object]

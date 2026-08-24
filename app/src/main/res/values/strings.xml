@@ -4,6 +4,7 @@
     <string name="search_hint">Cerca anime, cartoni, film…</string>
     <string name="checking_updates">Controllo aggiornamenti…</string>
     <string name="no_data">Nessun dato disponibile</string>
+    <string name="load_error">Errore caricamento catalogo</string>
     <string name="no_episodes">Nessun episodio disponibile</string>
     <string name="choose_player">Scegli il player</string>
     <string name="play">Riproduci</string>

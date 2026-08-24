@@ -37,7 +37,7 @@ $postCount = 0
 $linkCount = 0
 
 foreach ($f in $files) {
-    $posts = Get-Content -Raw $f.FullName | ConvertFrom-Json
+    $posts = Get-Content -Raw -Encoding UTF8 $f.FullName | ConvertFrom-Json
     foreach ($post in $posts) {
         $postCount++
         $content = $post.content.rendered

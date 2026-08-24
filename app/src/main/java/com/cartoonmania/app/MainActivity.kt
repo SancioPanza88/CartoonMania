@@ -22,6 +22,7 @@ class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        CrashGuard.install(applicationContext)
         setContentView(R.layout.activity_main)
 
         val search = findViewById<EditText>(R.id.search)
@@ -40,12 +41,21 @@ class MainActivity : Activity() {
         })
 
         Thread {
-            CatalogRepo.loadLocal(this)
+            val loadError = try {
+                CatalogRepo.loadLocal(this)
+                null
+            } catch (e: Exception) {
+                e
+            }
             runOnUiThread {
+                if (loadError != null) {
+                    status.text = getString(R.string.load_error)
+                    return@runOnUiThread
+                }
                 refilter(search.text?.toString().orEmpty())
                 status.text = getString(R.string.checking_updates)
                 Thread {
-                    val msg = try { CatalogRepo.refresh(this) } catch (e: Exception) { "Aggiornamento fallito" }
+                    val msg = try { CatalogRepo.refresh(this) } catch (e: Exception) { "Aggiornamento fallito: ${e.javaClass.simpleName}" }
                     runOnUiThread {
                         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
                         refilter(search.text?.toString().orEmpty())
