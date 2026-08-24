@@ -5,25 +5,38 @@ import android.app.Activity
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebChromeClient
+import android.view.WindowManager
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
-import java.io.ByteArrayInputStream
+import androidx.media3.common.AudioAttributes
+import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.Player
+import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.ui.PlayerView
+import java.util.concurrent.atomic.AtomicBoolean
 
 class PlayerActivity : Activity() {
 
-    private lateinit var web: WebView
-    private var customView: View? = null
-    private var originalParent: ViewGroup? = null
+    private lateinit var playerView: PlayerView
+    private lateinit var webContainer: FrameLayout
+    private lateinit var loading: View
+
+    private var player: ExoPlayer? = null
+    private var web: WebView? = null
+    private val captured = AtomicBoolean(false)
+    private val errorHandled = AtomicBoolean(false)
+    private var errors = 0
 
     private val desktopUa =
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 
-    // Domini pubblicitari / tracker bloccati a livello di rete
     private val adHosts = arrayOf(
         "doubleclick.net", "googlesyndication", "google-analytics", "googletagmanager",
         "adservice.google", "amazon-adsystem", "adnxs.com", "adsystem.com",
@@ -40,23 +53,6 @@ class PlayerActivity : Activity() {
         "coinzilla", "bitmedia"
     )
 
-    // Rimuove i contenitori pubblicitari tipici dalla pagina caricata
-    private val cleanupJs = """
-        (function(){try{
-          var sel=['div[id^="div-gpt-ad"]','div[id^="google_ads"]',
-                   'iframe[src*="doubleclick"]','iframe[src*="googlesyndication"]',
-                   'iframe[src*="advert"]','iframe[id*="aswift"]',
-                   '[class*="advertisement"]','[id*="advertisement"]',
-                   '[class*="ad-banner"]','[class*="ad_banner"]',
-                   'div[class*="banner-ad"]','div[id*="banner_ad"]'];
-          for(var i=0;i<sel.length;i++){try{
-            var els=document.querySelectorAll(sel[i]);
-            for(var j=0;j<els.length;j++){els[j].remove()}
-          }catch(e){}}
-          if(document.body){document.body.style.background='#000'}
-        }catch(e){}})();
-    """.trimIndent()
-
     private fun isAd(url: String): Boolean {
         val host = url.substringAfter("://").substringBefore('/').lowercase()
         if (host.isEmpty()) return false
@@ -65,18 +61,35 @@ class PlayerActivity : Activity() {
     }
 
     private fun blockedResponse(): WebResourceResponse =
-        WebResourceResponse("text/plain", "utf-8", ByteArrayInputStream(ByteArray(0)))
+        WebResourceResponse("text/plain", "utf-8", java.io.ByteArrayInputStream(ByteArray(0)))
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_player)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
-        web = WebView(this)
-        web.setBackgroundColor(0xFF000000.toInt())
-        web.isVerticalScrollBarEnabled = false
-        setContentView(web)
+        playerView = findViewById(R.id.player_view)
+        webContainer = findViewById(R.id.web_container)
+        loading = findViewById(R.id.loading)
 
-        with(web.settings) {
+        val url = intent.getStringExtra("url").orEmpty()
+        title = intent.getStringExtra("label") ?: ""
+        if (url.isEmpty()) { finish(); return }
+
+        captureStream(url, visible = false)
+    }
+
+    /**
+     * Carica la pagina del player in un WebView e intercetta l'URL reale del video.
+     * Con visible=false il WebView resta nascosto: appena catturato l'URL si passa ad ExoPlayer.
+     * Con visible=true e' il fallback classico (pagina web a schermo).
+     */
+    @SuppressLint("SetJavaScriptEnabled")
+    private fun captureStream(embedUrl: String, visible: Boolean) {
+        val w = WebView(this)
+        w.setBackgroundColor(0xFF000000.toInt())
+        with(w.settings) {
             javaScriptEnabled = true
             domStorageEnabled = true
             mediaPlaybackRequiresUserGesture = false
@@ -85,56 +98,38 @@ class PlayerActivity : Activity() {
             loadWithOverviewMode = true
             useWideViewPort = true
             builtInZoomControls = false
-            displayZoomControls = false
             setSupportMultipleWindows(false)
             setGeolocationEnabled(false)
             databaseEnabled = false
         }
 
-        web.webChromeClient = object : WebChromeClient() {
-            override fun onShowCustomView(view: View, callback: CustomViewCallback) {
-                if (customView != null) {
-                    callback.onCustomViewHidden()
-                    return
-                }
-                customView = view
-                originalParent = view.parent as? ViewGroup
-                (window.decorView as ViewGroup).addView(
-                    view,
-                    FrameLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                    )
-                )
-                actionBar?.hide()
-            }
-
-            override fun onHideCustomView() {
-                customView?.let {
-                    (it.parent as? ViewGroup)?.removeView(it)
-                    originalParent?.addView(it)
-                }
-                customView = null
-                actionBar?.show()
-            }
-        }
-
-        web.webViewClient = object : WebViewClient() {
+        w.webViewClient = object : WebViewClient() {
 
             override fun shouldInterceptRequest(
                 view: WebView,
                 request: WebResourceRequest
-            ): WebResourceResponse? =
-                if (isAd(request.url.toString())) blockedResponse() else null
+            ): WebResourceResponse? {
+                val u = request.url.toString()
+                if (isAd(u)) return blockedResponse()
+                if (!visible) {
+                    val low = u.substringBefore('?').lowercase()
+                    if (!captured.get() &&
+                        (low.endsWith(".m3u8") || low.endsWith(".mp4"))
+                    ) {
+                        if (captured.compareAndSet(false, true)) {
+                            runOnUiThread { startNative(u, embedUrl) }
+                        }
+                    }
+                }
+                return null
+            }
 
             override fun shouldOverrideUrlLoading(
                 view: WebView,
                 request: WebResourceRequest
             ): Boolean {
                 val u = request.url.toString()
-                // Blocca schemi non web (intent, market, tg, javascript, ecc.)
                 if (!(u.startsWith("http://") || u.startsWith("https://"))) return true
-                // Blocca redirect verso domini pubblicitari
                 return isAd(u)
             }
 
@@ -145,48 +140,136 @@ class PlayerActivity : Activity() {
             }
 
             override fun onPageFinished(view: WebView, url: String) {
-                view.evaluateJavascript(cleanupJs, null)
+                view.evaluateJavascript(AUTOPLAY_JS, null)
+                view.postDelayed({
+                    if (!captured.get()) view.evaluateJavascript(AUTOPLAY_JS, null)
+                }, 2500)
             }
         }
 
-        val url = intent.getStringExtra("url").orEmpty()
-        title = intent.getStringExtra("label") ?: ""
-        if (url.isNotEmpty()) web.loadUrl(url) else finish()
+        webContainer.addView(w, FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        ))
+        webContainer.visibility = if (visible) View.VISIBLE else View.INVISIBLE
+        web = w
+
+        if (!visible) {
+            // Se dopo 20 s non abbiamo catturato nulla, mostriamo la pagina web
+            w.postDelayed({
+                if (!captured.get() && !isFinishing && !isDestroyed) {
+                    loading.visibility = View.GONE
+                    webContainer.visibility = View.VISIBLE
+                }
+            }, 20000)
+        }
+
+        w.loadUrl(embedUrl)
     }
 
-    override fun onBackPressed() {
-        val cv = customView
-        if (cv != null) {
-            (cv.parent as? ViewGroup)?.removeView(cv)
-            originalParent?.addView(cv)
-            customView = null
-            return
+    private fun startNative(url: String, referer: String) {
+        if (isFinishing || isDestroyed) return
+        loading.visibility = View.GONE
+        destroyWeb()
+
+        val dsFactory = DefaultHttpDataSource.Factory()
+            .setUserAgent(desktopUa)
+            .setAllowCrossProtocolRedirects(true)
+            .setConnectTimeoutMs(15000)
+            .setReadTimeoutMs(30000)
+        if (referer.isNotEmpty()) {
+            dsFactory.setDefaultRequestProperties(mapOf("Referer" to referer))
         }
-        if (::web.isInitialized && web.canGoBack()) {
-            web.goBack()
-            return
+
+        val p = ExoPlayer.Builder(this)
+            .setMediaSourceFactory(DefaultMediaSourceFactory(dsFactory))
+            .build()
+        p.setAudioAttributes(
+            AudioAttributes.Builder()
+                .setUsage(androidx.media3.common.C.USAGE_MEDIA)
+                .setContentType(androidx.media3.common.C.AUDIO_CONTENT_TYPE_MOVIE)
+                .build(),
+            true
+        )
+        p.addListener(object : Player.Listener {
+            override fun onPlayerError(error: PlaybackException) {
+                if (!errorHandled.compareAndSet(false, true)) return
+                runOnUiThread {
+                    releasePlayer()
+                    errors++
+                    val embed = intent.getStringExtra("url").orEmpty()
+                    if (errors >= 2 || embed.isEmpty()) {
+                        // Troppi fallimenti: mostriamo direttamente la pagina web
+                        loading.visibility = View.GONE
+                        captureStream(embed, visible = true)
+                    } else {
+                        captured.set(false)
+                        loading.visibility = View.VISIBLE
+                        captureStream(embed, visible = false)
+                    }
+                }
+            }
+        })
+        p.setMediaItem(MediaItem.fromUri(url))
+        p.playWhenReady = true
+        p.prepare()
+
+        playerView.player = p
+        playerView.visibility = View.VISIBLE
+        player = p
+    }
+
+    private fun destroyWeb() {
+        web?.let { w ->
+            try {
+                w.loadUrl("about:blank")
+                w.stopLoading()
+                (w.parent as? ViewGroup)?.removeView(w)
+                w.destroy()
+            } catch (_: Exception) { }
         }
-        super.onBackPressed()
+        web = null
+    }
+
+    private fun releasePlayer() {
+        player?.let { p ->
+            playerView.player = null
+            p.release()
+        }
+        player = null
     }
 
     override fun onPause() {
-        if (::web.isInitialized) web.onPause()
+        web?.onPause()
+        player?.pause()
         super.onPause()
     }
 
     override fun onResume() {
         super.onResume()
-        if (::web.isInitialized) web.onResume()
+        web?.onResume()
     }
 
     override fun onDestroy() {
-        if (::web.isInitialized) {
-            web.apply {
-                loadUrl("about:blank")
-                (parent as? ViewGroup)?.removeView(this)
-                destroy()
-            }
-        }
+        releasePlayer()
+        destroyWeb()
         super.onDestroy()
+    }
+
+    companion object {
+        private const val AUTOPLAY_JS = """
+            (function(){try{
+              var v=document.querySelector('video');
+              if(v){try{v.play();}catch(e){}}
+              var sels=['#vid_play','.jw-icon-display','.vjs-big-play-button',
+                        '#play_button','#btnplay','.play-button','button[aria-label*=lay]'];
+              for(var i=0;i<sels.length;i++){
+                try{
+                  var el=document.querySelector(sels[i]);
+                  if(el){el.click();break;}
+                }catch(e){}
+              }
+            }catch(e){}})();
+        """
     }
 }

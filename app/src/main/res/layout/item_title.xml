@@ -2,27 +2,46 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
     android:paddingStart="16dp"
     android:paddingEnd="16dp"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp"
-    android:background="?android:attr/selectableItemBackground">
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp">
 
-    <TextView
-        android:id="@+id/t_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:textColor="#FFFFFF"
-        android:maxLines="1"
-        android:ellipsize="end" />
+    <ImageView
+        android:id="@+id/t_poster"
+        android:layout_width="56dp"
+        android:layout_height="84dp"
+        android:scaleType="centerCrop"
+        android:background="@color/surface2"
+        android:contentDescription="@string/poster" />
 
-    <TextView
-        android:id="@+id/t_sub"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textSize="13sp"
-        android:textColor="#9E9E9E" />
+        android:layout_weight="1"
+        android:layout_marginStart="14dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/t_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:textColor="@color/text_primary" />
+
+        <TextView
+            android:id="@+id/t_sub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:textSize="12sp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:textColor="@color/text_secondary" />
+    </LinearLayout>
 </LinearLayout>

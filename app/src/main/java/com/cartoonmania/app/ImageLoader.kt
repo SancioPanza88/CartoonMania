@@ -31,7 +31,11 @@ object ImageLoader {
             val bmp = fetch(url) ?: return@execute
             synchronized(cache) { cache.put(url, bmp) }
             iv.post {
-                if (iv.tag == url) iv.setImageBitmap(bmp)
+                if (iv.tag == url) {
+                    iv.setImageBitmap(bmp)
+                    iv.alpha = 0f
+                    iv.animate().alpha(1f).setDuration(180).start()
+                }
             }
         }
     }

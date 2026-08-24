@@ -3,7 +3,6 @@ package com.cartoonmania.app
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.Gravity
 import android.view.View
 import android.widget.HorizontalScrollView
 import android.widget.ImageView
@@ -78,8 +77,8 @@ class HomeActivity : Activity() {
             return
         }
 
-        addRow("Consigliati per te", all.shuffled().take(25))
-        addRow("Ultimi aggiornati", all.sortedByDescending { it.modified }.take(25))
+        addRow("Popolari ora", all.shuffled().take(25))
+        addRow("Aggiunti di recente", all.sortedByDescending { it.modified }.take(25))
 
         val preferred = listOf(
             "Anime", "Film Animazione", "Serie Tv", "Shonen", "Azione",
@@ -102,23 +101,22 @@ class HomeActivity : Activity() {
 
         val header = TextView(this).apply {
             text = sectionTitle
-            textSize = 18f
+            textSize = 17f
             setTextColor(0xFFFFFFFF.toInt())
-            setPadding(dp(16), dp(18), dp(16), dp(8))
+            setPadding(dp(20), dp(24), dp(20), dp(12))
             setTypeface(typeface, android.graphics.Typeface.BOLD)
         }
         container.addView(header)
 
         val row = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
-            setPadding(dp(10), 0, dp(10), dp(6))
+            setPadding(dp(14), 0, dp(14), dp(8))
         }
 
         for (t in items) {
             val card = LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
-                gravity = Gravity.CENTER_HORIZONTAL
-                setPadding(dp(4), 0, dp(4), 0)
+                setPadding(dp(5), 0, dp(5), 0)
                 isClickable = true
                 isFocusable = true
                 setBackgroundResource(ripple.resourceId)
@@ -130,20 +128,25 @@ class HomeActivity : Activity() {
             }
 
             val poster = ImageView(this).apply {
-                layoutParams = LinearLayout.LayoutParams(dp(100), dp(150))
+                layoutParams = LinearLayout.LayoutParams(dp(102), dp(152))
                 scaleType = ImageView.ScaleType.CENTER_CROP
-                setBackgroundColor(0xFF262626.toInt())
+                setBackgroundColor(0xFF1F1F2B.toInt())
+                clipToOutline = true
+                outlineProvider = object : android.view.ViewOutlineProvider() {
+                    override fun getOutline(view: View, outline: android.graphics.Outline) {
+                        outline.setRoundRect(0, 0, view.width, view.height, dp(10).toFloat())
+                    }
+                }
             }
             ImageLoader.display(poster, t.img)
 
             val label = TextView(this).apply {
                 text = t.title
                 textSize = 12f
-                setTextColor(0xFFDDDDDD.toInt())
+                setTextColor(0xFFA0A4B8.toInt())
                 maxLines = 2
                 ellipsize = android.text.TextUtils.TruncateAt.END
-                gravity = Gravity.CENTER_HORIZONTAL
-                setPadding(dp(2), dp(6), dp(2), dp(4))
+                setPadding(dp(2), dp(7), dp(2), dp(4))
             }
 
             card.addView(poster)

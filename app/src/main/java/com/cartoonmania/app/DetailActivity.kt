@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
 
@@ -28,9 +29,24 @@ class DetailActivity : Activity() {
 
         findViewById<TextView>(R.id.d_title).text = t.title
         findViewById<TextView>(R.id.d_count).text =
-            if (t.episodes.isEmpty()) getString(R.string.no_episodes)
+            if (t.episodes.isEmpty()) t.cats.take(2).joinToString(" · ")
             else resources.getQuantityString(R.plurals.episodes_count, t.episodes.size, t.episodes.size)
-        ImageLoader.display(findViewById(R.id.d_poster), t.img)
+
+        val poster = findViewById<ImageView>(R.id.d_poster)
+        ImageLoader.display(poster, t.img)
+        Ui.round(poster, 12)
+        ImageLoader.display(findViewById(R.id.d_backdrop), t.img)
+        findViewById<View>(R.id.d_back).setOnClickListener { finish() }
+
+        val chips = findViewById<LinearLayout>(R.id.d_chips)
+        for (c in t.cats) {
+            val chip = Ui.chip(this, c)
+            val lp = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            lp.marginEnd = Ui.dp(this, 8)
+            chips.addView(chip, lp)
+        }
 
         val list = findViewById<ListView>(R.id.d_list)
         adapter = EpisodeAdapter()

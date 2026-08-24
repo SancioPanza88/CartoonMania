@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
 
@@ -77,12 +78,15 @@ class SearchActivity : Activity() {
             val v = convertView ?: layoutInflater.inflate(R.layout.item_title, parent, false)
             val title: TextView = v.findViewById(R.id.t_title)
             val sub: TextView = v.findViewById(R.id.t_sub)
+            val poster: ImageView = v.findViewById(R.id.t_poster)
             val t = shown[position]
             title.text = t.title
             sub.text = when {
                 t.episodes.isEmpty() -> t.cats.joinToString(" · ")
                 else -> "${t.episodes.size} episodi · ${t.cats.take(3).joinToString(" · ")}"
             }
+            Ui.round(poster, 8)
+            ImageLoader.display(poster, t.img)
             return v
         }
     }

@@ -3,37 +3,46 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#121212">
+    android:background="@color/bg">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingTop="14dp"
-        android:paddingBottom="10dp">
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="12dp">
 
         <TextView
             android:id="@+id/home_logo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/app_name"
-            android:textSize="22sp"
+            android:textSize="23sp"
             android:textStyle="bold"
-            android:textColor="#7C4DFF" />
+            android:letterSpacing="-0.02"
+            android:textColor="@color/text_primary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="."
+            android:textSize="23sp"
+            android:textStyle="bold"
+            android:textColor="@color/accent" />
     </LinearLayout>
 
     <TextView
         android:id="@+id/home_status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingBottom="8dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="10dp"
         android:textSize="13sp"
-        android:textColor="#FF7043"
+        android:textColor="@color/status_error"
         android:visibility="gone" />
 
     <ScrollView
@@ -51,37 +60,59 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="58dp"
         android:orientation="horizontal"
-        android:background="#1B1B1B">
+        android:background="@drawable/bg_bottom_nav"
+        android:elevation="8dp">
 
-        <TextView
+        <LinearLayout
             android:id="@+id/btn_tab_home"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:orientation="vertical"
             android:gravity="center"
-            android:text="@string/tab_home"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="#7C4DFF"
-            android:background="?android:attr/selectableItemBackground" />
+            android:background="?android:attr/selectableItemBackground">
 
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="#2A2A2A" />
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_home"
+                android:tint="@color/accent"
+                android:contentDescription="@string/tab_home" />
 
-        <TextView
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/tab_home"
+                android:textSize="11sp"
+                android:textColor="@color/accent" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/btn_tab_search"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:orientation="vertical"
             android:gravity="center"
-            android:text="@string/tab_search"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="#9E9E9E"
-            android:background="?android:attr/selectableItemBackground" />
+            android:background="?android:attr/selectableItemBackground">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_search"
+                android:tint="@color/text_hint"
+                android:contentDescription="@string/tab_search" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/tab_search"
+                android:textSize="11sp"
+                android:textColor="@color/text_hint" />
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>
