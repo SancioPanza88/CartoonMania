@@ -28,7 +28,7 @@ object ImageLoader {
             return
         }
         executor.execute {
-            val bmp = fetch(url) ?: return@execute
+            val bmp = try { fetch(url) } catch (_: Throwable) { null } ?: return@execute
             synchronized(cache) { cache.put(url, bmp) }
             iv.post {
                 if (iv.tag == url) {
@@ -55,7 +55,7 @@ object ImageLoader {
         } finally {
             c.disconnect()
         }
-    } catch (_: Exception) {
+    } catch (_: Throwable) {
         null
     }
 }

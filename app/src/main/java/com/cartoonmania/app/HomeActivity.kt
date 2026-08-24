@@ -49,7 +49,7 @@ class HomeActivity : Activity() {
                         runOnUiThread {
                             if (ok) {
                                 status.visibility = View.GONE
-                                buildSections()
+                                safeBuildSections()
                             } else {
                                 status.text = "Scaricamento fallito: riavvia l'app con la connessione attiva"
                             }
@@ -58,7 +58,7 @@ class HomeActivity : Activity() {
                     return@runOnUiThread
                 }
                 status.visibility = View.GONE
-                buildSections()
+                safeBuildSections()
                 Thread {
                     val msg = try { CatalogRepo.refresh(this) } catch (e: Exception) { "Aggiornamento fallito" }
                     runOnUiThread {
@@ -67,6 +67,15 @@ class HomeActivity : Activity() {
                 }.start()
             }
         }.start()
+    }
+
+    private fun safeBuildSections() {
+        try {
+            buildSections()
+        } catch (e: Throwable) {
+            status.visibility = View.VISIBLE
+            status.text = "Errore: ${e.javaClass.simpleName}: ${e.message}"
+        }
     }
 
     private fun buildSections() {
