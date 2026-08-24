@@ -3,6 +3,8 @@ package com.cartoonmania.app
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.View
 import android.widget.HorizontalScrollView
 import android.widget.ImageView
@@ -25,6 +27,7 @@ class HomeActivity : Activity() {
         findViewById<View>(R.id.btn_tab_search).setOnClickListener {
             startActivity(Intent(this, SearchActivity::class.java))
         }
+        Ui.tvFocus(findViewById(R.id.btn_tab_search))
 
         Thread {
             val loadError = try {
@@ -69,6 +72,14 @@ class HomeActivity : Activity() {
         }.start()
     }
 
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_ESCAPE) {
+            onBackPressed()
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
     private fun safeBuildSections() {
         try {
             buildSections()
@@ -86,6 +97,8 @@ class HomeActivity : Activity() {
             return
         }
 
+        buildCategories(all)
+
         addRow("Popolari ora", all.shuffled().take(25))
         addRow("Aggiunti di recente", all.sortedByDescending { it.modified }.take(25))
 
@@ -101,6 +114,56 @@ class HomeActivity : Activity() {
         }
     }
 
+    private fun buildCategories(all: List<CatalogRepo.Title>) {
+        val counts = LinkedHashMap<String, Int>()
+        for (t in all) for (c in t.cats) counts[c] = (counts[c] ?: 0) + 1
+        val cats = counts.entries.filter { it.value >= 8 }.sortedByDescending { it.value }.take(30)
+        if (cats.isEmpty()) return
+
+        container.addView(sectionHeader(getString(R.string.categories)), 0)
+
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            setPadding(dp(14), 0, dp(14), dp(4))
+        }
+        for ((cat, count) in cats) {
+            val chip = Ui.chip(this, "$cat  $count") { ctx ->
+                startActivity(Intent(ctx, CategoryActivity::class.java).putExtra("cat", cat))
+            }
+            val lp = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            lp.marginEnd = dp(8)
+            row.addView(chip, lp)
+        }
+        container.addView(
+            wheelScroll(HorizontalScrollView(this).apply { addView(row) }),
+            1
+        )
+    }
+
+    private fun sectionHeader(text: String): TextView =
+        TextView(this).apply {
+            this.text = text
+            textSize = 17f
+            setTextColor(0xFFFFFFFF.toInt())
+            setPadding(dp(20), dp(24), dp(20), dp(12))
+            setTypeface(typeface, android.graphics.Typeface.BOLD)
+        }
+
+    private fun wheelScroll(scroll: HorizontalScrollView): HorizontalScrollView {
+        scroll.isHorizontalScrollBarEnabled = false
+        scroll.setOnGenericMotionListener { v, e ->
+            if (e.action == MotionEvent.ACTION_SCROLL) {
+                val dx = e.getAxisValue(MotionEvent.AXIS_HSCROLL) +
+                    e.getAxisValue(MotionEvent.AXIS_VSCROLL)
+                (v as HorizontalScrollView).smoothScrollBy((dx * dp(64)).toInt(), 0)
+                true
+            } else false
+        }
+        return scroll
+    }
+
     private fun addRow(sectionTitle: String, items: List<CatalogRepo.Title>) {
         if (items.isEmpty()) return
 
@@ -108,14 +171,7 @@ class HomeActivity : Activity() {
             theme.resolveAttribute(android.R.attr.selectableItemBackground, this, true)
         }
 
-        val header = TextView(this).apply {
-            text = sectionTitle
-            textSize = 17f
-            setTextColor(0xFFFFFFFF.toInt())
-            setPadding(dp(20), dp(24), dp(20), dp(12))
-            setTypeface(typeface, android.graphics.Typeface.BOLD)
-        }
-        container.addView(header)
+        container.addView(sectionHeader(sectionTitle))
 
         val row = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -135,6 +191,7 @@ class HomeActivity : Activity() {
                     )
                 }
             }
+            Ui.tvFocus(card)
 
             val poster = ImageView(this).apply {
                 layoutParams = LinearLayout.LayoutParams(dp(102), dp(152))
@@ -163,11 +220,7 @@ class HomeActivity : Activity() {
             row.addView(card)
         }
 
-        val scroll = HorizontalScrollView(this).apply {
-            isHorizontalScrollBarEnabled = false
-            addView(row)
-        }
-        container.addView(scroll)
+        container.addView(wheelScroll(HorizontalScrollView(this).apply { addView(row) }))
     }
 
     private fun dp(v: Int): Int = (v * resources.displayMetrics.density).toInt()

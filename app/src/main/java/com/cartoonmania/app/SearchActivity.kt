@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
@@ -27,6 +28,7 @@ class SearchActivity : Activity() {
         val list = findViewById<ListView>(R.id.list)
         status = findViewById(R.id.status)
         findViewById<View>(R.id.btn_tab_home).setOnClickListener { finish() }
+        Ui.tvFocus(findViewById(R.id.btn_tab_home))
         adapter = TitleAdapter()
         list.adapter = adapter
         list.setOnItemClickListener { _, _, pos, _ ->
@@ -48,6 +50,14 @@ class SearchActivity : Activity() {
                 }
             }.start()
         }
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_ESCAPE) {
+            onBackPressed()
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
     }
 
     private fun refilter(qRaw: String) {

@@ -2,10 +2,13 @@ package com.cartoonmania.app
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.net.Uri
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.webkit.CookieManager
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
@@ -20,6 +23,7 @@ import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.ui.PlayerView
+import java.util.ArrayList
 import java.util.concurrent.atomic.AtomicBoolean
 
 class PlayerActivity : Activity() {
@@ -33,6 +37,10 @@ class PlayerActivity : Activity() {
     private val captured = AtomicBoolean(false)
     private val errorHandled = AtomicBoolean(false)
     private var errors = 0
+
+    private val candidates = ArrayList<String>()
+    private var candidateIndex = 0
+    private var embedUrl = ""
 
     private val desktopUa =
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
@@ -73,20 +81,23 @@ class PlayerActivity : Activity() {
         webContainer = findViewById(R.id.web_container)
         loading = findViewById(R.id.loading)
 
-        val url = intent.getStringExtra("url").orEmpty()
+        embedUrl = intent.getStringExtra("url").orEmpty()
         title = intent.getStringExtra("label") ?: ""
-        if (url.isEmpty()) { finish(); return }
+        if (embedUrl.isEmpty()) { finish(); return }
 
-        captureStream(url, visible = false)
+        captureStream(embedUrl, visible = false)
     }
 
-    /**
-     * Carica la pagina del player in un WebView e intercetta l'URL reale del video.
-     * Con visible=false il WebView resta nascosto: appena catturato l'URL si passa ad ExoPlayer.
-     * Con visible=true e' il fallback classico (pagina web a schermo).
-     */
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_ESCAPE) {
+            onBackPressed()
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
     @SuppressLint("SetJavaScriptEnabled")
-    private fun captureStream(embedUrl: String, visible: Boolean) {
+    private fun captureStream(pageUrl: String, visible: Boolean) {
         val w = WebView(this)
         w.setBackgroundColor(0xFF000000.toInt())
         with(w.settings) {
@@ -102,6 +113,7 @@ class PlayerActivity : Activity() {
             setGeolocationEnabled(false)
             databaseEnabled = false
         }
+        try { CookieManager.getInstance().setAcceptCookie(true) } catch (_: Exception) { }
 
         w.webViewClient = object : WebViewClient() {
 
@@ -111,13 +123,13 @@ class PlayerActivity : Activity() {
             ): WebResourceResponse? {
                 val u = request.url.toString()
                 if (isAd(u)) return blockedResponse()
-                if (!visible) {
-                    val low = u.substringBefore('?').lowercase()
-                    if (!captured.get() &&
-                        (low.endsWith(".m3u8") || low.endsWith(".mp4"))
-                    ) {
-                        if (captured.compareAndSet(false, true)) {
-                            runOnUiThread { startNative(u, embedUrl) }
+                if (!visible && request.method == "GET" && looksLikeVideo(u)) {
+                    synchronized(candidates) {
+                        if (u !in candidates) {
+                            candidates.add(u)
+                            if (captured.compareAndSet(false, true)) {
+                                runOnUiThread { startNative(candidates[0]) }
+                            }
                         }
                     }
                 }
@@ -141,9 +153,6 @@ class PlayerActivity : Activity() {
 
             override fun onPageFinished(view: WebView, url: String) {
                 view.evaluateJavascript(AUTOPLAY_JS, null)
-                view.postDelayed({
-                    if (!captured.get()) view.evaluateJavascript(AUTOPLAY_JS, null)
-                }, 2500)
             }
         }
 
@@ -155,31 +164,49 @@ class PlayerActivity : Activity() {
         web = w
 
         if (!visible) {
-            // Se dopo 20 s non abbiamo catturato nulla, mostriamo la pagina web
             w.postDelayed({
                 if (!captured.get() && !isFinishing && !isDestroyed) {
                     loading.visibility = View.GONE
                     webContainer.visibility = View.VISIBLE
+                    web?.evaluateJavascript(AUTOPLAY_JS, null)
                 }
-            }, 20000)
+            }, 25000)
         }
 
-        w.loadUrl(embedUrl)
+        w.loadUrl(pageUrl)
     }
 
-    private fun startNative(url: String, referer: String) {
+    private fun looksLikeVideo(u: String): Boolean {
+        val low = u.substringBefore('#').lowercase()
+        return low.contains(".m3u8") || low.contains(".mpd") ||
+            ".mp4?" in low || low.endsWith(".mp4") || low.endsWith(".mkv") ||
+            "/hls/" in low || "playlist.m3u8" in low
+    }
+
+    private fun httpHeaders(videoUrl: String): MutableMap<String, String> {
+        val m = HashMap<String, String>()
+        val uri = Uri.parse(embedUrl)
+        val origin = "${uri.scheme ?: "https"}://${uri.host ?: ""}"
+        m["Referer"] = "$origin/"
+        m["Origin"] = origin
+        try {
+            CookieManager.getInstance().apply { setAcceptCookie(true); flush() }
+                .getCookie(videoUrl)?.let { if (it.isNotEmpty()) m["Cookie"] = it }
+        } catch (_: Exception) { }
+        return m
+    }
+
+    private fun startNative(url: String) {
         if (isFinishing || isDestroyed) return
         loading.visibility = View.GONE
         destroyWeb()
 
         val dsFactory = DefaultHttpDataSource.Factory()
             .setUserAgent(desktopUa)
+            .setDefaultRequestProperties(httpHeaders(url))
             .setAllowCrossProtocolRedirects(true)
             .setConnectTimeoutMs(15000)
             .setReadTimeoutMs(30000)
-        if (referer.isNotEmpty()) {
-            dsFactory.setDefaultRequestProperties(mapOf("Referer" to referer))
-        }
 
         val p = ExoPlayer.Builder(this)
             .setMediaSourceFactory(DefaultMediaSourceFactory(dsFactory))
@@ -194,18 +221,23 @@ class PlayerActivity : Activity() {
         p.addListener(object : Player.Listener {
             override fun onPlayerError(error: PlaybackException) {
                 if (!errorHandled.compareAndSet(false, true)) return
+                errorHandled.set(false)
                 runOnUiThread {
                     releasePlayer()
                     errors++
-                    val embed = intent.getStringExtra("url").orEmpty()
-                    if (errors >= 2 || embed.isEmpty()) {
-                        // Troppi fallimenti: mostriamo direttamente la pagina web
+                    val next = synchronized(candidates) {
+                        candidateIndex++
+                        if (candidateIndex < candidates.size) candidates[candidateIndex] else null
+                    }
+                    if (errors >= 6 || (next == null && errors >= 2)) {
                         loading.visibility = View.GONE
-                        captureStream(embed, visible = true)
+                        captureStream(embedUrl, visible = true)
+                    } else if (next != null) {
+                        startNative(next)
                     } else {
                         captured.set(false)
                         loading.visibility = View.VISIBLE
-                        captureStream(embed, visible = false)
+                        captureStream(embedUrl, visible = false)
                     }
                 }
             }
@@ -258,18 +290,32 @@ class PlayerActivity : Activity() {
 
     companion object {
         private const val AUTOPLAY_JS = """
-            (function(){try{
-              var v=document.querySelector('video');
-              if(v){try{v.play();}catch(e){}}
-              var sels=['#vid_play','.jw-icon-display','.vjs-big-play-button',
-                        '#play_button','#btnplay','.play-button','button[aria-label*=lay]'];
-              for(var i=0;i<sels.length;i++){
+            (function(){
+              var n=0;
+              function clickAll(){
                 try{
-                  var el=document.querySelector(sels[i]);
-                  if(el){el.click();break;}
+                  var sels=['#vid_play','.jw-icon-display','.vjs-big-play-button','#play_button',
+                    '#btnplay','.play-button','.play_btn','button[aria-label*=lay]','[class*=play]',
+                    '[id*=lay]','[id*=Play]','div[class*=overlay]','.pljshclick'];
+                  for(var i=0;i<sels.length;i++){
+                    var els=document.querySelectorAll(sels[i]);
+                    for(var j=0;j<els.length;j++){try{els[j].click();}catch(e){}}
+                  }
+                  var els=document.querySelectorAll('a,button,div,span,i,b');
+                  for(var k=0;k<els.length;k++){
+                    var el=els[k];
+                    var tx=(el.innerText||'').trim().toLowerCase();
+                    if(el.offsetParent!==null&&(tx==='play'||tx==='guarda'||tx==='▶'||tx.indexOf('play')===0)){
+                      try{el.click();}catch(e){}
+                    }
+                  }
+                  var v=document.querySelector('video');
+                  if(v){try{v.play();}catch(e){}if(!v.paused)n=999;}
                 }catch(e){}
               }
-            }catch(e){}})();
+              var t=setInterval(function(){n++;clickAll();if(n>=40||n===999){clearInterval(t);}},600);
+              clickAll();
+            })();
         """
     }
 }

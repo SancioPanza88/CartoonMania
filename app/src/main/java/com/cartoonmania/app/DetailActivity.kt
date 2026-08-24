@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
@@ -40,7 +41,9 @@ class DetailActivity : Activity() {
 
         val chips = findViewById<LinearLayout>(R.id.d_chips)
         for (c in t.cats) {
-            val chip = Ui.chip(this, c)
+            val chip = Ui.chip(this, c) { ctx ->
+                startActivity(Intent(ctx, CategoryActivity::class.java).putExtra("cat", c))
+            }
             val lp = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
             )
@@ -64,6 +67,14 @@ class DetailActivity : Activity() {
                     .show()
             }
         }
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_ESCAPE) {
+            onBackPressed()
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
     }
 
     private fun openPlayer(label: String, p: CatalogRepo.Player) {
