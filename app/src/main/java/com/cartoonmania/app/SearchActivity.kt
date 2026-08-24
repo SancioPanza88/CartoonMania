@@ -25,6 +25,7 @@ class SearchActivity : Activity() {
         val search = findViewById<EditText>(R.id.search)
         val list = findViewById<ListView>(R.id.list)
         status = findViewById(R.id.status)
+        findViewById<TextView>(R.id.btn_tab_home).setOnClickListener { finish() }
         adapter = TitleAdapter()
         list.adapter = adapter
         list.setOnItemClickListener { _, _, pos, _ ->

@@ -33,4 +33,40 @@
         android:layout_weight="1"
         android:divider="#2A2A2A"
         android:dividerHeight="1dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:background="#1B1B1B">
+
+        <TextView
+            android:id="@+id/btn_tab_home"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/tab_home"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#9E9E9E"
+            android:background="?android:attr/selectableItemBackground" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#2A2A2A" />
+
+        <TextView
+            android:id="@+id/btn_tab_search"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/tab_search"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#7C4DFF"
+            android:background="?android:attr/selectableItemBackground" />
+    </LinearLayout>
 </LinearLayout>

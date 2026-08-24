@@ -86,12 +86,23 @@ foreach ($f in $files) {
             $catNames = @($post._embedded.'wp:term'[0] | ForEach-Object { [string]$_.name })
         }
 
+        # Immagine: featuredmedia oppure primo <img> uploads nel contenuto
+        $img = $null
+        if ($post._embedded.'wp:featuredmedia') {
+            $img = $post._embedded.'wp:featuredmedia'[0].source_url
+        }
+        if (-not $img) {
+            $mImg = [regex]::Match($content, '<img[^>]+src=["'']([^"'']+/wp-content/uploads/[^"'']+)["'']', [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
+            if ($mImg.Success) { $img = $mImg.Groups[1].Value }
+        }
+        if ($img) { $img = $img -replace '^http://toonitalia\.xyz', 'https://toonitalia.xyz' }
+
         $results.Add([pscustomobject]@{
             id = $post.id
             titolo = [System.Net.WebUtility]::HtmlDecode($post.title.rendered)
             slug = $post.slug
             url_pagina = $post.link
-            immagine = $(if ($post._embedded.'wp:featuredmedia') { $post._embedded.'wp:featuredmedia'[0].source_url } else { $null })
+            immagine = $img
             categorie = $post.categories
             categorie_nomi = $catNames
             modificato = $post.modified_gmt

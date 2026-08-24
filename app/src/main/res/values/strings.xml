@@ -9,6 +9,8 @@
     <string name="choose_player">Scegli il player</string>
     <string name="play">Riproduci</string>
     <string name="poster">Copertina</string>
+    <string name="tab_home">Home</string>
+    <string name="tab_search">Cerca</string>
     <plurals name="episodes_count">
         <item quantity="one">%d episodio</item>
         <item quantity="other">%d episodi</item>
