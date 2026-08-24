@@ -81,6 +81,11 @@ foreach ($f in $files) {
             }
         }
 
+        $catNames = @()
+        if ($post._embedded.'wp:term') {
+            $catNames = @($post._embedded.'wp:term'[0] | ForEach-Object { [string]$_.name })
+        }
+
         $results.Add([pscustomobject]@{
             id = $post.id
             titolo = [System.Net.WebUtility]::HtmlDecode($post.title.rendered)
@@ -88,6 +93,8 @@ foreach ($f in $files) {
             url_pagina = $post.link
             immagine = $(if ($post._embedded.'wp:featuredmedia') { $post._embedded.'wp:featuredmedia'[0].source_url } else { $null })
             categorie = $post.categories
+            categorie_nomi = $catNames
+            modificato = $post.modified_gmt
             episodi = $episodes
         })
     }

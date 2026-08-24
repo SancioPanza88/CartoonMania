@@ -26,6 +26,8 @@ foreach ($t in $src) {
         u = $t.slug
         t = $t.titolo
         i = $t.immagine
+        c = $(if ($t.categorie_nomi) { @($t.categorie_nomi) } else { @() })
+        m = $t.modificato
         e = $eps
     })
 }

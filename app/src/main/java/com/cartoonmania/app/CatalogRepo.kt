@@ -18,7 +18,14 @@ object CatalogRepo {
 
     data class Player(val name: String, val url: String)
     data class Episode(val label: String, val players: List<Player>)
-    data class Title(val slug: String, val title: String, val img: String?, val episodes: List<Episode>)
+    data class Title(
+        val slug: String,
+        val title: String,
+        val img: String?,
+        val cats: List<String>,
+        val modified: String,
+        val episodes: List<Episode>
+    )
 
     @Volatile
     var titles: List<Title> = emptyList()
@@ -28,17 +35,21 @@ object CatalogRepo {
     private fun versionFile(ctx: Context) = File(ctx.filesDir, "catalog.version")
 
     /**
-     * Parsing in streaming direttamente dal gzip: nessun file/stringa gigante in RAM.
+     * Carica il catalogo: prima il cache scaricato (se presente), poi l'asset integrato.
+     * Se il cache e' corrotto viene eliminato e si ripiega sull'asset.
      */
     @Synchronized
     fun loadLocal(ctx: Context): List<Title> {
-        val f = cacheFile(ctx)
-        val input: InputStream = if (f.exists() && f.length() > 0) {
-            f.inputStream()
-        } else {
-            ctx.assets.open("catalog.json.gz")
+        val cached = cacheFile(ctx)
+        if (cached.exists() && cached.length() > 0) {
+            try {
+                titles = parseGzip(cached.inputStream())
+                return titles
+            } catch (_: Exception) {
+                cached.delete()
+            }
         }
-        GZIPInputStream(input, 1 shl 16).use { gz ->
+        GZIPInputStream(ctx.assets.open("catalog.json.gz"), 1 shl 16).use { gz ->
             InputStreamReader(gz, Charsets.UTF_8).use { isr ->
                 JsonReader(isr).use { reader ->
                     titles = parseStream(reader)
@@ -48,19 +59,21 @@ object CatalogRepo {
         return titles
     }
 
+    private fun parseGzip(input: InputStream): List<Title> =
+        GZIPInputStream(input, 1 shl 16).use { gz ->
+            InputStreamReader(gz, Charsets.UTF_8).use { isr ->
+                JsonReader(isr).use { reader -> parseStream(reader) }
+            }
+        }
+
     fun currentVersion(ctx: Context): String {
         val f = versionFile(ctx)
         return if (f.exists()) f.readText().trim() else "0"
     }
 
-    /**
-     * Scarica il catalogo remoto se la versione e' piu' recente.
-     * Ritorna messaggio di esito.
-     */
     @Synchronized
     fun refresh(ctx: Context): String {
-        val remoteVer = httpGet(VERSION_URL)?.trim()
-            ?: return "Rete non disponibile"
+        val remoteVer = httpGet(VERSION_URL)?.trim() ?: return "Rete non disponibile"
         if (remoteVer.isEmpty()) return "Nessun aggiornamento"
         if (cacheFile(ctx).exists() && remoteVer == currentVersion(ctx)) {
             return "Catalogo gia' aggiornato"
@@ -69,14 +82,12 @@ object CatalogRepo {
         try {
             downloadTo(CATALOG_URL, tmp)
             if (!isGzip(tmp)) return "File remoto non valido"
-
-            // valida e parsa in streaming dal file temporaneo
-            val newTitles = GZIPInputStream(tmp.inputStream(), 1 shl 16).use { gz ->
-                InputStreamReader(gz, Charsets.UTF_8).use { isr ->
-                    JsonReader(isr).use { reader -> parseStream(reader) }
-                }
+            val newTitles = parseGzip(tmp.inputStream())
+            cacheFile(ctx).delete()
+            if (!tmp.renameTo(cacheFile(ctx))) {
+                tmp.copyTo(cacheFile(ctx), overwrite = true)
+                tmp.delete()
             }
-            tmp.renameTo(cacheFile(ctx))
             versionFile(ctx).writeText(remoteVer)
             titles = newTitles
             return "Aggiornato: ${titles.size} titoli"
@@ -106,6 +117,8 @@ object CatalogRepo {
         var slug = ""
         var title = ""
         var img: String? = null
+        var cats: List<String> = emptyList()
+        var modified = ""
         var eps: List<Episode> = emptyList()
         r.beginObject()
         while (r.hasNext()) {
@@ -113,6 +126,8 @@ object CatalogRepo {
                 "u" -> slug = r.nextString()
                 "t" -> title = r.nextString()
                 "i" -> img = if (r.peek() == JsonToken.NULL) { r.nextNull(); null } else r.nextString()
+                "m" -> modified = r.nextString()
+                "c" -> cats = readStringArray(r)
                 "e" -> {
                     val list = ArrayList<Episode>()
                     r.beginArray()
@@ -124,7 +139,15 @@ object CatalogRepo {
             }
         }
         r.endObject()
-        return Title(slug, title, img, eps)
+        return Title(slug, title, img, cats, modified, eps)
+    }
+
+    private fun readStringArray(r: JsonReader): List<String> {
+        val out = ArrayList<String>(4)
+        r.beginArray()
+        while (r.hasNext()) out.add(r.nextString().intern())
+        r.endArray()
+        return out
     }
 
     private fun readEpisode(r: JsonReader): Episode {
@@ -145,7 +168,7 @@ object CatalogRepo {
             }
         }
         r.endObject()
-        return Episode(label, players)
+        return Episode(label.intern(), players)
     }
 
     private fun readPlayer(r: JsonReader): Player {
@@ -154,7 +177,7 @@ object CatalogRepo {
         r.beginObject()
         while (r.hasNext()) {
             when (r.nextName()) {
-                "n" -> name = r.nextString()
+                "n" -> name = r.nextString().intern()
                 "u" -> url = r.nextString()
                 else -> r.skipValue()
             }

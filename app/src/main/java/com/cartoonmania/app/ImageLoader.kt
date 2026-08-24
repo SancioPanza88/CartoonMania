@@ -1,6 +1,6 @@
 package com.cartoonmania.app
 
-import android.app.Activity
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.LruCache
 import android.widget.ImageView
@@ -13,40 +13,45 @@ object ImageLoader {
 
     private val executor: ExecutorService = Executors.newFixedThreadPool(3)
 
-    private val cache = object : LruCache<String, android.graphics.Bitmap>(30) {
-        override fun sizeOf(key: String, value: android.graphics.Bitmap) = 1
+    private val maxKb = (Runtime.getRuntime().maxMemory() / 1024L / 6L).toInt()
+
+    private val cache = object : LruCache<String, Bitmap>(maxKb) {
+        override fun sizeOf(key: String, value: Bitmap): Int = value.byteCount / 1024
     }
 
     fun display(iv: ImageView, url: String?) {
         iv.setImageBitmap(null)
         iv.tag = url
         if (url.isNullOrEmpty()) return
-        cache.get(url)?.let {
+        synchronized(cache) { cache.get(url) }?.let {
             if (iv.tag == url) iv.setImageBitmap(it)
             return
         }
         executor.execute {
             val bmp = fetch(url) ?: return@execute
-            cache.put(url, bmp)
+            synchronized(cache) { cache.put(url, bmp) }
             iv.post {
                 if (iv.tag == url) iv.setImageBitmap(bmp)
             }
         }
     }
 
-    private fun fetch(url: String): android.graphics.Bitmap? = try {
+    private fun fetch(url: String): Bitmap? = try {
         val c = URL(url).openConnection() as HttpURLConnection
         c.connectTimeout = 10000
         c.readTimeout = 20000
         try {
             if (c.responseCode != 200) null
-            else BitmapFactory.decodeStream(c.inputStream)
+            else {
+                val opts = BitmapFactory.Options().apply {
+                    inPreferredConfig = Bitmap.Config.RGB_565
+                }
+                BitmapFactory.decodeStream(c.inputStream, null, opts)
+            }
         } finally {
             c.disconnect()
         }
     } catch (_: Exception) {
         null
     }
-
-    fun preload(activity: Activity) {}
 }

@@ -10,11 +10,9 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.EditText
 import android.widget.ListView
-import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
 
-class MainActivity : Activity() {
+class SearchActivity : Activity() {
 
     private lateinit var adapter: TitleAdapter
     private val shown = ArrayList<CatalogRepo.Title>()
@@ -22,8 +20,7 @@ class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        CrashGuard.install(applicationContext)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_search)
 
         val search = findViewById<EditText>(R.id.search)
         val list = findViewById<ListView>(R.id.list)
@@ -40,31 +37,15 @@ class MainActivity : Activity() {
             override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
         })
 
-        Thread {
-            val loadError = try {
-                CatalogRepo.loadLocal(this)
-                null
-            } catch (e: Exception) {
-                e
-            }
-            runOnUiThread {
-                if (loadError != null) {
-                    status.text = getString(R.string.load_error)
-                    return@runOnUiThread
+        refilter("")
+        if (CatalogRepo.titles.isEmpty()) {
+            Thread {
+                try { CatalogRepo.loadLocal(this) } catch (_: Exception) { }
+                runOnUiThread {
+                    if (CatalogRepo.titles.isNotEmpty()) refilter(search.text?.toString().orEmpty())
                 }
-                refilter(search.text?.toString().orEmpty())
-                status.text = getString(R.string.checking_updates)
-                Thread {
-                    val msg = try { CatalogRepo.refresh(this) } catch (e: Exception) { "Aggiornamento fallito: ${e.javaClass.simpleName}" }
-                    runOnUiThread {
-                        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-                        refilter(search.text?.toString().orEmpty())
-                        if (CatalogRepo.titles.isEmpty()) status.text = getString(R.string.no_data)
-                        else status.visibility = View.GONE
-                    }
-                }.start()
-            }
-        }.start()
+            }.start()
+        }
     }
 
     private fun refilter(qRaw: String) {
@@ -83,7 +64,6 @@ class MainActivity : Activity() {
             }
             status.text = "${shown.size} risultati per \"$qRaw\""
         }
-        status.visibility = View.VISIBLE
         adapter.notifyDataSetChanged()
     }
 
@@ -99,8 +79,8 @@ class MainActivity : Activity() {
             val t = shown[position]
             title.text = t.title
             sub.text = when {
-                t.episodes.isEmpty() -> "Nessun episodio"
-                else -> "${t.episodes.size} episodi"
+                t.episodes.isEmpty() -> t.cats.joinToString(" · ")
+                else -> "${t.episodes.size} episodi · ${t.cats.take(3).joinToString(" · ")}"
             }
             return v
         }
