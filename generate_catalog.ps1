@@ -40,7 +40,7 @@ $json = $catalog | ConvertTo-Json -Depth 8 -Compress
 # Gzip
 $bytes = [System.IO.File]::ReadAllBytes($jsonPath)
 $msIn = New-Object System.IO.MemoryStream(,$bytes)
-$gzipPaths = @((Join-Path $dataDir "catalog.json.gz"), (Join-Path $assetsDir "catalog.json.gz"))
+$gzipPaths = @((Join-Path $dataDir "catalog.json.gz"), (Join-Path $assetsDir "catalog.cm"))
 foreach ($gp in $gzipPaths) {
     $fs = [System.IO.File]::Create($gp)
     $gz = New-Object System.IO.Compression.GZipStream($fs, [System.IO.Compression.CompressionLevel]::Optimal)

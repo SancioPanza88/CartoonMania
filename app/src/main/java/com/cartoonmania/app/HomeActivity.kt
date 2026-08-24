@@ -37,7 +37,25 @@ class HomeActivity : Activity() {
             runOnUiThread {
                 if (loadError != null) {
                     status.visibility = View.VISIBLE
-                    status.text = "Errore caricamento: ${loadError.javaClass.simpleName}: ${loadError.message}"
+                    status.text = "Asset non disponibile, scarico il catalogo…"
+                    Thread {
+                        var ok = false
+                        for (attempt in 1..5) {
+                            val msg = try { CatalogRepo.refresh(this@HomeActivity) } catch (e: Exception) { "Errore: ${e.message}" }
+                            ok = CatalogRepo.titles.isNotEmpty()
+                            if (ok) break
+                            runOnUiThread { status.text = "$msg - riprovo ($attempt/5)" }
+                            Thread.sleep(8000)
+                        }
+                        runOnUiThread {
+                            if (ok) {
+                                status.visibility = View.GONE
+                                buildSections()
+                            } else {
+                                status.text = "Scaricamento fallito: riavvia l'app con la connessione attiva"
+                            }
+                        }
+                    }.start()
                     return@runOnUiThread
                 }
                 status.visibility = View.GONE

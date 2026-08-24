@@ -35,36 +35,48 @@ object CatalogRepo {
     private fun versionFile(ctx: Context) = File(ctx.filesDir, "catalog.version")
 
     /**
-     * Carica il catalogo: prima il cache scaricato (se presente), poi l'asset integrato.
-     * Se il cache e' corrotto viene eliminato e si ripiega sull'asset.
+     * Carica il catalogo dagli asset integrati.
+     * Prova piu' nomi perche' il packaging Android puo' rinominare gli asset .gz.
+     * Rileva automaticamente se il contenuto e' gzip o json plain.
      */
     @Synchronized
     fun loadLocal(ctx: Context): List<Title> {
         val cached = cacheFile(ctx)
         if (cached.exists() && cached.length() > 0) {
             try {
-                titles = parseGzip(cached.inputStream())
+                titles = parseAuto(cached.inputStream())
                 return titles
             } catch (_: Exception) {
                 cached.delete()
             }
         }
-        GZIPInputStream(ctx.assets.open("catalog.json.gz"), 1 shl 16).use { gz ->
-            InputStreamReader(gz, Charsets.UTF_8).use { isr ->
-                JsonReader(isr).use { reader ->
-                    titles = parseStream(reader)
+        val candidates = listOf("catalog.cm", "catalog.json.gz", "catalog.json", "catalog.cm.gz")
+        var lastErr: Exception? = null
+        for (name in candidates) {
+            try {
+                ctx.assets.open(name).use { raw ->
+                    titles = parseAuto(raw)
+                    return titles
                 }
+            } catch (e: Exception) {
+                lastErr = e
             }
         }
-        return titles
+        throw IllegalStateException("Asset catalogo non trovato nell'APK", lastErr)
     }
 
-    private fun parseGzip(input: InputStream): List<Title> =
-        GZIPInputStream(input, 1 shl 16).use { gz ->
-            InputStreamReader(gz, Charsets.UTF_8).use { isr ->
-                JsonReader(isr).use { reader -> parseStream(reader) }
-            }
+    /** Rileva la magia gzip 1F 8B e decodifica di conseguenza. */
+    private fun parseAuto(input: InputStream): List<Title> {
+        val pb = java.io.PushbackInputStream(input.buffered(1 shl 16), 2)
+        val b1 = pb.read()
+        val b2 = pb.read()
+        pb.unread(byteArrayOf(b1.toByte(), b2.toByte()))
+        val stream: InputStream =
+            if (b1 == 0x1f && b2 == 0x8b) GZIPInputStream(pb, 1 shl 16) else pb
+        InputStreamReader(stream, Charsets.UTF_8).use { isr ->
+            JsonReader(isr).use { reader -> return parseStream(reader) }
         }
+    }
 
     fun currentVersion(ctx: Context): String {
         val f = versionFile(ctx)
@@ -82,7 +94,7 @@ object CatalogRepo {
         try {
             downloadTo(CATALOG_URL, tmp)
             if (!isGzip(tmp)) return "File remoto non valido"
-            val newTitles = parseGzip(tmp.inputStream())
+            val newTitles = parseAuto(tmp.inputStream())
             cacheFile(ctx).delete()
             if (!tmp.renameTo(cacheFile(ctx))) {
                 tmp.copyTo(cacheFile(ctx), overwrite = true)
