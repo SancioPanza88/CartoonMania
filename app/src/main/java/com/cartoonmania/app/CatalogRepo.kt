@@ -139,7 +139,11 @@ object CatalogRepo {
                 "t" -> title = r.nextString()
                 "i" -> img = if (r.peek() == JsonToken.NULL) { r.nextNull(); null } else r.nextString()
                 "m" -> modified = r.nextString()
-                "c" -> cats = readStringArray(r)
+                "c" -> cats = when (r.peek()) {
+                    JsonToken.NULL -> { r.nextNull(); emptyList() }
+                    JsonToken.STRING -> listOf(r.nextString().intern())
+                    else -> readStringArray(r)
+                }
                 "e" -> {
                     val list = ArrayList<Episode>()
                     r.beginArray()

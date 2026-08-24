@@ -10,6 +10,9 @@ $version = [long](Get-Date -Format yyyyMMddHHmm)
 $titles = New-Object System.Collections.Generic.List[object]
 
 foreach ($t in $src) {
+    # NB: niente $(...) qui: svuoterebbe gli array con un solo elemento
+    $cats = @()
+    if ($t.categorie_nomi) { $cats = @($t.categorie_nomi) }
     $eps = New-Object System.Collections.Generic.List[object]
     foreach ($ep in $t.episodi) {
         $players = New-Object System.Collections.Generic.List[object]
@@ -26,7 +29,7 @@ foreach ($t in $src) {
         u = $t.slug
         t = $t.titolo
         i = $t.immagine
-        c = $(if ($t.categorie_nomi) { @($t.categorie_nomi) } else { @() })
+        c = $cats
         m = $t.modificato
         e = $eps
     })
