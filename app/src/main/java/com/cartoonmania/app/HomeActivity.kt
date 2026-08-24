@@ -22,7 +22,7 @@ class HomeActivity : Activity() {
 
         container = findViewById(R.id.home_container)
         status = findViewById(R.id.home_status)
-        findViewById<TextView>(R.id.btn_tab_search).setOnClickListener {
+        findViewById<View>(R.id.btn_tab_search).setOnClickListener {
             startActivity(Intent(this, SearchActivity::class.java))
         }
 
