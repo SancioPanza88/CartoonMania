@@ -87,7 +87,7 @@ class HomeActivity : Activity() {
             textSize = 18f
             setTextColor(0xFFFFFFFF.toInt())
             setPadding(dp(16), dp(18), dp(16), dp(8))
-            textStyle = android.graphics.Typeface.BOLD
+            setTypeface(typeface, android.graphics.Typeface.BOLD)
         }
         container.addView(header)
 
