@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CartoonMania</string>
+    <string name="search_hint">Cerca anime, cartoni, film…</string>
+    <string name="checking_updates">Controllo aggiornamenti…</string>
+    <string name="no_data">Nessun dato disponibile</string>
+    <string name="no_episodes">Nessun episodio disponibile</string>
+    <string name="choose_player">Scegli il player</string>
+    <string name="play">Riproduci</string>
+    <string name="poster">Copertina</string>
+    <plurals name="episodes_count">
+        <item quantity="one">%d episodio</item>
+        <item quantity="other">%d episodi</item>
+    </plurals>
+</resources>

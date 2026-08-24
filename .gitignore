@@ -1,0 +1,14 @@
+.gradle/
+build/
+local.properties
+.idea/
+*.iml
+captures/
+.cxx/
+
+data/raw/
+data/streaming_links.json
+data/streaming_links.csv
+data/catalog.json
+
+*.log
