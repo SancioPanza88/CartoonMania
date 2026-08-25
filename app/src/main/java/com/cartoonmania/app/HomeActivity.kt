@@ -11,7 +11,6 @@ import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 
 class HomeActivity : Activity() {
 
@@ -29,6 +28,8 @@ class HomeActivity : Activity() {
             startActivity(Intent(this, SearchActivity::class.java))
         }
         Ui.tvFocus(findViewById(R.id.btn_tab_search))
+        findViewById<View>(R.id.home_refresh).setOnClickListener { manualRefresh() }
+        Ui.tvFocus(findViewById(R.id.home_refresh))
 
         Thread {
             val loadError = try {
@@ -63,12 +64,40 @@ class HomeActivity : Activity() {
                 }
                 status.visibility = View.GONE
                 safeBuildSections()
-                Thread {
-                    val msg = try { CatalogRepo.refresh(this) } catch (e: Exception) { "Aggiornamento fallito" }
-                    runOnUiThread {
-                        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-                    }
-                }.start()
+                backgroundRefresh(manual = false)
+            }
+        }.start()
+    }
+
+    private var refreshing = false
+
+    private fun manualRefresh() {
+        if (refreshing) return
+        refreshing = true
+        status.visibility = View.VISIBLE
+        status.text = getString(R.string.checking_updates)
+        backgroundRefresh(manual = true)
+    }
+
+    private fun backgroundRefresh(manual: Boolean) {
+        Thread {
+            val msg = try { CatalogRepo.refresh(this) } catch (e: Exception) { "Errore: ${e.message}" }
+            runOnUiThread {
+                refreshing = false
+                val updated = msg.startsWith("Aggiornato")
+                if (updated) {
+                    container.removeAllViews()
+                    safeBuildSections()
+                }
+                val silent = !manual && !updated &&
+                    msg.startsWith("Catalogo gia'") && CatalogRepo.titles.isNotEmpty()
+                if (silent) {
+                    status.visibility = View.GONE
+                } else {
+                    status.text = msg
+                    status.visibility = View.VISIBLE
+                    status.postDelayed({ status.visibility = View.GONE }, 3000)
+                }
             }
         }.start()
     }
