@@ -15,10 +15,10 @@ import java.util.concurrent.atomic.AtomicLong
 
 object ImageLoader {
 
-    private val executor: ExecutorService = Executors.newFixedThreadPool(6)
+    private val executor: ExecutorService = Executors.newFixedThreadPool(10)
     private val counter = AtomicLong(0)
 
-    private val maxKb = (Runtime.getRuntime().maxMemory() / 1024L / 6L).toInt()
+    private val maxKb = (Runtime.getRuntime().maxMemory() / 1024L / 4L).toInt()
 
     private val cache = object : LruCache<String, Bitmap>(maxKb) {
         override fun sizeOf(key: String, value: Bitmap): Int = value.byteCount / 1024
@@ -72,12 +72,24 @@ object ImageLoader {
                             b
                         }
                     }
-                } finally {
-                    c.disconnect()
+                } catch (e: Throwable) {
+                    try { c.disconnect() } catch (_: Throwable) { }
+                    throw e
                 }
             }
         if (counter.incrementAndGet() % 64 == 0L) prune(dir)
         return data?.let { decode(it) }
+    }
+
+    fun clearDiskCache(ctx: Context): Long {
+        synchronized(cache) { cache.evictAll() }
+        var freed = 0L
+        val dir = cacheDir(ctx)
+        dir.listFiles()?.forEach {
+            val len = it.length()
+            if (it.delete()) freed += len
+        }
+        return freed / (1024 * 1024)
     }
 
     private fun decode(bytes: ByteArray): Bitmap? {

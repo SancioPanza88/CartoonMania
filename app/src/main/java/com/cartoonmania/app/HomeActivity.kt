@@ -28,8 +28,13 @@ class HomeActivity : Activity() {
             startActivity(Intent(this, SearchActivity::class.java))
         }
         Ui.tvFocus(findViewById(R.id.btn_tab_search))
-        findViewById<View>(R.id.home_refresh).setOnClickListener { manualRefresh() }
-        Ui.tvFocus(findViewById(R.id.home_refresh))
+        findViewById<View>(R.id.btn_tab_settings).setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
+        Ui.tvFocus(findViewById(R.id.btn_tab_settings))
+        findViewById<View>(R.id.btn_tab_home).setOnClickListener {
+            findViewById<android.widget.ScrollView>(R.id.home_scroll).smoothScrollTo(0, 0)
+        }
 
         Thread {
             val loadError = try {
@@ -69,15 +74,16 @@ class HomeActivity : Activity() {
         }.start()
     }
 
-    private var refreshing = false
-
-    private fun manualRefresh() {
-        if (refreshing) return
-        refreshing = true
-        status.visibility = View.VISIBLE
-        status.text = getString(R.string.checking_updates)
-        backgroundRefresh(manual = true)
+    override fun onResume() {
+        super.onResume()
+        val v = CatalogRepo.currentVersion(this)
+        if (builtVer != null && v != builtVer && CatalogRepo.titles.isNotEmpty()) {
+            container.removeAllViews()
+            safeBuildSections()
+        }
     }
+
+    private var refreshing = false
 
     private fun backgroundRefresh(manual: Boolean) {
         Thread {
@@ -113,11 +119,14 @@ class HomeActivity : Activity() {
     private fun safeBuildSections() {
         try {
             buildSections()
+            builtVer = CatalogRepo.currentVersion(this)
         } catch (e: Throwable) {
             status.visibility = View.VISIBLE
             status.text = "Errore: ${e.javaClass.simpleName}: ${e.message}"
         }
     }
+
+    private var builtVer: String? = null
 
     private fun buildSections() {
         val all = CatalogRepo.titles

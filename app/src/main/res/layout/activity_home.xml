@@ -37,16 +37,6 @@
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_weight="1" />
-
-        <ImageView
-            android:id="@+id/home_refresh"
-            android:layout_width="34dp"
-            android:layout_height="34dp"
-            android:padding="7dp"
-            android:src="@drawable/ic_refresh"
-            android:tint="@color/text_secondary"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/aggiorna" />
     </LinearLayout>
 
     <TextView
@@ -61,6 +51,7 @@
         android:visibility="gone" />
 
     <ScrollView
+        android:id="@+id/home_scroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -126,6 +117,33 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="@string/tab_search"
+                android:textSize="11sp"
+                android:textColor="@color/text_hint" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btn_tab_settings"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?android:attr/selectableItemBackground">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_settings"
+                android:tint="@color/text_hint"
+                android:contentDescription="@string/tab_settings" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/tab_settings"
                 android:textSize="11sp"
                 android:textColor="@color/text_hint" />
         </LinearLayout>

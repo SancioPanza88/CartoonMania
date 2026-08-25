@@ -29,6 +29,10 @@ class SearchActivity : Activity() {
         status = findViewById(R.id.status)
         findViewById<View>(R.id.btn_tab_home).setOnClickListener { finish() }
         Ui.tvFocus(findViewById(R.id.btn_tab_home))
+        findViewById<View>(R.id.btn_tab_settings).setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
+        Ui.tvFocus(findViewById(R.id.btn_tab_settings))
         adapter = TitleAdapter()
         list.adapter = adapter
         list.setOnItemClickListener { _, _, pos, _ ->
