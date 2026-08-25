@@ -15,9 +15,23 @@ android {
         versionName = "1.5"
     }
 
+    signingConfigs {
+        create("stable") {
+            storeType = "PKCS12"
+            storeFile = rootProject.file("android-signing/cartoonmania.keystore")
+            storePassword = "cm2026stable"
+            keyAlias = "cartoonmania"
+            keyPassword = "cm2026stable"
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("stable")
+        }
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("stable")
         }
     }
 
