@@ -1,0 +1,437 @@
+{
+    "id":  9000001,
+    "titolo":  "Le nuove avventure di Scooby-Doo",
+    "slug":  "le-nuove-avventure-di-scooby-doo",
+    "url_pagina":  "https://loonex.eu/cartoni/index.php?cartone=le-nuove-avventure-di-scooby-doo-1782907602",
+    "immagine":  "https://loonex.eu/cartoni/uploads/covers/cover_lenuoveavventurediscooby-doo_1782907602.jpg",
+    "categorie":  [
+
+                  ],
+    "categorie_nomi":  [
+                           "Bambini",
+                           "ITA"
+                       ],
+    "modificato":  "2026-08-25T12:00:00",
+    "episodi":  [
+                    {
+                        "episodio":  "1x01 - La creatura di ghiaccio",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S1/Le%20nuove%20avventure%20di%20Scooby-Doo%20S01E01%20La%20creatura%20di%20ghiaccio/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "1x02 - Tutti a caccia del dinosauro",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S1/Le%20nuove%20avventure%20di%20Scooby-Doo%20S01E02%20Tutti%20a%20caccia%20del%20dinosauro/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "1x03 - Il finto alieno",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S1/Le%20nuove%20avventure%20di%20Scooby-Doo%20S01E03%20Il%20finto%20alieno/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "1x04 - I fratelli fantasmi",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S1/Le%20nuove%20avventure%20di%20Scooby-Doo%20S01E04%20I%20fratelli%20fantasmi/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "1x05 - La mistery machine è posseduta",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S1/Le%20nuove%20avventure%20di%20Scooby-Doo%20S01E05%20La%20mistery%20machine%20%C3%A8%20posseduta/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "1x06 - Rufus il mago",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S1/Le%20nuove%20avventure%20di%20Scooby-Doo%20S01E06%20Rufus%20il%20mago/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "1x07 - Una giornata al luna park",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S1/Le%20nuove%20avventure%20di%20Scooby-Doo%20S01E07%20Una%20giornata%20al%20luna%20park/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "1x08 - I bracconieri",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S1/Le%20nuove%20avventure%20di%20Scooby-Doo%20S01E08%20I%20bracconieri/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "1x09 - Il mostro marino",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S1/Le%20nuove%20avventure%20di%20Scooby-Doo%20S01E09%20Il%20mostro%20marino/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "1x10 - Voglia di Natale",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S1/Le%20nuove%20avventure%20di%20Scooby-Doo%20S01E10%20Voglia%20di%20Natale/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "1x11 - Giocattoli pericolosi",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S1/Le%20nuove%20avventure%20di%20Scooby-Doo%20S01E11%20Giocattoli%20pericolosi/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "1x12 - Il fantasma senza volto",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S1/Le%20nuove%20avventure%20di%20Scooby-Doo%20S01E12%20Il%20fantasma%20senza%20volto/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "1x13 - Un viaggio a Pompei",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S1/Le%20nuove%20avventure%20di%20Scooby-Doo%20S01E13%20Un%20viaggio%20a%20Pompei/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "1x14 - Il re dei fuori campo",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S1/Le%20nuove%20avventure%20di%20Scooby-Doo%20S01E14%20Il%20re%20dei%20fuori%20campo/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "2x01 - Il gigante affamato",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S2/Le%20nuove%20avventure%20di%20Scooby-Doo%20S02E01%20Il%20gigante%20affamato/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "2x02 - La maledizione della mummia",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S2/Le%20nuove%20avventure%20di%20Scooby-Doo%20S02E02%20La%20maledizione%20della%20mummia/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "2x03 - Più veloce del verme",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S2/Le%20nuove%20avventure%20di%20Scooby-Doo%20S02E03%20Pi%C3%B9%20veloce%20del%20verme/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "2x04 - La casa stregata",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S2/Le%20nuove%20avventure%20di%20Scooby-Doo%20S02E04%20La%20casa%20stregata/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "2x05 - Il ritorno del vampiro",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S2/Le%20nuove%20avventure%20di%20Scooby-Doo%20S02E05%20Il%20ritorno%20del%20vampiro/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "2x06 - La notte di Halloween",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S2/Le%20nuove%20avventure%20di%20Scooby-Doo%20S02E06%20La%20notte%20di%20Halloween/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "2x07 - Cani e gatti",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S2/Le%20nuove%20avventure%20di%20Scooby-Doo%20S02E07%20Cani%20e%20gatti/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "2x08 - Il terrore scorre sullo skateboard",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S2/Le%20nuove%20avventure%20di%20Scooby-Doo%20S02E08%20Il%20terrore%20scorre%20sullo%20skateboard/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "2x09 - L\u0027uomo invisibile",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S2/Le%20nuove%20avventure%20di%20Scooby-Doo%20S02E09%20L\u0027uomo%20invisibile/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "2x10 - La ricetta segreta",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S2/Le%20nuove%20avventure%20di%20Scooby-Doo%20S02E10%20La%20ricetta%20segreta/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "2x11 - Il tesoro del drago",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S2/Le%20nuove%20avventure%20di%20Scooby-Doo%20S02E11%20Il%20tesoro%20del%20drago/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "2x12 - Zio Scooby e l\u0027Antartide",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S2/Le%20nuove%20avventure%20di%20Scooby-Doo%20S02E12%20Zio%20Scooby%20e%20l\u0027Antartide/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "2x13 - La leggenda del Wakumi",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S2/Le%20nuove%20avventure%20di%20Scooby-Doo%20S02E13%20La%20leggenda%20del%20Wakumi/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "2x14 - Il mistero dell\u0027amuleto",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S2/Le%20nuove%20avventure%20di%20Scooby-Doo%20S02E14%20Il%20mistero%20dell\u0027amuleto/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "3x01 - Il fantasma del faro",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S3/Le%20nuove%20avventure%20di%20Scooby-Doo%20S03E01%20Il%20fantasma%20del%20faro/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "3x02 - Da che parte per il west",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S3/Le%20nuove%20avventure%20di%20Scooby-Doo%20S03E02%20Da%20che%20parte%20per%20il%20west/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "3x03 - Ammiratori segreti",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S3/Le%20nuove%20avventure%20di%20Scooby-Doo%20S03E03%20Ammiratori%20segreti/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "3x04 - I maniaci del wrestling",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S3/Le%20nuove%20avventure%20di%20Scooby-Doo%20S03E04%20I%20maniaci%20del%20wrestling/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "3x05 - Un gargoyle a Parigi",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S3/Le%20nuove%20avventure%20di%20Scooby-Doo%20S03E05%20Un%20gargoyle%20a%20Parigi/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "3x06 - Il falciatore folle",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S3/Le%20nuove%20avventure%20di%20Scooby-Doo%20S03E06%20Il%20falciatore%20folle/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "3x07 - Hockey su diamanti",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S3/Le%20nuove%20avventure%20di%20Scooby-Doo%20S03E07%20Hockey%20su%20diamanti/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "3x08 - Il clown del terrore",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S3/Le%20nuove%20avventure%20di%20Scooby-Doo%20S03E08%20Il%20clown%20del%20terrore/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "3x09 - Il mostro del campeggio",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S3/Le%20nuove%20avventure%20di%20Scooby-Doo%20S03E09%20Il%20mostro%20del%20campeggio/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "3x10 - Il caranello",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S3/Le%20nuove%20avventure%20di%20Scooby-Doo%20S03E10%20Il%20caranello/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "3x11 - Signori, via con i mostri",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S3/Le%20nuove%20avventure%20di%20Scooby-Doo%20S03E11%20Signori,%20via%20con%20i%20mostri/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "3x12 - Il mostro dorato",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S3/Le%20nuove%20avventure%20di%20Scooby-Doo%20S03E12%20Il%20mostro%20dorato/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "3x13 - Gli scultori della sabbia",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S3/Le%20nuove%20avventure%20di%20Scooby-Doo%20S03E13%20Gli%20scultori%20della%20sabbia/output.m3u8"
+                                       }
+                                   ]
+                    },
+                    {
+                        "episodio":  "3x14 - L\u0027attacco degli Osmon",
+                        "player":  [
+                                       {
+                                           "nome":  "Loonex",
+                                           "dominio":  "loonex.eu",
+                                           "url":  "https://videoserver.loonex.eu/episodi/scooby.new/S3/Le%20nuove%20avventure%20di%20Scooby-Doo%20S03E14%20L\u0027attacco%20degli%20Osmon/output.m3u8"
+                                       }
+                                   ]
+                    }
+                ]
+}

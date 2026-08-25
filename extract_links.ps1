@@ -111,7 +111,13 @@ foreach ($f in $files) {
     }
 }
 
-# --- 3. Salvataggio output ---
+# --- 3. Guardia anti-catalogo-vuoto ---
+if ($results.Count -eq 0) {
+    Write-Host "ERRORE CRITICO: nessun post estratto da toonitalia. Mantengo i dati precedenti."
+    exit 1
+}
+
+# --- 4. Salvataggio output ---
 $dataDir = Join-Path $PSScriptRoot "data"
 $jsonPath = Join-Path $dataDir "streaming_links.json"
 $csvPath  = Join-Path $dataDir "streaming_links.csv"

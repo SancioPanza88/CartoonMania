@@ -6,6 +6,43 @@ New-Item -ItemType Directory -Path $assetsDir -Force | Out-Null
 
 $src = Get-Content -Raw -Encoding UTF8 (Join-Path $dataDir "streaming_links.json") | ConvertFrom-Json
 
+# Serie extra (loonex ecc.): file separato, unione senza duplicati di slug
+$extraPath = Join-Path $dataDir "loonex_links.json"
+if (Test-Path $extraPath) {
+    try {
+        $extra = @(Get-Content -Raw -Encoding UTF8 $extraPath | ConvertFrom-Json)
+        if ($extra.Count -gt 0) {
+            $slugs = @{}
+            foreach ($t in $src) { $slugs[$t.slug] = $true }
+            foreach ($e in $extra) {
+                if (-not $slugs.ContainsKey($e.slug)) { $src = @($src) + $e }
+            }
+            Write-Host "Serie extra integrate: $($extra.Count)"
+        }
+    } catch {
+        Write-Host "[WARN] loonex_links.json non valido, ignorato: $($_.Exception.Message)"
+    }
+}
+
+# Guardia: non pubblicare catalogi vuoti o drasticamente ridotti
+$prevCount = 0
+$assetPath = Join-Path $assetsDir "catalog.cm"
+if (Test-Path $assetPath) {
+    try {
+        $in = [System.IO.File]::OpenRead($assetPath)
+        $gz = New-Object System.IO.Compression.GZipStream($in, [System.IO.Compression.CompressionMode]::Decompress)
+        $sr = New-Object System.IO.StreamReader($gz)
+        $prev = $sr.ReadToEnd() | ConvertFrom-Json
+        $sr.Close()
+        $prevCount = @($prev.s).Count
+    } catch { $prevCount = 0 }
+}
+$newCount = @($src).Count
+if ($newCount -eq 0 -or ($prevCount -gt 100 -and $newCount -lt [int]($prevCount * 0.7))) {
+    Write-Host "BLOCCATO: nuovo catalogo ha $newCount titoli (precedente: $prevCount). Nessun file scritto."
+    exit 1
+}
+
 $version = [long](Get-Date -Format yyyyMMddHHmm)
 $titles = New-Object System.Collections.Generic.List[object]
 

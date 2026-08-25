@@ -22,6 +22,10 @@ jobs:
         shell: pwsh
         run: ./extract_links.ps1
 
+      - name: Integra serie Loonex
+        shell: pwsh
+        run: ./extract_loonex.ps1
+
       - name: Genera catalogo compresso per l'app
         shell: pwsh
         run: ./generate_catalog.ps1

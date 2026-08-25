@@ -44,19 +44,19 @@ object CatalogRepo {
         val cached = cacheFile(ctx)
         if (cached.exists() && cached.length() > 0) {
             try {
-                titles = parseAuto(cached.inputStream())
-                return titles
+                val t = parseAuto(cached.inputStream())
+                if (t.isNotEmpty()) { titles = t; return titles }
             } catch (_: Exception) {
-                cached.delete()
             }
+            cached.delete()
         }
         val candidates = listOf("catalog.cm", "catalog.json.gz", "catalog.json", "catalog.cm.gz")
         var lastErr: Exception? = null
         for (name in candidates) {
             try {
                 ctx.assets.open(name).use { raw ->
-                    titles = parseAuto(raw)
-                    return titles
+                    val t = parseAuto(raw)
+                    if (t.isNotEmpty()) { titles = t; return titles }
                 }
             } catch (e: Exception) {
                 lastErr = e
@@ -87,7 +87,8 @@ object CatalogRepo {
     fun refresh(ctx: Context): String {
         val remoteVer = httpGet(VERSION_URL)?.trim() ?: return "Rete non disponibile"
         if (remoteVer.isEmpty()) return "Nessun aggiornamento"
-        if (cacheFile(ctx).exists() && remoteVer == currentVersion(ctx)) {
+        val cacheOk = cacheFile(ctx).exists() && cacheFile(ctx).length() > 0
+        if (cacheOk && titles.isNotEmpty() && remoteVer == currentVersion(ctx)) {
             return "Catalogo gia' aggiornato"
         }
         val tmp = File(ctx.filesDir, "catalog.tmp.gz")
@@ -95,6 +96,7 @@ object CatalogRepo {
             downloadTo(CATALOG_URL, tmp)
             if (!isGzip(tmp)) return "File remoto non valido"
             val newTitles = parseAuto(tmp.inputStream())
+            if (newTitles.isEmpty()) return "Catalogo remoto vuoto"
             cacheFile(ctx).delete()
             if (!tmp.renameTo(cacheFile(ctx))) {
                 tmp.copyTo(cacheFile(ctx), overwrite = true)
