@@ -35,15 +35,19 @@ class PlayerActivity : Activity() {
     private var player: ExoPlayer? = null
     private var web: WebView? = null
     private val captured = AtomicBoolean(false)
-    private val errorHandled = AtomicBoolean(false)
     private var errors = 0
 
     private val candidates = ArrayList<String>()
     private var candidateIndex = 0
     private var embedUrl = ""
+    private var currentUrl = ""
+    private var headerMode = 0
 
     private val desktopUa =
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+
+    private val mobileUa =
+        "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36"
 
     private val adHosts = arrayOf(
         "doubleclick.net", "googlesyndication", "google-analytics", "googletagmanager",
@@ -104,7 +108,7 @@ class PlayerActivity : Activity() {
             javaScriptEnabled = true
             domStorageEnabled = true
             mediaPlaybackRequiresUserGesture = false
-            userAgentString = desktopUa
+            userAgentString = if (pageUrl.contains("loonex")) mobileUa else desktopUa
             mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
             loadWithOverviewMode = true
             useWideViewPort = true
@@ -185,6 +189,7 @@ class PlayerActivity : Activity() {
 
     private fun httpHeaders(videoUrl: String): MutableMap<String, String> {
         val m = HashMap<String, String>()
+        if (headerMode == 1) return m
         val uri = Uri.parse(embedUrl)
         val origin = "${uri.scheme ?: "https"}://${uri.host ?: ""}"
         m["Referer"] = "$origin/"
@@ -200,6 +205,7 @@ class PlayerActivity : Activity() {
         if (isFinishing || isDestroyed) return
         loading.visibility = View.GONE
         destroyWeb()
+        currentUrl = url
 
         val dsFactory = DefaultHttpDataSource.Factory()
             .setUserAgent(desktopUa)
@@ -220,26 +226,7 @@ class PlayerActivity : Activity() {
         )
         p.addListener(object : Player.Listener {
             override fun onPlayerError(error: PlaybackException) {
-                if (!errorHandled.compareAndSet(false, true)) return
-                errorHandled.set(false)
-                runOnUiThread {
-                    releasePlayer()
-                    errors++
-                    val next = synchronized(candidates) {
-                        candidateIndex++
-                        if (candidateIndex < candidates.size) candidates[candidateIndex] else null
-                    }
-                    if (errors >= 6 || (next == null && errors >= 2)) {
-                        loading.visibility = View.GONE
-                        captureStream(embedUrl, visible = true)
-                    } else if (next != null) {
-                        startNative(next)
-                    } else {
-                        captured.set(false)
-                        loading.visibility = View.VISIBLE
-                        captureStream(embedUrl, visible = false)
-                    }
-                }
+                runOnUiThread { onNativeError() }
             }
         })
         p.setMediaItem(MediaItem.fromUri(url))
@@ -249,6 +236,35 @@ class PlayerActivity : Activity() {
         playerView.player = p
         playerView.visibility = View.VISIBLE
         player = p
+    }
+
+    private fun onNativeError() {
+        releasePlayer()
+        if (headerMode == 0) {
+            headerMode = 1
+            loading.visibility = View.VISIBLE
+            startNative(currentUrl)
+            return
+        }
+        headerMode = 0
+        val next = synchronized(candidates) {
+            candidateIndex++
+            if (candidateIndex < candidates.size) candidates[candidateIndex] else null
+        }
+        if (next != null) {
+            loading.visibility = View.VISIBLE
+            startNative(next)
+            return
+        }
+        errors++
+        if (errors >= 2 || embedUrl.isEmpty()) {
+            loading.visibility = View.GONE
+            captureStream(embedUrl, visible = true)
+        } else {
+            captured.set(false)
+            loading.visibility = View.VISIBLE
+            captureStream(embedUrl, visible = false)
+        }
     }
 
     private fun destroyWeb() {
