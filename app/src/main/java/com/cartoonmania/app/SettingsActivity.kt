@@ -27,8 +27,8 @@ class SettingsActivity : Activity() {
         }
         Ui.tvFocus(findViewById(R.id.btn_tab_home))
         Ui.tvFocus(findViewById(R.id.btn_tab_search))
-        Ui.tvFocus(findViewById(R.id.btn_update))
-        Ui.tvFocus(findViewById(R.id.btn_clear_cache))
+        // Niente zoom sui pulsanti larghi: con lo ScrollView lo zoom li spinge
+        // fuori schermo; l'evidenziazione la fa gia' lo sfondo sulla TV.
         // Sulla TV il ripple non evidenzia il focus: sfondo bordato
         if (Ui.isTv(this)) {
             findViewById<View>(R.id.btn_update).setBackgroundResource(R.drawable.bg_episode_focus)

@@ -33,6 +33,7 @@ object CatalogRepo {
 
     private fun cacheFile(ctx: Context) = File(ctx.filesDir, "catalog.json.gz")
     private fun versionFile(ctx: Context) = File(ctx.filesDir, "catalog.version")
+    private fun binFile(ctx: Context) = File(ctx.filesDir, "titles.bin")
 
     /**
      * Carica il catalogo dagli asset integrati.
@@ -42,10 +43,24 @@ object CatalogRepo {
     @Synchronized
     fun loadLocal(ctx: Context): List<Title> {
         val cached = cacheFile(ctx)
-        if (cached.exists() && cached.length() > 0) {
+        val useCache = cached.exists() && cached.length() > 0
+        val key = sourceKey(ctx, cached)
+        // Via veloce: lettura binaria dell'ultimo parse valido (millisecondi
+        // invece di secondi sulle CPU scarse delle TV)
+        try {
+            val t = loadBin(ctx, key)
+            if (t.isNotEmpty()) { titles = t; return titles }
+        } catch (_: Exception) {
+        }
+        // Via lenta: gzip + JSON, poi salva il bin per le prossime volte
+        if (useCache) {
             try {
                 val t = parseAuto(cached.inputStream())
-                if (t.isNotEmpty()) { titles = t; return titles }
+                if (t.isNotEmpty()) {
+                    titles = t
+                    try { writeBin(ctx, key, t) } catch (_: Exception) { }
+                    return titles
+                }
             } catch (_: Exception) {
             }
             cached.delete()
@@ -56,13 +71,97 @@ object CatalogRepo {
             try {
                 ctx.assets.open(name).use { raw ->
                     val t = parseAuto(raw)
-                    if (t.isNotEmpty()) { titles = t; return titles }
+                    if (t.isNotEmpty()) {
+                        titles = t
+                        try { writeBin(ctx, key, t) } catch (_: Exception) { }
+                        return titles
+                    }
                 }
             } catch (e: Exception) {
                 lastErr = e
             }
         }
         throw IllegalStateException("Asset catalogo non trovato nell'APK", lastErr)
+    }
+
+    /** Chiave della sorgente dati: se cambia, il bin e' scaduto e si riparsa. */
+    @Suppress("DEPRECATION")
+    private fun sourceKey(ctx: Context, cached: File): String {
+        return if (cached.exists() && cached.length() > 0) {
+            "file:${cached.length()}:${cached.lastModified()}"
+        } else {
+            val appVer = try {
+                ctx.packageManager.getPackageInfo(ctx.packageName, 0)?.versionName ?: "?"
+            } catch (_: Exception) {
+                "?"
+            }
+            "asset:$appVer"
+        }
+    }
+
+    private fun writeBin(ctx: Context, key: String, list: List<Title>) {
+        val tmp = File(ctx.filesDir, "titles.tmp.bin")
+        java.io.DataOutputStream(tmp.outputStream().buffered(1 shl 16)).use { out ->
+            out.writeUTF(key)
+            out.writeInt(list.size)
+            for (t in list) {
+                out.writeUTF(t.slug)
+                out.writeUTF(t.title)
+                out.writeUTF(t.img ?: "")
+                out.writeUTF(t.modified)
+                out.writeInt(t.cats.size)
+                for (c in t.cats) out.writeUTF(c)
+                out.writeInt(t.episodes.size)
+                for (e in t.episodes) {
+                    out.writeUTF(e.label)
+                    out.writeInt(e.players.size)
+                    for (p in e.players) {
+                        out.writeUTF(p.name)
+                        out.writeUTF(p.url)
+                    }
+                }
+            }
+        }
+        val dest = binFile(ctx)
+        dest.delete()
+        if (!tmp.renameTo(dest)) {
+            tmp.copyTo(dest, overwrite = true)
+            tmp.delete()
+        }
+    }
+
+    private fun loadBin(ctx: Context, key: String): List<Title> {
+        val f = binFile(ctx)
+        if (!f.exists() || f.length() <= 0) return emptyList()
+        java.io.DataInputStream(f.inputStream().buffered(1 shl 16)).use { inp ->
+            if (inp.readUTF() != key) return emptyList()
+            val n = inp.readInt()
+            if (n <= 0 || n > 20000) return emptyList()
+            val list = ArrayList<Title>(n)
+            repeat(n) {
+                val slug = inp.readUTF()
+                val title = inp.readUTF()
+                val imgRaw = inp.readUTF()
+                val modified = inp.readUTF()
+                val nc = inp.readInt()
+                if (nc < 0 || nc > 100) throw IllegalStateException("bin corrotto")
+                val cats = ArrayList<String>(nc)
+                repeat(nc) { cats.add(inp.readUTF().intern()) }
+                val ne = inp.readInt()
+                if (ne < 0 || ne > 2000) throw IllegalStateException("bin corrotto")
+                val eps = ArrayList<Episode>(ne)
+                repeat(ne) {
+                    val label = inp.readUTF()
+                    val np = inp.readInt()
+                    if (np < 0 || np > 100) throw IllegalStateException("bin corrotto")
+                    val players = ArrayList<Player>(np)
+                    repeat(np) { players.add(Player(inp.readUTF(), inp.readUTF())) }
+                    eps.add(Episode(label.intern(), players))
+                }
+                list.add(Title(slug, title, imgRaw.ifEmpty { null }, cats, modified, eps))
+            }
+            return list
+        }
     }
 
     /** Rileva la magia gzip 1F 8B e decodifica di conseguenza. */
@@ -104,6 +203,7 @@ object CatalogRepo {
             }
             versionFile(ctx).writeText(remoteVer)
             titles = newTitles
+            try { writeBin(ctx, sourceKey(ctx, cacheFile(ctx)), newTitles) } catch (_: Exception) { }
             return "Aggiornato: ${titles.size} titoli"
         } finally {
             if (tmp.exists()) tmp.delete()
