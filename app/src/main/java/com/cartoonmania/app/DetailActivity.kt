@@ -28,18 +28,31 @@ class DetailActivity : Activity() {
         }
         current = t
 
-        findViewById<TextView>(R.id.d_title).text = t.title
-        findViewById<TextView>(R.id.d_count).text =
+        val list = findViewById<ListView>(R.id.d_list)
+        // Sulla TV testata e lista sono un'unica ListView (niente ScrollView
+        // annidata: col D-pad il focus non entrerebbe mai negli episodi).
+        // Sul telefono la testata resta dov'era.
+        val header: View = if (Ui.isTv(this)) {
+            layoutInflater.inflate(R.layout.detail_header, list, false).also {
+                list.addHeaderView(it)
+                list.addHeaderView(episodesLabel())
+            }
+        } else {
+            findViewById(R.id.d_header)
+        }
+
+        header.findViewById<TextView>(R.id.d_title).text = t.title
+        header.findViewById<TextView>(R.id.d_count).text =
             if (t.episodes.isEmpty()) t.cats.take(2).joinToString(" · ")
             else resources.getQuantityString(R.plurals.episodes_count, t.episodes.size, t.episodes.size)
 
-        val poster = findViewById<ImageView>(R.id.d_poster)
+        val poster = header.findViewById<ImageView>(R.id.d_poster)
         ImageLoader.display(poster, t.img)
         Ui.round(poster, 12)
-        ImageLoader.display(findViewById(R.id.d_backdrop), t.img)
-        findViewById<View>(R.id.d_back).setOnClickListener { finish() }
+        ImageLoader.display(header.findViewById(R.id.d_backdrop), t.img)
+        header.findViewById<View>(R.id.d_back).setOnClickListener { finish() }
 
-        val chips = findViewById<LinearLayout>(R.id.d_chips)
+        val chips = header.findViewById<LinearLayout>(R.id.d_chips)
         for (c in t.cats) {
             val chip = Ui.chip(this, c) { ctx ->
                 startActivity(Intent(ctx, CategoryActivity::class.java).putExtra("cat", c))
@@ -51,22 +64,32 @@ class DetailActivity : Activity() {
             chips.addView(chip, lp)
         }
 
-        val list = findViewById<ListView>(R.id.d_list)
         adapter = EpisodeAdapter()
         list.adapter = adapter
         list.setOnItemClickListener { _, _, pos, _ ->
-            val ep = t.episodes.getOrNull(pos) ?: return@setOnItemClickListener
+            // pos include gli header della lista (solo TV ne ha)
+            val epPos = pos - list.headerViewsCount
+            val ep = t.episodes.getOrNull(epPos) ?: return@setOnItemClickListener
             if (ep.players.size == 1) {
-                openPlayer(pos, 0)
+                openPlayer(epPos, 0)
             } else {
                 val names = ep.players.map { "${it.name} (${it.url.substringAfter("//").substringBefore("/")})" }
                 AlertDialog.Builder(this)
                     .setTitle(ep.label.ifEmpty { getString(R.string.choose_player) })
-                    .setItems(names.toTypedArray()) { _, which -> openPlayer(pos, which) }
+                    .setItems(names.toTypedArray()) { _, which -> openPlayer(epPos, which) }
                     .setNegativeButton(android.R.string.cancel, null)
                     .show()
             }
         }
+    }
+
+    private fun episodesLabel(): TextView = TextView(this).apply {
+        text = getString(R.string.episodes_header)
+        textSize = 20f
+        setTypeface(typeface, android.graphics.Typeface.BOLD)
+        setTextColor(0xFFFFFFFF.toInt())
+        val dp = Ui.dp(this@DetailActivity, 1)
+        setPadding(48 * dp, 24 * dp, 48 * dp, 12 * dp)
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {

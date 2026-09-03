@@ -282,6 +282,13 @@ class PlayerActivity : Activity() {
             goPrev()
             return true
         }
+        // Col controller nascosto, OK lo riapre invece di mettere pausa alla cieca
+        if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER && player != null &&
+            !playerView.isControllerFullyVisible
+        ) {
+            playerView.showController()
+            return true
+        }
         return super.onKeyDown(keyCode, event)
     }
 
