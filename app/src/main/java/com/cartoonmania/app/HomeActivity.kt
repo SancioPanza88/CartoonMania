@@ -21,6 +21,8 @@ class HomeActivity : Activity() {
         super.onCreate(savedInstanceState)
         CrashGuard.install(applicationContext)
         setContentView(R.layout.activity_home)
+        // Popup di aggiornamento a ogni avvio se c'e' una release piu' nuova
+        UpdateChecker.check(this)
 
         container = findViewById(R.id.home_container)
         status = findViewById(R.id.home_status)

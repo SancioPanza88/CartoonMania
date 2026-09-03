@@ -27,6 +27,12 @@
     <string name="close_player">Chiudi player</string>
     <string name="pause">Pausa</string>
     <string name="end_of_series">Hai finito gli episodi</string>
+    <string name="update_title">Aggiornamento disponibile</string>
+    <string name="update_msg">Pronta la versione %1$s (installata: %2$s).\n\nVuoi scaricarla e installarla ora?</string>
+    <string name="update_now">Aggiorna</string>
+    <string name="update_later">Più tardi</string>
+    <string name="update_downloading">Download aggiornamento…</string>
+    <string name="update_failed">Aggiornamento fallito, riprova più tardi</string>
     <plurals name="episodes_count">
         <item quantity="one">%d episodio</item>
         <item quantity="other">%d episodi</item>

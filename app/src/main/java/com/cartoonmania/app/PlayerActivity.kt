@@ -17,6 +17,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.media3.common.AudioAttributes
@@ -46,8 +47,8 @@ class PlayerActivity : Activity() {
     private lateinit var btnEpisodes: Button
     // Controlli dentro il controller ExoPlayer
     private lateinit var cTitle: TextView
-    private lateinit var cPrev: Button
-    private lateinit var cNext: Button
+    private lateinit var cPrev: ImageButton
+    private lateinit var cNext: ImageButton
     private lateinit var cEpisodes: Button
 
     private var player: ExoPlayer? = null
@@ -233,7 +234,7 @@ class PlayerActivity : Activity() {
         title = "${s.title} — ${ep.label.ifEmpty { getString(R.string.play) }}"
 
         releasePlayer()
-        suspendWeb()
+        destroyWeb()
         synchronized(candidates) { candidates.clear() }
         candidateIndex = 0
         captured.set(false)
@@ -284,8 +285,20 @@ class PlayerActivity : Activity() {
         return super.onKeyDown(keyCode, event)
     }
 
-    /** WebView unica riutilizzata tra gli episodi: crearla ogni volta costa
-     *  1-2s e decine di MB, insostenibile sulle TV con poca RAM. */
+    /** True sotto ~1.5GB di RAM totale: le TV economiche hanno 1GB e uccidono
+     *  l'app appena WebView + ExoPlayer superano la memoria disponibile. */
+    private fun isLowRam(): Boolean {
+        return try {
+            val am = getSystemService(ACTIVITY_SERVICE) as android.app.ActivityManager
+            val mi = android.app.ActivityManager.MemoryInfo()
+            am.getMemoryInfo(mi)
+            mi.totalMem in 1..1_610_612_736L
+        } catch (_: Exception) {
+            false
+        }
+    }
+    /** WebView creata solo quando serve (fallback/cattura) e distrutta appena
+     *  parte il player nativo: su 1GB di RAM tenerla viva costa il crash. */
     @SuppressLint("SetJavaScriptEnabled")
     private fun obtainWeb(): WebView {
         web?.let { return it }
@@ -313,16 +326,10 @@ class PlayerActivity : Activity() {
         return w
     }
 
-    /** Mette in pausa la WebView senza distruggerla (risparmia CPU/RAM sulle TV). */
-    private fun suspendWeb() {
-        web?.let { w ->
-            try {
-                w.onPause()
-                w.pauseTimers()
-                w.stopLoading()
-            } catch (_: Exception) { }
-        }
-        webContainer.visibility = View.GONE
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        // Sotto pressione memoria libera subito la WebView se il nativo sta andando
+        if (level >= TRIM_MEMORY_RUNNING_LOW && player != null) destroyWeb()
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -330,7 +337,6 @@ class PlayerActivity : Activity() {
         val w = obtainWeb()
         try {
             w.onResume()
-            w.resumeTimers()
         } catch (_: Exception) { }
         w.settings.userAgentString = if (pageUrl.contains("loonex")) mobileUa else desktopUa
 
@@ -421,7 +427,10 @@ class PlayerActivity : Activity() {
     private fun startNative(url: String) {
         if (isFinishing || isDestroyed) return
         loading.visibility = View.GONE
-        suspendWeb()
+        // Libera subito la WebView (50-150MB): su 1GB di RAM tenerla insieme
+        // al player nativo significa OOM. Viene ricreata se serve.
+        destroyWeb()
+        webContainer.visibility = View.GONE
         navBar.visibility = View.GONE
         currentUrl = url
 
@@ -432,13 +441,20 @@ class PlayerActivity : Activity() {
             .setConnectTimeoutMs(15000)
             .setReadTimeoutMs(30000)
 
-        // Buffer corti: le TV hanno poca RAM e i default (50s) rallentano l'avvio
+        // Buffer corti (i default da 50s mangiano RAM e rallentano l'avvio),
+        // ancora piu' corti su 1GB di RAM
+        val lowRam = isLowRam()
         val loadControl = DefaultLoadControl.Builder()
-            .setBufferDurationsMs(8000, 25000, 1500, 2000)
+            .setBufferDurationsMs(
+                if (lowRam) 5000 else 8000,
+                if (lowRam) 12000 else 25000,
+                1000, 1500
+            )
             .build()
-        // Max 1080p: i SoC delle TV arrancano oltre, e le fonti sono comunque <=1080p
+        // Cap risoluzione: 720p con poca RAM, 1080p altrove (le fonti sono <=1080p)
+        val (maxW, maxH) = if (lowRam) 1280 to 720 else 1920 to 1080
         val trackSelector = DefaultTrackSelector(this).apply {
-            setParameters(buildUponParameters().setMaxVideoSize(1920, 1080))
+            setParameters(buildUponParameters().setMaxVideoSize(maxW, maxH))
         }
 
         val p = ExoPlayer.Builder(this)

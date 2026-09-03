@@ -77,45 +77,37 @@
         android:gravity="center"
         android:orientation="horizontal">
 
-        <Button
+        <ImageButton
             android:id="@+id/c_prev"
             android:layout_width="56dp"
             android:layout_height="56dp"
-            android:background="?android:attr/selectableItemBackground"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/prev_episode"
-            android:text="❮"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp" />
+            android:src="@drawable/ic_prev" />
 
-        <Button
+        <ImageButton
             android:id="@+id/exo_play"
             android:layout_width="64dp"
             android:layout_height="56dp"
-            android:background="?android:attr/selectableItemBackground"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/play"
-            android:text="▶"
-            android:textColor="#FFFFFF"
-            android:textSize="24sp" />
+            android:src="@drawable/ic_play" />
 
-        <Button
+        <ImageButton
             android:id="@+id/exo_pause"
             android:layout_width="64dp"
             android:layout_height="56dp"
-            android:background="?android:attr/selectableItemBackground"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/pause"
-            android:text="⏸"
-            android:textColor="#FFFFFF"
-            android:textSize="24sp" />
+            android:src="@drawable/ic_pause" />
 
-        <Button
+        <ImageButton
             android:id="@+id/c_next"
             android:layout_width="56dp"
             android:layout_height="56dp"
-            android:background="?android:attr/selectableItemBackground"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/next_episode"
-            android:text="❯"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp" />
+            android:src="@drawable/ic_next" />
 
         <Button
             android:id="@+id/c_episodes"
