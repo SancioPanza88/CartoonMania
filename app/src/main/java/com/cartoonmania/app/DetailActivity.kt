@@ -53,6 +53,7 @@ class DetailActivity : Activity() {
         header.findViewById<View>(R.id.d_back).setOnClickListener { finish() }
 
         val chips = header.findViewById<LinearLayout>(R.id.d_chips)
+        val chipViews = ArrayList<View>()
         for (c in t.cats) {
             val chip = Ui.chip(this, c) { ctx ->
                 startActivity(Intent(ctx, CategoryActivity::class.java).putExtra("cat", c))
@@ -62,7 +63,9 @@ class DetailActivity : Activity() {
             )
             lp.marginEnd = Ui.dp(this, 8)
             chips.addView(chip, lp)
+            chipViews.add(chip)
         }
+        Ui.clampHorizontalRow(chipViews)
 
         adapter = EpisodeAdapter()
         list.adapter = adapter

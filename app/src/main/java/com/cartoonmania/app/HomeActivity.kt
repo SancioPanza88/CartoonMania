@@ -183,6 +183,7 @@ class HomeActivity : Activity() {
             orientation = LinearLayout.HORIZONTAL
             setPadding(dp(14), 0, dp(14), dp(4))
         }
+        val chipViews = ArrayList<View>()
         for ((cat, count) in cats) {
             val chip = Ui.chip(this, "$cat  $count") { ctx ->
                 startActivity(Intent(ctx, CategoryActivity::class.java).putExtra("cat", cat))
@@ -192,7 +193,9 @@ class HomeActivity : Activity() {
             )
             lp.marginEnd = dp(8)
             row.addView(chip, lp)
+            chipViews.add(chip)
         }
+        Ui.clampHorizontalRow(chipViews)
         container.addView(
             wheelScroll(HorizontalScrollView(this).apply { addView(row) }),
             1
@@ -235,6 +238,7 @@ class HomeActivity : Activity() {
             setPadding(dp(14), 0, dp(14), dp(8))
         }
 
+        val cards = ArrayList<View>()
         for (t in items) {
             val card = LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
@@ -275,7 +279,9 @@ class HomeActivity : Activity() {
             card.addView(poster)
             card.addView(label)
             row.addView(card)
+            cards.add(card)
         }
+        Ui.clampHorizontalRow(cards)
 
         container.addView(wheelScroll(HorizontalScrollView(this).apply { addView(row) }))
     }

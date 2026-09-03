@@ -61,6 +61,15 @@ object Ui {
         return c
     }
 
+    /** Blocca il focus ai bordi di una riga orizzontale: a fine riga la freccia
+     *  resta dov'e' invece di cadere sulla riga sotto. */
+    fun clampHorizontalRow(views: List<View>) {
+        if (views.isEmpty()) return
+        for (v in views) if (v.id == View.NO_ID) v.id = View.generateViewId()
+        views.first().nextFocusLeftId = views.first().id
+        views.last().nextFocusRightId = views.last().id
+    }
+
     fun dp(ctx: Context, v: Int): Int =
         (v * ctx.resources.displayMetrics.density).toInt()
 }
