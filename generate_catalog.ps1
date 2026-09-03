@@ -4,7 +4,12 @@ $dataDir = Join-Path $PSScriptRoot "data"
 $assetsDir = Join-Path $PSScriptRoot "app\src\main\assets"
 New-Item -ItemType Directory -Path $assetsDir -Force | Out-Null
 
-$src = Get-Content -Raw -Encoding UTF8 (Join-Path $dataDir "streaming_links.json") | ConvertFrom-Json
+$streamingPath = Join-Path $dataDir "streaming_links.json"
+if (-not (Test-Path $streamingPath)) {
+    Write-Host "WARN: $streamingPath assente (scrape precedente bloccato?). Niente da generare, esco senza fallire."
+    exit 0
+}
+$src = Get-Content -Raw -Encoding UTF8 $streamingPath | ConvertFrom-Json
 
 # Serie extra (loonex ecc.): file separato, unione senza duplicati di slug
 $extraPath = Join-Path $dataDir "loonex_links.json"

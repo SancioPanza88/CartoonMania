@@ -18,6 +18,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Ripristina cache dati scraping
+        uses: actions/cache@v4
+        with:
+          path: |
+            data/raw
+            data/streaming_links.json
+            data/streaming_links.csv
+          key: cartoonmania-raw-${{ github.run_id }}
+          restore-keys: |
+            cartoonmania-raw-
+
       - name: Estrai link di riproduzione dal sito
         shell: pwsh
         run: ./extract_links.ps1
