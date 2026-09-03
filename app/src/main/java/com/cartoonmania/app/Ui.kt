@@ -8,6 +8,15 @@ import android.widget.TextView
 
 object Ui {
 
+    fun isTv(ctx: Context): Boolean {
+        return try {
+            val um = ctx.getSystemService(Context.UI_MODE_SERVICE) as android.app.UiModeManager
+            um.currentModeType == android.content.res.Configuration.UI_MODE_TYPE_TELEVISION
+        } catch (_: Exception) {
+            false
+        }
+    }
+
     fun round(view: View, radiusDp: Int) {
         val r = radiusDp * view.resources.displayMetrics.density
         view.clipToOutline = true
@@ -21,8 +30,10 @@ object Ui {
     fun tvFocus(v: View) {
         v.isFocusable = true
         v.isClickable = true
+        // Sulla TV lo zoom deve vedersi da 3 metri
+        val zoom = if (isTv(v.context)) 1.12f else 1.07f
         v.onFocusChangeListener = View.OnFocusChangeListener { view, has ->
-            val s = if (has) 1.07f else 1f
+            val s = if (has) zoom else 1f
             view.animate().scaleX(s).scaleY(s).setDuration(120).start()
             view.translationZ = if (has) 10f else 0f
         }
@@ -39,9 +50,10 @@ object Ui {
                 isFocusable = true
                 isClickable = true
                 setOnClickListener { onClick(it.context) }
+                val zoom = if (isTv(parent)) 1.12f else 1.08f
                 onFocusChangeListener = View.OnFocusChangeListener { view, has ->
-                    view.animate().scaleX(if (has) 1.08f else 1f)
-                        .scaleY(if (has) 1.08f else 1f)
+                    view.animate().scaleX(if (has) zoom else 1f)
+                        .scaleY(if (has) zoom else 1f)
                         .setDuration(120).start()
                 }
             }

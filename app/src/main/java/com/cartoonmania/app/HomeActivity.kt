@@ -37,6 +37,7 @@ class HomeActivity : Activity() {
         findViewById<View>(R.id.btn_tab_home).setOnClickListener {
             findViewById<android.widget.ScrollView>(R.id.home_scroll).smoothScrollTo(0, 0)
         }
+        Ui.tvFocus(findViewById(R.id.btn_tab_home))
 
         Thread {
             val loadError = try {
