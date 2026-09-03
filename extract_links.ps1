@@ -13,6 +13,11 @@ $headers = @{
     'Referer'         = 'https://toonitalia.xyz/'
 }
 
+# Sessione persistente: riusa i cookie Cloudflare tra le richieste.
+# Senza sessione ogni Invoke-WebRequest riparte senza cf_clearance e il WAF
+# blocca le pagine successive (pagina 1 OK, poi 403 a raffica).
+$wpSession = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+
 # --- 1. Completa download post mancanti ---
 $totalPages = 32
 $consecutiveBlocked = 0
@@ -24,7 +29,7 @@ for ($p = 1; $p -le $totalPages; $p++) {
     $done = $false
     for ($i = 1; $i -le 5 -and -not $done; $i++) {
         try {
-            $r = Invoke-WebRequest -Uri "https://toonitalia.xyz/wp-json/wp/v2/posts?per_page=100&page=$p&_embed=wp:term,wp:featuredmedia" -UseBasicParsing -TimeoutSec 180 -Headers $headers
+            $r = Invoke-WebRequest -Uri "https://toonitalia.xyz/wp-json/wp/v2/posts?per_page=100&page=$p&_embed=wp:term,wp:featuredmedia" -UseBasicParsing -TimeoutSec 180 -Headers $headers -WebSession $wpSession
             # Aggiorna il totale pagine dall'header WP (fallback: 32 se assente)
             if ($p -eq 1 -and $r.Headers['X-WP-TotalPages']) {
                 try { $totalPages = [int]($r.Headers['X-WP-TotalPages'] | Select-Object -First 1) } catch {}
@@ -42,13 +47,15 @@ for ($p = 1; $p -le $totalPages; $p++) {
                 $consecutiveBlocked++
                 Write-Host "[RETRY $i] ($code) pagina $p (blocco $consecutiveBlocked di fila - probabile filtro Cloudflare su IP datacenter)"
                 if ($consecutiveBlocked -ge 3) { $abortedByBlock = $true; break }
-                Start-Sleep -Seconds (3 * $i)
+                # Backoff lungo: il rate-limit Cloudflare scatta con richieste ravvicinate
+                Start-Sleep -Seconds (10 * $i)
             }
             else { Write-Host "[RETRY $i] ($code) pagina $p"; Start-Sleep -Seconds (3 * $i) }
         }
     }
     if ($abortedByBlock) { break }
-    Start-Sleep -Milliseconds 1500
+    # Pausa anti-rate-limit tra pagine (6-9s con jitter)
+    Start-Sleep -Seconds (6 + (Get-Random -Minimum 0 -Maximum 4))
 }
 if ($abortedByBlock) {
     Write-Host "BLOCCO RILEVATO: toonitalia.xyz risponde 403/401/429 in sequenza. Probabile blocco Cloudflare degli IP GitHub Actions. Interrompo i download, uso i dati in cache."

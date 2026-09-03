@@ -44,8 +44,11 @@ if (Test-Path $assetPath) {
 }
 $newCount = @($src).Count
 if ($newCount -eq 0 -or ($prevCount -gt 100 -and $newCount -lt [int]($prevCount * 0.7))) {
-    Write-Host "BLOCCATO: nuovo catalogo ha $newCount titoli (precedente: $prevCount). Nessun file scritto."
-    exit 1
+    # Protezione attiva per scelta: con scrape parziale (es. blocco Cloudflare
+    # 403 dopo pagina 1) non sovrascrivere mai il catalogo buono. Esco 0
+    # cosi' il workflow resta verde: niente da aggiornare in questo run.
+    Write-Host "WARN: catalogo parziale ($newCount titoli contro $prevCount precedenti, probabile blocco 403). Mantengo il precedente, nessun file scritto."
+    exit 0
 }
 
 $version = [long](Get-Date -Format yyyyMMddHHmm)

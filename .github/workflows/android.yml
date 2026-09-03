@@ -28,6 +28,10 @@ jobs:
           key: cartoonmania-raw-${{ github.run_id }}
           restore-keys: |
             cartoonmania-raw-
+          # Salva anche se gli step successivi falliscono: i progressi
+          # parziali (es. pagina 1 scaricata prima del blocco 403) vengono
+          # riusati dal run successivo invece di ripartire da zero.
+          save-always: true
 
       - name: Estrai link di riproduzione dal sito
         shell: pwsh
