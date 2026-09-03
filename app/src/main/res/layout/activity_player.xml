@@ -38,20 +38,8 @@
             android:textColor="@color/text_secondary" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/next_overlay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:background="#CC000000"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center"
-        android:padding="24dp"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:visibility="gone" />
-
+    <!-- Barra di riserva: visibile SOLO nel fallback WebView (senza player
+         nativo non c'e' il controller ExoPlayer con i suoi pulsanti). -->
     <LinearLayout
         android:id="@+id/nav_bar"
         android:layout_width="match_parent"
@@ -89,7 +77,9 @@
             android:id="@+id/btn_episodes"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
-            android:text="@string/episode_list" />
+            android:background="@drawable/bg_player_btn"
+            android:text="@string/episode_list"
+            android:textColor="#FFFFFF" />
 
         <Button
             android:id="@+id/btn_prev"

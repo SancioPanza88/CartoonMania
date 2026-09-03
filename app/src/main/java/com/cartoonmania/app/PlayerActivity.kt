@@ -5,8 +5,6 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
@@ -26,8 +24,10 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.ui.PlayerView
 import java.util.ArrayList
 import java.util.concurrent.atomic.AtomicBoolean
@@ -37,12 +37,18 @@ class PlayerActivity : Activity() {
     private lateinit var playerView: PlayerView
     private lateinit var webContainer: FrameLayout
     private lateinit var loading: View
+    // Barra di riserva per il fallback WebView (col player nativo i controlli
+    // stanno dentro il controller ExoPlayer e si nascondono da soli)
     private lateinit var navBar: View
     private lateinit var navTitle: TextView
     private lateinit var btnPrev: Button
     private lateinit var btnNext: Button
     private lateinit var btnEpisodes: Button
-    private lateinit var nextOverlay: TextView
+    // Controlli dentro il controller ExoPlayer
+    private lateinit var cTitle: TextView
+    private lateinit var cPrev: Button
+    private lateinit var cNext: Button
+    private lateinit var cEpisodes: Button
 
     private var player: ExoPlayer? = null
     private var web: WebView? = null
@@ -56,8 +62,6 @@ class PlayerActivity : Activity() {
 
     // Generazione di caricamento: invalida i callback in ritardo dell'episodio precedente
     private var sessionId = 0
-    private val handler = Handler(Looper.getMainLooper())
-    private var autoplayLeft = 0
 
     private val candidates = ArrayList<String>()
     private var candidateIndex = 0
@@ -111,13 +115,25 @@ class PlayerActivity : Activity() {
         btnPrev = findViewById(R.id.btn_prev)
         btnNext = findViewById(R.id.btn_next)
         btnEpisodes = findViewById(R.id.btn_episodes)
-        nextOverlay = findViewById(R.id.next_overlay)
+        cTitle = findViewById(R.id.c_title)
+        cPrev = findViewById(R.id.c_prev)
+        cNext = findViewById(R.id.c_next)
+        cEpisodes = findViewById(R.id.c_episodes)
+
+        // Il controller si nasconde da solo dopo pochi secondi e riappare
+        // al tocco o coi tasti del telecomando
+        playerView.controllerShowTimeoutMs = 3500
 
         findViewById<View>(R.id.btn_close).setOnClickListener { finish() }
+        findViewById<View>(R.id.c_close).setOnClickListener { finish() }
         btnPrev.setOnClickListener { goPrev() }
         btnNext.setOnClickListener { goNext() }
         btnEpisodes.setOnClickListener { showEpisodePicker() }
-        nextOverlay.setOnClickListener { cancelAutoplay() }
+        cPrev.setOnClickListener { goPrev() }
+        cNext.setOnClickListener { goNext() }
+        cEpisodes.setOnClickListener { showEpisodePicker() }
+
+        hideSystemUi()
 
         val startUrl = intent.getStringExtra("url").orEmpty()
         if (startUrl.isEmpty()) { finish(); return }
@@ -127,7 +143,9 @@ class PlayerActivity : Activity() {
         }
         val s = series
         if (s != null && s.episodes.isNotEmpty()) {
-            navBar.visibility = View.VISIBLE
+            // Col player nativo i controlli stanno nel controller ExoPlayer;
+            // la barra di riserva serve solo nel fallback WebView
+            navBar.visibility = View.GONE
             playEpisodeAt(
                 intent.getIntExtra("ep", 0).coerceIn(0, s.episodes.size - 1),
                 intent.getIntExtra("pi", 0)
@@ -139,6 +157,23 @@ class PlayerActivity : Activity() {
             title = intent.getStringExtra("label") ?: ""
             captureStream(embedUrl, visible = false)
         }
+    }
+
+    @Suppress("DEPRECATION")
+    private fun hideSystemUi() {
+        window.decorView.systemUiVisibility = (
+            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                or View.SYSTEM_UI_FLAG_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            )
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) hideSystemUi()
     }
 
     private fun hasPrev() = series != null && epIndex > 0
@@ -168,20 +203,25 @@ class PlayerActivity : Activity() {
     private fun updateNav() {
         val s = series ?: return
         val ep = s.episodes.getOrNull(epIndex)
-        navTitle.text =
+        val label =
             if (ep == null) s.title
             else "${s.title} — ${ep.label.ifEmpty { getString(R.string.play) }}"
+        navTitle.text = label
+        cTitle.text = label
         btnPrev.isEnabled = hasPrev()
         btnNext.isEnabled = hasNext()
         btnPrev.alpha = if (btnPrev.isEnabled) 1f else 0.4f
         btnNext.alpha = if (btnNext.isEnabled) 1f else 0.4f
+        cPrev.isEnabled = hasPrev()
+        cNext.isEnabled = hasNext()
+        cPrev.alpha = if (cPrev.isEnabled) 1f else 0.4f
+        cNext.alpha = if (cNext.isEnabled) 1f else 0.4f
     }
 
     /** Ricomincia da zero il caricamento sul nuovo episodio (nativo o fallback web). */
     private fun playEpisodeAt(index: Int, playerIdx: Int) {
         val s = series ?: return
         if (index !in s.episodes.indices) return
-        cancelAutoplay()
         sessionId++
 
         epIndex = index
@@ -193,7 +233,7 @@ class PlayerActivity : Activity() {
         title = "${s.title} — ${ep.label.ifEmpty { getString(R.string.play) }}"
 
         releasePlayer()
-        destroyWeb()
+        suspendWeb()
         synchronized(candidates) { candidates.clear() }
         candidateIndex = 0
         captured.set(false)
@@ -204,6 +244,7 @@ class PlayerActivity : Activity() {
         loading.visibility = View.VISIBLE
         playerView.visibility = View.GONE
         webContainer.visibility = View.GONE
+        navBar.visibility = View.GONE
         updateNav()
         captureStream(embedUrl, visible = false)
     }
@@ -221,34 +262,10 @@ class PlayerActivity : Activity() {
             .show()
     }
 
-    private val autoplayTick = object : Runnable {
-        override fun run() {
-            if (isFinishing || isDestroyed) return
-            if (autoplayLeft <= 0 || !hasNext()) {
-                nextOverlay.visibility = View.GONE
-                if (hasNext()) goNext()
-                return
-            }
-            val s = series ?: return
-            val next = s.episodes[epIndex + 1]
-            nextOverlay.text =
-                "${getString(R.string.up_next, autoplayLeft)}\n${next.label}\n${getString(R.string.tap_to_cancel)}"
-            autoplayLeft--
-            handler.postDelayed(this, 1000)
-        }
-    }
-
-    private fun scheduleAutoplay() {
-        if (!hasNext()) return
-        autoplayLeft = 5
-        nextOverlay.visibility = View.VISIBLE
-        handler.removeCallbacks(autoplayTick)
-        handler.post(autoplayTick)
-    }
-
-    private fun cancelAutoplay() {
-        handler.removeCallbacks(autoplayTick)
-        if (::nextOverlay.isInitialized) nextOverlay.visibility = View.GONE
+    /** Autoplay diretto: finito un episodio parte subito il successivo. */
+    private fun onEpisodeEnded() {
+        if (hasNext()) goNext()
+        else Toast.makeText(this, R.string.end_of_series, Toast.LENGTH_SHORT).show()
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
@@ -267,15 +284,18 @@ class PlayerActivity : Activity() {
         return super.onKeyDown(keyCode, event)
     }
 
+    /** WebView unica riutilizzata tra gli episodi: crearla ogni volta costa
+     *  1-2s e decine di MB, insostenibile sulle TV con poca RAM. */
     @SuppressLint("SetJavaScriptEnabled")
-    private fun captureStream(pageUrl: String, visible: Boolean) {
+    private fun obtainWeb(): WebView {
+        web?.let { return it }
         val w = WebView(this)
         w.setBackgroundColor(0xFF000000.toInt())
         with(w.settings) {
             javaScriptEnabled = true
             domStorageEnabled = true
             mediaPlaybackRequiresUserGesture = false
-            userAgentString = if (pageUrl.contains("loonex")) mobileUa else desktopUa
+            userAgentString = desktopUa
             mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
             loadWithOverviewMode = true
             useWideViewPort = true
@@ -285,6 +305,34 @@ class PlayerActivity : Activity() {
             databaseEnabled = false
         }
         try { CookieManager.getInstance().setAcceptCookie(true) } catch (_: Exception) { }
+        webContainer.addView(w, FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        ))
+        web = w
+        return w
+    }
+
+    /** Mette in pausa la WebView senza distruggerla (risparmia CPU/RAM sulle TV). */
+    private fun suspendWeb() {
+        web?.let { w ->
+            try {
+                w.onPause()
+                w.pauseTimers()
+                w.stopLoading()
+            } catch (_: Exception) { }
+        }
+        webContainer.visibility = View.GONE
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    private fun captureStream(pageUrl: String, visible: Boolean) {
+        val w = obtainWeb()
+        try {
+            w.onResume()
+            w.resumeTimers()
+        } catch (_: Exception) { }
+        w.settings.userAgentString = if (pageUrl.contains("loonex")) mobileUa else desktopUa
 
         w.webViewClient = object : WebViewClient() {
 
@@ -327,12 +375,7 @@ class PlayerActivity : Activity() {
             }
         }
 
-        webContainer.addView(w, FrameLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
-        ))
         webContainer.visibility = if (visible) View.VISIBLE else View.INVISIBLE
-        web = w
 
         if (!visible) {
             val sid = sessionId
@@ -340,11 +383,14 @@ class PlayerActivity : Activity() {
                 if (sid == sessionId && !captured.get() && !isFinishing && !isDestroyed) {
                     loading.visibility = View.GONE
                     webContainer.visibility = View.VISIBLE
+                    // Senza player nativo non c'e' il controller: mostra la barra di riserva
+                    if (series != null) navBar.visibility = View.VISIBLE
                     web?.evaluateJavascript(AUTOPLAY_JS, null)
                 }
             }, 25000)
         }
 
+        w.stopLoading()
         w.loadUrl(pageUrl)
     }
 
@@ -359,7 +405,10 @@ class PlayerActivity : Activity() {
         val m = HashMap<String, String>()
         if (headerMode == 1) return m
         val uri = Uri.parse(embedUrl)
-        val origin = "${uri.scheme ?: "https"}://${uri.host ?: ""}"
+        var origin = "${uri.scheme ?: "https"}://${uri.host ?: ""}"
+        // videoserver.loonex.eu ha hotlink protection: accetta solo Referer dal
+        // sito, senza (o col Referer del videoserver stesso) risponde 403
+        if ("loonex" in (uri.host ?: "")) origin = "https://loonex.eu"
         m["Referer"] = "$origin/"
         m["Origin"] = origin
         try {
@@ -372,7 +421,8 @@ class PlayerActivity : Activity() {
     private fun startNative(url: String) {
         if (isFinishing || isDestroyed) return
         loading.visibility = View.GONE
-        destroyWeb()
+        suspendWeb()
+        navBar.visibility = View.GONE
         currentUrl = url
 
         val dsFactory = DefaultHttpDataSource.Factory()
@@ -382,8 +432,19 @@ class PlayerActivity : Activity() {
             .setConnectTimeoutMs(15000)
             .setReadTimeoutMs(30000)
 
+        // Buffer corti: le TV hanno poca RAM e i default (50s) rallentano l'avvio
+        val loadControl = DefaultLoadControl.Builder()
+            .setBufferDurationsMs(8000, 25000, 1500, 2000)
+            .build()
+        // Max 1080p: i SoC delle TV arrancano oltre, e le fonti sono comunque <=1080p
+        val trackSelector = DefaultTrackSelector(this).apply {
+            setParameters(buildUponParameters().setMaxVideoSize(1920, 1080))
+        }
+
         val p = ExoPlayer.Builder(this)
             .setMediaSourceFactory(DefaultMediaSourceFactory(dsFactory))
+            .setLoadControl(loadControl)
+            .setTrackSelector(trackSelector)
             .build()
         p.setAudioAttributes(
             AudioAttributes.Builder()
@@ -398,7 +459,7 @@ class PlayerActivity : Activity() {
             }
 
             override fun onPlaybackStateChanged(state: Int) {
-                if (state == Player.STATE_ENDED) runOnUiThread { scheduleAutoplay() }
+                if (state == Player.STATE_ENDED) runOnUiThread { onEpisodeEnded() }
             }
         })
         p.setMediaItem(MediaItem.fromUri(url))
@@ -407,6 +468,7 @@ class PlayerActivity : Activity() {
 
         playerView.player = p
         playerView.visibility = View.VISIBLE
+        playerView.showController()
         player = p
     }
 
@@ -431,6 +493,7 @@ class PlayerActivity : Activity() {
         errors++
         if (errors >= 2 || embedUrl.isEmpty()) {
             loading.visibility = View.GONE
+            if (series != null) navBar.visibility = View.VISIBLE
             captureStream(embedUrl, visible = true)
         } else {
             captured.set(false)
@@ -471,7 +534,6 @@ class PlayerActivity : Activity() {
     }
 
     override fun onDestroy() {
-        handler.removeCallbacksAndMessages(null)
         releasePlayer()
         destroyWeb()
         super.onDestroy()
