@@ -29,6 +29,11 @@ class SettingsActivity : Activity() {
         Ui.tvFocus(findViewById(R.id.btn_tab_search))
         Ui.tvFocus(findViewById(R.id.btn_update))
         Ui.tvFocus(findViewById(R.id.btn_clear_cache))
+        // Sulla TV il ripple non evidenzia il focus: sfondo bordato
+        if (Ui.isTv(this)) {
+            findViewById<View>(R.id.btn_update).setBackgroundResource(R.drawable.bg_episode_focus)
+            findViewById<View>(R.id.btn_clear_cache).setBackgroundResource(R.drawable.bg_episode_focus)
+        }
 
         val appVer = try {
             packageManager.getPackageInfo(packageName, 0).versionName ?: "?"

@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Stato focus ben visibile col telecomando: bordo bianco su viola -->
+<!-- Evidenziazione righe per telecomando: col D-pad le righe della ListView
+     ricevono state_selected/activated, NON state_focused: servono tutti. -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_focused="true">
         <shape android:shape="rectangle">
-            <solid android:color="@color/accent_dim" />
-            <stroke android:width="2dp" android:color="#FFFFFF" />
+            <solid android:color="@color/accent" />
+            <stroke android:width="3dp" android:color="#FFFFFF" />
+            <corners android:radius="14dp" />
+        </shape>
+    </item>
+    <item android:state_selected="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/accent" />
+            <stroke android:width="3dp" android:color="#FFFFFF" />
+            <corners android:radius="14dp" />
+        </shape>
+    </item>
+    <item android:state_activated="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/accent" />
+            <stroke android:width="3dp" android:color="#FFFFFF" />
             <corners android:radius="14dp" />
         </shape>
     </item>

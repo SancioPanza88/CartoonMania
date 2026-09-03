@@ -88,7 +88,22 @@ class HomeActivity : Activity() {
 
     private var refreshing = false
 
+    /** Controllo rete al massimo ogni 6h: gli avvii ravvicinati usano i dati
+     *  locali e partono subito (l'aggiornamento manuale resta sempre). */
+    private fun shouldAutoRefresh(): Boolean {
+        return try {
+            val p = getSharedPreferences("cm", MODE_PRIVATE)
+            val last = p.getLong("last_refresh", 0)
+            if (System.currentTimeMillis() - last < 6 * 60 * 60 * 1000L) return false
+            p.edit().putLong("last_refresh", System.currentTimeMillis()).apply()
+            true
+        } catch (_: Exception) {
+            true
+        }
+    }
+
     private fun backgroundRefresh(manual: Boolean) {
+        if (!manual && !shouldAutoRefresh()) return
         Thread {
             val msg = try { CatalogRepo.refresh(this) } catch (e: Exception) { "Errore: ${e.message}" }
             runOnUiThread {

@@ -3,6 +3,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/bg_episode_focus"
     android:paddingStart="40dp"
     android:paddingEnd="40dp"
     android:paddingTop="7dp"
@@ -13,8 +14,6 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:background="@drawable/bg_episode_focus"
-        android:duplicateParentState="true"
         android:paddingStart="24dp"
         android:paddingEnd="24dp"
         android:paddingTop="20dp"
@@ -52,7 +51,7 @@
             android:layout_height="30dp"
             android:layout_marginStart="16dp"
             android:src="@drawable/ic_play"
-            android:tint="@color/accent"
+            android:tint="#FFFFFF"
             android:contentDescription="@string/play" />
     </LinearLayout>
 </FrameLayout>

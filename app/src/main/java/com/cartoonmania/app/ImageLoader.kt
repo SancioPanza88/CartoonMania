@@ -15,7 +15,25 @@ import java.util.concurrent.atomic.AtomicLong
 
 object ImageLoader {
 
-    private val executor: ExecutorService = Executors.newFixedThreadPool(10)
+    // Pochi thread sulle TV scarse (1GB RAM): 10 download+decode in parallelo
+    // le ingolfa, 3 bastano e il resto viaggia in coda.
+    @Volatile
+    private var threads: ExecutorService? = null
+
+    private fun exec(ctx: Context): ExecutorService = synchronized(this) {
+        threads ?: run {
+            val low = try {
+                val am = ctx.getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
+                val mi = android.app.ActivityManager.MemoryInfo()
+                am.getMemoryInfo(mi)
+                mi.totalMem in 1..1_610_612_736L
+            } catch (_: Exception) {
+                false
+            }
+            Executors.newFixedThreadPool(if (low) 3 else 10).also { threads = it }
+        }
+    }
+
     private val counter = AtomicLong(0)
 
     private val maxKb = (Runtime.getRuntime().maxMemory() / 1024L / 4L).toInt()
@@ -36,14 +54,17 @@ object ImageLoader {
             return
         }
         val ctx = iv.context.applicationContext
-        executor.execute {
+        exec(ctx).execute {
             val bmp = try { fetch(url, ctx) } catch (_: Throwable) { null } ?: return@execute
             synchronized(cache) { cache.put(url, bmp) }
             iv.post {
                 if (iv.tag == url) {
                     iv.setImageBitmap(bmp)
-                    iv.alpha = 0f
-                    iv.animate().alpha(1f).setDuration(180).start()
+                    // Sulla TV niente dissolvenze: la GPU scarsa scatta
+                    if (!Ui.isTv(iv.context)) {
+                        iv.alpha = 0f
+                        iv.animate().alpha(1f).setDuration(180).start()
+                    }
                 }
             }
         }

@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Sfondo pieno opaco fino ai bordi: niente trasparenze = niente bordi
+     bianchi quando il launcher la incornicia -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="48dp"
     android:height="48dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
     <path
-        android:pathData="M28,4 h52 a24,24 0 0 1 24,24 v52 a24,24 0 0 1 -24,24 h-52 a24,24 0 0 1 -24,-24 v-52 a24,24 0 0 1 24,-24 z"
+        android:pathData="M0,0 h108 v108 h-108 z"
         android:fillColor="#0B0B10" />
     <path
         android:pathData="M44,26 h20 a18,18 0 0 1 18,18 v20 a18,18 0 0 1 -18,18 h-20 a18,18 0 0 1 -18,-18 v-20 a18,18 0 0 1 18,-18 z"
