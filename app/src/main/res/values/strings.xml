@@ -21,6 +21,13 @@
     <string name="categories">Categorie</string>
     <string name="aggiorna">Aggiorna catalogo</string>
     <string name="loading_stream">Preparo il flusso…</string>
+    <string name="episode_list">Episodi</string>
+    <string name="prev_episode">Episodio precedente</string>
+    <string name="next_episode">Episodio successivo</string>
+    <string name="close_player">Chiudi player</string>
+    <string name="up_next">Prossimo episodio tra %1$d…</string>
+    <string name="tap_to_cancel">Tocca per restare qui</string>
+    <string name="end_of_series">Hai finito gli episodi</string>
     <plurals name="episodes_count">
         <item quantity="one">%d episodio</item>
         <item quantity="other">%d episodi</item>

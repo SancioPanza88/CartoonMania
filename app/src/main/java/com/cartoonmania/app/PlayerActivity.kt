@@ -2,8 +2,11 @@ package com.cartoonmania.app
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +17,10 @@ import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.TextView
+import android.widget.Toast
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
@@ -31,11 +37,27 @@ class PlayerActivity : Activity() {
     private lateinit var playerView: PlayerView
     private lateinit var webContainer: FrameLayout
     private lateinit var loading: View
+    private lateinit var navBar: View
+    private lateinit var navTitle: TextView
+    private lateinit var btnPrev: Button
+    private lateinit var btnNext: Button
+    private lateinit var btnEpisodes: Button
+    private lateinit var nextOverlay: TextView
 
     private var player: ExoPlayer? = null
     private var web: WebView? = null
     private val captured = AtomicBoolean(false)
     private var errors = 0
+
+    // Contesto serie per la navigazione tra episodi senza tornare indietro
+    private var series: CatalogRepo.Title? = null
+    private var epIndex = 0
+    private var playerIndex = 0
+
+    // Generazione di caricamento: invalida i callback in ritardo dell'episodio precedente
+    private var sessionId = 0
+    private val handler = Handler(Looper.getMainLooper())
+    private var autoplayLeft = 0
 
     private val candidates = ArrayList<String>()
     private var candidateIndex = 0
@@ -84,17 +106,162 @@ class PlayerActivity : Activity() {
         playerView = findViewById(R.id.player_view)
         webContainer = findViewById(R.id.web_container)
         loading = findViewById(R.id.loading)
+        navBar = findViewById(R.id.nav_bar)
+        navTitle = findViewById(R.id.nav_title)
+        btnPrev = findViewById(R.id.btn_prev)
+        btnNext = findViewById(R.id.btn_next)
+        btnEpisodes = findViewById(R.id.btn_episodes)
+        nextOverlay = findViewById(R.id.next_overlay)
 
-        embedUrl = intent.getStringExtra("url").orEmpty()
-        title = intent.getStringExtra("label") ?: ""
-        if (embedUrl.isEmpty()) { finish(); return }
+        findViewById<View>(R.id.btn_close).setOnClickListener { finish() }
+        btnPrev.setOnClickListener { goPrev() }
+        btnNext.setOnClickListener { goNext() }
+        btnEpisodes.setOnClickListener { showEpisodePicker() }
+        nextOverlay.setOnClickListener { cancelAutoplay() }
 
+        val startUrl = intent.getStringExtra("url").orEmpty()
+        if (startUrl.isEmpty()) { finish(); return }
+
+        series = intent.getStringExtra("slug")?.let { s ->
+            CatalogRepo.titles.firstOrNull { it.slug == s }
+        }
+        val s = series
+        if (s != null && s.episodes.isNotEmpty()) {
+            navBar.visibility = View.VISIBLE
+            playEpisodeAt(
+                intent.getIntExtra("ep", 0).coerceIn(0, s.episodes.size - 1),
+                intent.getIntExtra("pi", 0)
+            )
+        } else {
+            // Avvio legacy senza contesto serie: nessuna navigazione episodi
+            navBar.visibility = View.GONE
+            embedUrl = startUrl
+            title = intent.getStringExtra("label") ?: ""
+            captureStream(embedUrl, visible = false)
+        }
+    }
+
+    private fun hasPrev() = series != null && epIndex > 0
+
+    private fun hasNext(): Boolean {
+        val s = series ?: return false
+        return epIndex < s.episodes.size - 1
+    }
+
+    /** Stesso server tra un episodio e l'altro quando disponibile. */
+    private fun bestPlayerIdx(index: Int): Int {
+        val s = series ?: return 0
+        val n = s.episodes.getOrNull(index)?.players?.size ?: 0
+        return if (playerIndex < n) playerIndex else 0
+    }
+
+    private fun goPrev() {
+        if (hasPrev()) playEpisodeAt(epIndex - 1, bestPlayerIdx(epIndex - 1))
+        else Toast.makeText(this, R.string.end_of_series, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun goNext() {
+        if (hasNext()) playEpisodeAt(epIndex + 1, bestPlayerIdx(epIndex + 1))
+        else Toast.makeText(this, R.string.end_of_series, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun updateNav() {
+        val s = series ?: return
+        val ep = s.episodes.getOrNull(epIndex)
+        navTitle.text =
+            if (ep == null) s.title
+            else "${s.title} — ${ep.label.ifEmpty { getString(R.string.play) }}"
+        btnPrev.isEnabled = hasPrev()
+        btnNext.isEnabled = hasNext()
+        btnPrev.alpha = if (btnPrev.isEnabled) 1f else 0.4f
+        btnNext.alpha = if (btnNext.isEnabled) 1f else 0.4f
+    }
+
+    /** Ricomincia da zero il caricamento sul nuovo episodio (nativo o fallback web). */
+    private fun playEpisodeAt(index: Int, playerIdx: Int) {
+        val s = series ?: return
+        if (index !in s.episodes.indices) return
+        cancelAutoplay()
+        sessionId++
+
+        epIndex = index
+        val ep = s.episodes[index]
+        playerIndex = if (playerIdx in ep.players.indices) playerIdx else 0
+        val p = ep.players.getOrNull(playerIndex) ?: return
+
+        embedUrl = p.url
+        title = "${s.title} — ${ep.label.ifEmpty { getString(R.string.play) }}"
+
+        releasePlayer()
+        destroyWeb()
+        synchronized(candidates) { candidates.clear() }
+        candidateIndex = 0
+        captured.set(false)
+        errors = 0
+        headerMode = 0
+        currentUrl = ""
+
+        loading.visibility = View.VISIBLE
+        playerView.visibility = View.GONE
+        webContainer.visibility = View.GONE
+        updateNav()
         captureStream(embedUrl, visible = false)
+    }
+
+    private fun showEpisodePicker() {
+        val s = series ?: return
+        val labels = s.episodes.mapIndexed { i, ep ->
+            val l = ep.label.ifEmpty { getString(R.string.play) }
+            if (i == epIndex) "▶ $l" else l
+        }.toTypedArray()
+        AlertDialog.Builder(this)
+            .setTitle(R.string.episode_list)
+            .setItems(labels) { _, which -> playEpisodeAt(which, bestPlayerIdx(which)) }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private val autoplayTick = object : Runnable {
+        override fun run() {
+            if (isFinishing || isDestroyed) return
+            if (autoplayLeft <= 0 || !hasNext()) {
+                nextOverlay.visibility = View.GONE
+                if (hasNext()) goNext()
+                return
+            }
+            val s = series ?: return
+            val next = s.episodes[epIndex + 1]
+            nextOverlay.text =
+                "${getString(R.string.up_next, autoplayLeft)}\n${next.label}\n${getString(R.string.tap_to_cancel)}"
+            autoplayLeft--
+            handler.postDelayed(this, 1000)
+        }
+    }
+
+    private fun scheduleAutoplay() {
+        if (!hasNext()) return
+        autoplayLeft = 5
+        nextOverlay.visibility = View.VISIBLE
+        handler.removeCallbacks(autoplayTick)
+        handler.post(autoplayTick)
+    }
+
+    private fun cancelAutoplay() {
+        handler.removeCallbacks(autoplayTick)
+        if (::nextOverlay.isInitialized) nextOverlay.visibility = View.GONE
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if (keyCode == KeyEvent.KEYCODE_ESCAPE) {
             onBackPressed()
+            return true
+        }
+        if (keyCode == KeyEvent.KEYCODE_MEDIA_NEXT) {
+            goNext()
+            return true
+        }
+        if (keyCode == KeyEvent.KEYCODE_MEDIA_PREVIOUS) {
+            goPrev()
             return true
         }
         return super.onKeyDown(keyCode, event)
@@ -168,8 +335,9 @@ class PlayerActivity : Activity() {
         web = w
 
         if (!visible) {
+            val sid = sessionId
             w.postDelayed({
-                if (!captured.get() && !isFinishing && !isDestroyed) {
+                if (sid == sessionId && !captured.get() && !isFinishing && !isDestroyed) {
                     loading.visibility = View.GONE
                     webContainer.visibility = View.VISIBLE
                     web?.evaluateJavascript(AUTOPLAY_JS, null)
@@ -227,6 +395,10 @@ class PlayerActivity : Activity() {
         p.addListener(object : Player.Listener {
             override fun onPlayerError(error: PlaybackException) {
                 runOnUiThread { onNativeError() }
+            }
+
+            override fun onPlaybackStateChanged(state: Int) {
+                if (state == Player.STATE_ENDED) runOnUiThread { scheduleAutoplay() }
             }
         })
         p.setMediaItem(MediaItem.fromUri(url))
@@ -299,6 +471,7 @@ class PlayerActivity : Activity() {
     }
 
     override fun onDestroy() {
+        handler.removeCallbacksAndMessages(null)
         releasePlayer()
         destroyWeb()
         super.onDestroy()

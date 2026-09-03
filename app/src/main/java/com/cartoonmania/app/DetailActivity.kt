@@ -57,12 +57,12 @@ class DetailActivity : Activity() {
         list.setOnItemClickListener { _, _, pos, _ ->
             val ep = t.episodes.getOrNull(pos) ?: return@setOnItemClickListener
             if (ep.players.size == 1) {
-                openPlayer(ep.label, ep.players[0])
+                openPlayer(pos, 0)
             } else {
                 val names = ep.players.map { "${it.name} (${it.url.substringAfter("//").substringBefore("/")})" }
                 AlertDialog.Builder(this)
                     .setTitle(ep.label.ifEmpty { getString(R.string.choose_player) })
-                    .setItems(names.toTypedArray()) { _, which -> openPlayer(ep.label, ep.players[which]) }
+                    .setItems(names.toTypedArray()) { _, which -> openPlayer(pos, which) }
                     .setNegativeButton(android.R.string.cancel, null)
                     .show()
             }
@@ -77,11 +77,17 @@ class DetailActivity : Activity() {
         return super.onKeyDown(keyCode, event)
     }
 
-    private fun openPlayer(label: String, p: CatalogRepo.Player) {
+    private fun openPlayer(pos: Int, playerIdx: Int) {
+        val t = current ?: return
+        val ep = t.episodes.getOrNull(pos) ?: return
+        val p = ep.players.getOrNull(playerIdx) ?: ep.players.firstOrNull() ?: return
         startActivity(
             Intent(this, PlayerActivity::class.java)
                 .putExtra("url", p.url)
-                .putExtra("label", label)
+                .putExtra("label", ep.label)
+                .putExtra("slug", t.slug)
+                .putExtra("ep", pos)
+                .putExtra("pi", playerIdx)
         )
     }
 
