@@ -91,21 +91,15 @@
             android:contentDescription="@string/rew_10"
             android:src="@drawable/ic_rew" />
 
+        <!-- ATTENZIONE: media3 vuole UN SOLO exo_play_pause (l'icona la cambia
+             lui da solo). I vecchi exo_play/exo_pause separati resterebbero muti. -->
         <ImageButton
-            android:id="@+id/exo_play"
+            android:id="@+id/exo_play_pause"
             android:layout_width="80dp"
             android:layout_height="72dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/play"
             android:src="@drawable/ic_play" />
-
-        <ImageButton
-            android:id="@+id/exo_pause"
-            android:layout_width="80dp"
-            android:layout_height="72dp"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/pause"
-            android:src="@drawable/ic_pause" />
 
         <ImageButton
             android:id="@+id/exo_ffwd"

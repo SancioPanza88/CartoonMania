@@ -340,9 +340,7 @@ class PlayerActivity : Activity() {
      *  il telecomando preme a vuoto (succede quando i controlli si nascondono). */
     private fun focusPlayPause() {
         try {
-            val pause = playerView.findViewById<View>(R.id.exo_pause)
-            if (pause?.visibility == View.VISIBLE && pause.requestFocus()) return
-            playerView.findViewById<View>(R.id.exo_play)?.requestFocus()
+            playerView.findViewById<View>(R.id.exo_play_pause)?.requestFocus()
         } catch (_: Exception) {
         }
     }
