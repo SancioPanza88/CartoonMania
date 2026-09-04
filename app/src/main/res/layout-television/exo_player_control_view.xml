@@ -84,6 +84,14 @@
             android:src="@drawable/ic_prev" />
 
         <ImageButton
+            android:id="@+id/exo_rew"
+            android:layout_width="64dp"
+            android:layout_height="72dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/rew_10"
+            android:src="@drawable/ic_rew" />
+
+        <ImageButton
             android:id="@+id/exo_play"
             android:layout_width="80dp"
             android:layout_height="72dp"
@@ -98,6 +106,14 @@
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/pause"
             android:src="@drawable/ic_pause" />
+
+        <ImageButton
+            android:id="@+id/exo_ffwd"
+            android:layout_width="64dp"
+            android:layout_height="72dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/ffwd_10"
+            android:src="@drawable/ic_ffwd" />
 
         <ImageButton
             android:id="@+id/c_next"

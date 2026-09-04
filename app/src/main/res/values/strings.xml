@@ -35,6 +35,10 @@
     <string name="update_failed">Aggiornamento fallito, riprova più tardi</string>
     <string name="fav_add">☆ Preferiti</string>
     <string name="fav_remove">★ Preferiti</string>
+    <string name="fav_added">Aggiunto ai preferiti</string>
+    <string name="fav_removed">Rimosso dai preferiti</string>
+    <string name="rew_10">Indietro di 10 secondi</string>
+    <string name="ffwd_10">Avanti di 10 secondi</string>
     <string name="profile">Profilo</string>
     <string name="profiles_title">Chi guarda?</string>
     <string name="profile_new">＋ Nuovo profilo</string>

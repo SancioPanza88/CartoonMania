@@ -125,6 +125,9 @@ class PlayerActivity : Activity() {
         // Il controller si nasconde da solo dopo pochi secondi e riappare
         // al tocco o coi tasti del telecomando
         playerView.controllerShowTimeoutMs = 3500
+        // La barra di scorrimento non prende mai il focus: col D-pad ogni
+        // pressione salterebbe durata/20 (minuti). Per i salti ci sono i tasti ±10s.
+        findViewById<View>(R.id.exo_progress).isFocusable = false
 
         findViewById<View>(R.id.btn_close).setOnClickListener { finish() }
         findViewById<View>(R.id.c_close).setOnClickListener { finish() }
@@ -498,6 +501,8 @@ class PlayerActivity : Activity() {
             .setMediaSourceFactory(DefaultMediaSourceFactory(dsFactory))
             .setLoadControl(loadControl)
             .setTrackSelector(trackSelector)
+            .setSeekBackIncrementMs(10_000)
+            .setSeekForwardIncrementMs(10_000)
             .build()
         p.setAudioAttributes(
             AudioAttributes.Builder()

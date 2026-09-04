@@ -88,10 +88,21 @@ class HomeActivity : Activity() {
     override fun onResume() {
         super.onResume()
         renderProfile()
-        val v = CatalogRepo.currentVersion(this)
-        val pid = try { Profiles.current(this).id } catch (_: Exception) { "" }
-        if (builtVer != null && (v != builtVer || pid != builtProfile) && CatalogRepo.titles.isNotEmpty()) {
+        val sig = contentSig()
+        if (builtSig != null && sig != builtSig && CatalogRepo.titles.isNotEmpty()) {
             safeBuildSections()
+        }
+    }
+
+    /** Cambia quando cambia qualunque cosa mostrata: versione, profilo,
+     *  preferiti, recenti o progressi. */
+    private fun contentSig(): String {
+        return try {
+            val me = Profiles.current(this)
+            CatalogRepo.currentVersion(this) + "|" + me.id + "|" +
+                me.favorites.size + "|" + me.recent.size + "|" + me.progress.size
+        } catch (_: Exception) {
+            "?"
         }
     }
 
@@ -167,8 +178,7 @@ class HomeActivity : Activity() {
                 return
             }
             buildCategories(all)
-            builtVer = CatalogRepo.currentVersion(this)
-            builtProfile = try { Profiles.current(this).id } catch (_: Exception) { null }
+            builtSig = contentSig()
             postRows(planRows(all), 0, g)
         } catch (e: Throwable) {
             status.visibility = View.VISIBLE
@@ -176,8 +186,7 @@ class HomeActivity : Activity() {
         }
     }
 
-    private var builtVer: String? = null
-    private var builtProfile: String? = null
+    private var builtSig: String? = null
 
     private data class RowSpec(
         val title: String,

@@ -13,6 +13,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
+import android.widget.Toast
 
 class DetailActivity : Activity() {
 
@@ -61,8 +62,13 @@ class DetailActivity : Activity() {
         }
         refreshFav()
         favBtn.setOnClickListener {
-            Profiles.toggleFavorite(this, slug)
+            val now = Profiles.toggleFavorite(this, slug)
             refreshFav()
+            Toast.makeText(
+                this,
+                if (now) getString(R.string.fav_added) else getString(R.string.fav_removed),
+                Toast.LENGTH_SHORT
+            ).show()
         }
 
         val chips = header.findViewById<LinearLayout>(R.id.d_chips)
