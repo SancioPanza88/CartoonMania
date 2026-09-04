@@ -32,6 +32,10 @@ class DetailActivity : Activity() {
         Profiles.touchRecent(this, slug)
 
         val list = findViewById<ListView>(R.id.d_list)
+        // Fondamentale per il telecomando: senza, i bottoni nell'header
+        // (indietro, preferiti, chip) non ricevono mai il focus/D-pad
+        // perche' la ListView se lo tiene tutto per la selezione righe.
+        list.setItemsCanFocus(true)
         // Sulla TV testata e lista sono un'unica ListView (niente ScrollView
         // annidata: col D-pad il focus non entrerebbe mai negli episodi).
         // Sul telefono la testata resta dov'era.

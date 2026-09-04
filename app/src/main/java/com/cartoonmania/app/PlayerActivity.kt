@@ -320,9 +320,31 @@ class PlayerActivity : Activity() {
             !playerView.isControllerFullyVisible
         ) {
             playerView.showController()
+            focusPlayPause()
+            return true
+        }
+        // Controller nascosto: anche le frecce lo riaprono (stile YouTube TV)
+        // invece di finire nel vuoto o cercare alla cieca
+        if (player != null && !playerView.isControllerFullyVisible &&
+            (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN ||
+                keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)
+        ) {
+            playerView.showController()
+            focusPlayPause()
             return true
         }
         return super.onKeyDown(keyCode, event)
+    }
+
+    /** Garantisce che frecce/OK abbiano sempre un bersaglio: senza focus
+     *  il telecomando preme a vuoto (succede quando i controlli si nascondono). */
+    private fun focusPlayPause() {
+        try {
+            val pause = playerView.findViewById<View>(R.id.exo_pause)
+            if (pause?.visibility == View.VISIBLE && pause.requestFocus()) return
+            playerView.findViewById<View>(R.id.exo_play)?.requestFocus()
+        } catch (_: Exception) {
+        }
     }
 
     /** True sotto ~1.5GB di RAM totale: le TV economiche hanno 1GB e uccidono
@@ -534,6 +556,7 @@ class PlayerActivity : Activity() {
         playerView.player = p
         playerView.visibility = View.VISIBLE
         playerView.showController()
+        focusPlayPause()
         player = p
     }
 
