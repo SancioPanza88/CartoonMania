@@ -21,6 +21,13 @@ class HomeActivity : Activity() {
         super.onCreate(savedInstanceState)
         CrashGuard.install(applicationContext)
         setContentView(R.layout.activity_home)
+
+        val profBtn = findViewById<ImageView>(R.id.home_profile)
+        Ui.tvFocus(profBtn)
+        profBtn.setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
+        }
+        renderProfile()
         // Popup di aggiornamento a ogni avvio se c'e' una release piu' nuova
         UpdateChecker.check(this)
 
@@ -79,10 +86,21 @@ class HomeActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
+        renderProfile()
         val v = CatalogRepo.currentVersion(this)
-        if (builtVer != null && v != builtVer && CatalogRepo.titles.isNotEmpty()) {
-            container.removeAllViews()
+        val pid = try { Profiles.current(this).id } catch (_: Exception) { "" }
+        if (builtVer != null && (v != builtVer || pid != builtProfile) && CatalogRepo.titles.isNotEmpty()) {
             safeBuildSections()
+        }
+    }
+
+    private fun renderProfile() {
+        try {
+            val p = Profiles.current(this)
+            val v = findViewById<ImageView>(R.id.home_profile)
+            Profiles.renderInto(this, v, p)
+            v.contentDescription = p.name
+        } catch (_: Exception) {
         }
     }
 
@@ -134,10 +152,23 @@ class HomeActivity : Activity() {
         return super.onKeyDown(keyCode, event)
     }
 
+    private var buildGen = 0
+
     private fun safeBuildSections() {
         try {
-            buildSections()
+            buildGen++
+            val g = buildGen
+            container.removeAllViews()
+            val all = CatalogRepo.titles
+            if (all.isEmpty()) {
+                status.visibility = View.VISIBLE
+                status.text = getString(R.string.no_data)
+                return
+            }
+            buildCategories(all)
             builtVer = CatalogRepo.currentVersion(this)
+            builtProfile = try { Profiles.current(this).id } catch (_: Exception) { null }
+            postRows(planRows(all), 0, g)
         } catch (e: Throwable) {
             status.visibility = View.VISIBLE
             status.text = "Errore: ${e.javaClass.simpleName}: ${e.message}"
@@ -145,19 +176,24 @@ class HomeActivity : Activity() {
     }
 
     private var builtVer: String? = null
+    private var builtProfile: String? = null
 
-    private fun buildSections() {
-        val all = CatalogRepo.titles
-        if (all.isEmpty()) {
-            status.visibility = View.VISIBLE
-            status.text = getString(R.string.no_data)
-            return
+    private fun planRows(all: List<CatalogRepo.Title>): List<Pair<String, List<CatalogRepo.Title>>> {
+        val out = ArrayList<Pair<String, List<CatalogRepo.Title>>>()
+        val tv = Ui.isTv(this)
+        val popN = if (tv) 20 else 25
+        val rowN = if (tv) 20 else 30
+        try {
+            val bySlug = all.associateBy { it.slug }
+            val me = Profiles.current(this)
+            val favs = me.favorites.mapNotNull { bySlug[it] }
+            if (favs.isNotEmpty()) out.add(getString(R.string.favorites_row) to favs)
+            val rec = me.recent.mapNotNull { bySlug[it] }
+            if (rec.isNotEmpty()) out.add(getString(R.string.recent_row) to rec)
+        } catch (_: Exception) {
         }
-
-        buildCategories(all)
-
-        addRow("Popolari ora", all.shuffled().take(25))
-        addRow("Aggiunti di recente", all.sortedByDescending { it.modified }.take(25))
+        out.add("Popolari ora" to all.shuffled().take(popN))
+        out.add("Aggiunti di recente" to all.sortedByDescending { it.modified }.take(popN))
 
         val preferred = listOf(
             "Anime", "Film Animazione", "Serie Tv", "Shonen", "Azione",
@@ -167,8 +203,20 @@ class HomeActivity : Activity() {
         )
         for (cat in preferred) {
             val items = all.filter { it.cats.contains(cat) }
-            if (items.size >= 8) addRow(cat, items.shuffled().take(30))
+            if (items.size >= 8) out.add(cat to items.shuffled().take(rowN))
         }
+        return out
+    }
+
+    /** Aggiunge le righe a blocchi: la prima si vede subito, il resto segue. */
+    private fun postRows(rows: List<Pair<String, List<CatalogRepo.Title>>>, i: Int, g: Int) {
+        if (g != buildGen || isFinishing || isDestroyed) return
+        if (i >= rows.size) return
+        try {
+            addRow(rows[i].first, rows[i].second)
+        } catch (_: Exception) {
+        }
+        container.post { postRows(rows, i + 1, g) }
     }
 
     private fun buildCategories(all: List<CatalogRepo.Title>) {

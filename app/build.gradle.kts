@@ -11,8 +11,8 @@ android {
         applicationId = "com.cartoonmania.app"
         minSdk = 21
         targetSdk = 34
-        versionCode = 15
-        versionName = "1.13"
+        versionCode = 16
+        versionName = "1.14"
     }
 
     signingConfigs {
@@ -47,6 +47,7 @@ android {
 
 dependencies {
     implementation("androidx.core:core:1.12.0")
+    implementation("com.google.zxing:core:3.5.3")
     implementation("androidx.media3:media3-exoplayer:1.3.1")
     implementation("androidx.media3:media3-exoplayer-hls:1.3.1")
     implementation("androidx.media3:media3-ui:1.3.1")

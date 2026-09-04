@@ -545,6 +545,16 @@ class PlayerActivity : Activity() {
         player = null
     }
 
+    @Suppress("DEPRECATION")
+    override fun onBackPressed() {
+        // Primo tocco nasconde i controlli, il secondo esce davvero
+        if (player != null && playerView.isControllerFullyVisible) {
+            playerView.hideController()
+            return
+        }
+        super.onBackPressed()
+    }
+
     override fun onPause() {
         web?.onPause()
         player?.pause()

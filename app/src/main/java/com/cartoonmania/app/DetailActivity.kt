@@ -8,6 +8,7 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ListView
@@ -27,6 +28,7 @@ class DetailActivity : Activity() {
             finish(); return
         }
         current = t
+        Profiles.touchRecent(this, slug)
 
         val list = findViewById<ListView>(R.id.d_list)
         // Sulla TV testata e lista sono un'unica ListView (niente ScrollView
@@ -51,6 +53,17 @@ class DetailActivity : Activity() {
         Ui.round(poster, 12)
         ImageLoader.display(header.findViewById(R.id.d_backdrop), t.img)
         header.findViewById<View>(R.id.d_back).setOnClickListener { finish() }
+
+        val favBtn = header.findViewById<Button>(R.id.d_fav)
+        fun refreshFav() {
+            favBtn.text = if (Profiles.isFavorite(this, slug)) getString(R.string.fav_remove)
+            else getString(R.string.fav_add)
+        }
+        refreshFav()
+        favBtn.setOnClickListener {
+            Profiles.toggleFavorite(this, slug)
+            refreshFav()
+        }
 
         val chips = header.findViewById<LinearLayout>(R.id.d_chips)
         val chipViews = ArrayList<View>()
