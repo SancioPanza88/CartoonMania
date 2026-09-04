@@ -168,43 +168,82 @@ object PhotoServer {
             <!doctype html><html><head><meta charset="utf-8">
             <meta name="viewport" content="width=device-width,initial-scale=1">
             <title>Foto profilo TV</title></head>
-            <body style="background:#0B0B10;color:#fff;font-family:sans-serif;text-align:center;padding:32px">
+            <body style="background:#0B0B10;color:#fff;font-family:sans-serif;text-align:center;padding:24px;margin:0">
             <h2>Foto profilo per la TV</h2>
-            <input type="file" id="f" accept="image/*" style="font-size:18px"><br><br>
-            <button onclick="send()" style="font-size:20px;padding:12px 32px;background:#7C5CFC;color:#fff;border:0;border-radius:8px">Invia alla TV</button>
+            <input type="file" id="f" accept="image/*" style="font-size:18px">
+            <div id="crop" style="display:none;margin:16px auto;position:relative;width:300px;height:300px;overflow:hidden;background:#222;border-radius:8px;touch-action:none;-webkit-user-select:none;user-select:none">
+            <img id="im" style="position:absolute;max-width:none">
+            <div style="position:absolute;inset:0;border-radius:50%;box-shadow:0 0 0 999px rgba(0,0,0,.6);pointer-events:none;border:2px solid #7C5CFC;box-sizing:border-box"></div>
+            </div>
+            <div id="zoomrow" style="display:none;margin:8px">
+            <span style="font-size:22px">-</span>
+            <input type="range" id="z" min="1" max="3" step="0.05" value="1" style="width:200px">
+            <span style="font-size:22px">+</span>
+            </div>
+            <button id="sendbtn" onclick="send()" style="display:none;font-size:20px;padding:12px 32px;background:#7C5CFC;color:#fff;border:0;border-radius:8px;margin-top:8px">Invia alla TV</button>
             <p id="m"></p>
             <script>
-            function send(){
-              var f=document.getElementById('f').files[0];
-              if(!f){document.getElementById('m').textContent='Scegli una foto';return;}
-              document.getElementById('m').textContent='Preparo...';
-              shrink(f).then(function(blob){
-                document.getElementById('m').textContent='Invio...';
-                var ctrl=new AbortController();
-                var to=setTimeout(function(){ctrl.abort();},110000);
-                fetch('/up',{method:'POST',headers:{'X-Token':'$token','Content-Type':'application/octet-stream'},body:blob,signal:ctrl.signal})
-                  .then(function(r){clearTimeout(to);return r.text().then(function(t){document.getElementById('m').textContent=(t==='ok')?'Fatto! Guarda la TV':'Errore HTTP '+r.status+': '+t;});})
-                  .catch(function(e){clearTimeout(to);document.getElementById('m').textContent='Errore di rete: controlla stesso Wi-Fi e riprova';});
-              }).catch(function(e){
-                document.getElementById('m').textContent='Foto non leggibile';
-              });
+            var S=300, W=0, H=0, k=1, dx=0, dy=0, z=1, objUrl=null;
+            var im=document.getElementById('im');
+            document.getElementById('f').addEventListener('change', function(){
+              var f=this.files[0]; if(!f) return;
+              if(objUrl) URL.revokeObjectURL(objUrl);
+              objUrl=URL.createObjectURL(f);
+              var tmp=new Image();
+              tmp.onload=function(){
+                W=tmp.naturalWidth; H=tmp.naturalHeight;
+                if(!W||!H){document.getElementById('m').textContent='Foto non leggibile';return;}
+                z=1; document.getElementById('z').value=1;
+                dx=(S-W*base())/2; dy=(S-H*base())/2;
+                im.src=objUrl;
+                document.getElementById('crop').style.display='block';
+                document.getElementById('zoomrow').style.display='block';
+                document.getElementById('sendbtn').style.display='inline-block';
+                document.getElementById('m').textContent='Trascina e zooma: nel cerchio vedi come viene';
+                layout();
+              };
+              tmp.onerror=function(){document.getElementById('m').textContent='Foto non leggibile';};
+              tmp.src=objUrl;
+            });
+            function base(){ return Math.max(S/W, S/H); }
+            function layout(){
+              k=base()*z;
+              var w=W*k, h=H*k;
+              if(w<=S){ dx=(S-w)/2; } else { dx=Math.min(0,Math.max(S-w,dx)); }
+              if(h<=S){ dy=(S-h)/2; } else { dy=Math.min(0,Math.max(S-h,dy)); }
+              im.style.width=w+'px'; im.style.height=h+'px';
+              im.style.left=dx+'px'; im.style.top=dy+'px';
             }
-            function shrink(f){
-              return new Promise(function(resolve,reject){
-                if(!window.createImageBitmap){resolve(f);return;}
-                createImageBitmap(f).then(function(bmp){
-                  try{
-                    var scale=Math.min(1,1280/Math.max(bmp.width,bmp.height));
-                    var cv=document.createElement('canvas');
-                    cv.width=Math.max(1,Math.round(bmp.width*scale));
-                    cv.height=Math.max(1,Math.round(bmp.height*scale));
-                    cv.getContext('2d').drawImage(bmp,0,0,cv.width,cv.height);
-                    if(cv.toBlob){
-                      cv.toBlob(function(b){resolve(b||f);},'image/jpeg',0.85);
-                    } else { resolve(f); }
-                  }catch(e){ resolve(f); }
-                }).catch(function(e){ resolve(f); });
+            document.getElementById('z').addEventListener('input', function(){ z=parseFloat(this.value); layout(); });
+            (function(){
+              var box=document.getElementById('crop'), pid=null, lx=0, ly=0;
+              box.addEventListener('pointerdown', function(e){ pid=e.pointerId; lx=e.clientX; ly=e.clientY; try{box.setPointerCapture(pid);}catch(err){} e.preventDefault(); });
+              box.addEventListener('pointermove', function(e){
+                if(e.pointerId!==pid) return;
+                dx+=e.clientX-lx; dy+=e.clientY-ly; lx=e.clientX; ly=e.clientY; layout();
               });
+              function up(e){ if(e.pointerId===pid) pid=null; }
+              box.addEventListener('pointerup', up); box.addEventListener('pointercancel', up);
+            })();
+            function send(){
+              document.getElementById('m').textContent='Preparo...';
+              try{
+                var sx=-dx/k, sy=-dy/k, ss=S/k;
+                var cv=document.createElement('canvas'); cv.width=512; cv.height=512;
+                cv.getContext('2d').drawImage(im, sx, sy, ss, ss, 0, 0, 512, 512);
+                cv.toBlob(function(blob){
+                  if(!blob){document.getElementById('m').textContent='Foto non leggibile';return;}
+                  upload(blob);
+                },'image/jpeg',0.9);
+              }catch(e){ document.getElementById('m').textContent='Foto non leggibile'; }
+            }
+            function upload(blob){
+              document.getElementById('m').textContent='Invio...';
+              var ctrl=new AbortController();
+              var to=setTimeout(function(){ctrl.abort();},110000);
+              fetch('/up',{method:'POST',headers:{'X-Token':'$token','Content-Type':'application/octet-stream'},body:blob,signal:ctrl.signal})
+                .then(function(r){clearTimeout(to);return r.text().then(function(t){document.getElementById('m').textContent=(t==='ok')?'Fatto! Guarda la TV':'Errore HTTP '+r.status+': '+t;});})
+                .catch(function(e){clearTimeout(to);document.getElementById('m').textContent='Errore di rete: controlla stesso Wi-Fi e riprova';});
             }
             </script></body></html>
         """.trimIndent()

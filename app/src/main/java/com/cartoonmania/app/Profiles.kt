@@ -275,6 +275,8 @@ object Profiles {
         try {
             val px = (96 * ctx.resources.displayMetrics.density).toInt().coerceAtLeast(96)
             iv.setImageBitmap(avatarBitmap(ctx, p, px))
+            // Avatar sempre tondi, come la guida della pagina di ritaglio
+            Ui.round(iv, 100)
         } catch (_: Exception) {
         }
     }
