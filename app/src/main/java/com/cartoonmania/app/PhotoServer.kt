@@ -70,6 +70,7 @@ object PhotoServer {
             val reqLine = readLineRaw(inp) ?: return
             var contentLength = 0
             var token = ""
+            var expectContinue = false
             while (true) {
                 val h = readLineRaw(inp) ?: return
                 if (h.isEmpty()) break
@@ -79,6 +80,7 @@ object PhotoServer {
                     val value = h.substring(idx + 1).trim()
                     if (name == "content-length") contentLength = value.toIntOrNull() ?: 0
                     if (name == "x-token") token = value
+                    if (name == "expect" && value.lowercase().startsWith("100")) expectContinue = true
                 }
             }
             val out = s.getOutputStream()
@@ -97,13 +99,26 @@ object PhotoServer {
             val method = parts[0]
             val path = parts[1]
             if (method == "GET") {
-                respond("200 OK", "text/html; charset=utf-8", page(token).toByteArray(Charsets.UTF_8))
+                // La pagina deve contenere il token VERO della sessione,
+                // non quello (vuoto) arrivato negli header della GET
+                respond("200 OK", "text/html; charset=utf-8", page(this.token).toByteArray(Charsets.UTF_8))
                 return
             }
             if (method == "POST" && path.startsWith("/up")) {
-                if (token != this.token || contentLength <= 0 || contentLength > MAX_BYTES) {
-                    // Svuota comunque il body per non sporcare la connessione
-                    respond("403 Forbidden", "text/plain", "no".toByteArray())
+                if (expectContinue) {
+                    try {
+                        out.write("HTTP/1.1 100 Continue\r\n\r\n".toByteArray(Charsets.US_ASCII))
+                        out.flush()
+                    } catch (_: Exception) {
+                        return
+                    }
+                }
+                if (token != this.token) {
+                    respond("403 Forbidden", "text/plain", "token errato".toByteArray())
+                    return
+                }
+                if (contentLength <= 0 || contentLength > MAX_BYTES) {
+                    respond("413 Too Large", "text/plain", "file troppo grande".toByteArray())
                     return
                 }
                 val data = ByteArray(contentLength)
@@ -114,7 +129,7 @@ object PhotoServer {
                     read += n
                 }
                 if (read != contentLength || !isJpeg(data)) {
-                    respond("400 Bad Request", "text/plain", "no".toByteArray())
+                    respond("400 Bad Request", "text/plain", "foto non valida (serve JPEG)".toByteArray())
                     return
                 }
                 try {
@@ -168,7 +183,7 @@ object PhotoServer {
                 var ctrl=new AbortController();
                 var to=setTimeout(function(){ctrl.abort();},110000);
                 fetch('/up',{method:'POST',headers:{'X-Token':'$token','Content-Type':'application/octet-stream'},body:blob,signal:ctrl.signal})
-                  .then(function(r){clearTimeout(to);return r.text().then(function(t){document.getElementById('m').textContent=(t==='ok')?'Fatto! Guarda la TV':'Errore: '+t;});})
+                  .then(function(r){clearTimeout(to);return r.text().then(function(t){document.getElementById('m').textContent=(t==='ok')?'Fatto! Guarda la TV':'Errore HTTP '+r.status+': '+t;});})
                   .catch(function(e){clearTimeout(to);document.getElementById('m').textContent='Errore di rete: controlla stesso Wi-Fi e riprova';});
               }).catch(function(e){
                 document.getElementById('m').textContent='Foto non leggibile';

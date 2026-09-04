@@ -255,10 +255,11 @@ class HomeActivity : Activity() {
         container.post { postRows(rows, i + 1, g) }
     }
 
-    /** Tieni premuto: segna come gia' visto (sparisce dal Continua). */
+    /** Tieni premuto: segna come gia' visto (sparisce da Continua e Recenti). */
     private fun markWatched(t: CatalogRepo.Title) {
         try {
             Profiles.clearProgress(this, t.slug)
+            Profiles.removeRecent(this, t.slug)
             Toast.makeText(this, "${t.title}: ${getString(R.string.watched_done)}", Toast.LENGTH_SHORT).show()
             safeBuildSections()
         } catch (_: Exception) {

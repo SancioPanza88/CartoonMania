@@ -221,6 +221,16 @@ object Profiles {
         }
     }
 
+    /** Togli dagli ultimamente visti (es. show finito e segnato come visto). */
+    fun removeRecent(ctx: Context, slug: String) {
+        try {
+            val list = all(ctx)
+            val cur = list.firstOrNull { it.id == prefs(ctx).getString("current", null) } ?: list[0]
+            if (cur.recent.remove(slug)) persist(ctx, list)
+        } catch (_: Exception) {
+        }
+    }
+
     fun progressOf(ctx: Context, slug: String): Prog? {
         return try {
             current(ctx).progress[slug]
