@@ -43,9 +43,13 @@ object ImageLoader {
     }
 
     private const val TARGET_W = 320
-    private const val MAX_DISK_MB = 96L
+    private const val MAX_DISK_MB = 192L
 
     fun display(iv: ImageView, url: String?) {
+        display(iv, url, retry = true)
+    }
+
+    private fun display(iv: ImageView, url: String?, retry: Boolean) {
         iv.setImageBitmap(null)
         iv.tag = url
         if (url.isNullOrEmpty()) return
@@ -55,7 +59,15 @@ object ImageLoader {
         }
         val ctx = iv.context.applicationContext
         exec(ctx).execute {
-            val bmp = try { fetch(url, ctx) } catch (_: Throwable) { null } ?: return@execute
+            val bmp = try { fetch(url, ctx) } catch (_: Throwable) { null }
+            if (bmp == null) {
+                // Un solo retry dopo 4s (Wi-Fi TV ballerino): solo se la vista
+                // vuole ancora la stessa immagine
+                if (retry) {
+                    iv.postDelayed({ if (iv.tag == url) display(iv, url, false) }, 4000)
+                }
+                return@execute
+            }
             synchronized(cache) { cache.put(url, bmp) }
             iv.post {
                 if (iv.tag == url) {
@@ -70,7 +82,9 @@ object ImageLoader {
         }
     }
 
-    private fun cacheDir(ctx: Context): File = File(ctx.cacheDir, "posters").apply { mkdirs() }
+    /** filesDir e NON cacheDir: il sistema svuota cacheDir sotto pressione
+     *  (TV da 1GB quasi sempre) e si riscaricherebbe tutto a ogni avvio. */
+    private fun cacheDir(ctx: Context): File = File(ctx.filesDir, "posters").apply { mkdirs() }
 
     private fun fetch(url: String, ctx: Context): Bitmap? {
         val dir = cacheDir(ctx)
@@ -80,8 +94,8 @@ object ImageLoader {
                 f.readBytes()
             } else {
                 val c = URL(url).openConnection() as HttpURLConnection
-                c.connectTimeout = 8000
-                c.readTimeout = 20000
+                c.connectTimeout = 5000
+                c.readTimeout = 15000
                 try {
                     if (c.responseCode != 200) null
                     else {
