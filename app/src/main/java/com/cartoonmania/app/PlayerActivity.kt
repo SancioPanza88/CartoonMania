@@ -60,6 +60,7 @@ class PlayerActivity : Activity() {
     private var series: CatalogRepo.Title? = null
     private var epIndex = 0
     private var playerIndex = 0
+    private var resumeMs = 0L
 
     // Generazione di caricamento: invalida i callback in ritardo dell'episodio precedente
     private var sessionId = 0
@@ -147,6 +148,7 @@ class PlayerActivity : Activity() {
             // Col player nativo i controlli stanno nel controller ExoPlayer;
             // la barra di riserva serve solo nel fallback WebView
             navBar.visibility = View.GONE
+            resumeMs = intent.getLongExtra("pos", 0)
             playEpisodeAt(
                 intent.getIntExtra("ep", 0).coerceIn(0, s.episodes.size - 1),
                 intent.getIntExtra("pi", 0)
@@ -224,6 +226,8 @@ class PlayerActivity : Activity() {
         val s = series ?: return
         if (index !in s.episodes.indices) return
         sessionId++
+        // Salva dove eri arrivato nell'episodio precedente
+        if (player != null) saveCurrentProgress()
 
         epIndex = index
         val ep = s.episodes[index]
@@ -266,7 +270,33 @@ class PlayerActivity : Activity() {
     /** Autoplay diretto: finito un episodio parte subito il successivo. */
     private fun onEpisodeEnded() {
         if (hasNext()) goNext()
-        else Toast.makeText(this, R.string.end_of_series, Toast.LENGTH_SHORT).show()
+        else {
+            try {
+                series?.let { Profiles.clearProgress(this, it.slug) }
+            } catch (_: Exception) {
+            }
+            Toast.makeText(this, R.string.end_of_series, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /** Ricorda episodio + posizione per il "Continua a guardare". */
+    private fun saveCurrentProgress() {
+        val s = series ?: return
+        val p = player ?: return
+        try {
+            val pos = p.currentPosition
+            val dur = p.duration
+            if (dur > 0 && pos >= dur - 30000) {
+                Profiles.clearProgress(this, s.slug)
+                return
+            }
+            val ep = s.episodes.getOrNull(epIndex)
+            Profiles.saveProgress(
+                this, s.slug, epIndex, playerIndex,
+                pos.coerceAtLeast(0), ep?.label ?: ""
+            )
+        } catch (_: Exception) {
+        }
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
@@ -488,6 +518,13 @@ class PlayerActivity : Activity() {
         p.setMediaItem(MediaItem.fromUri(url))
         p.playWhenReady = true
         p.prepare()
+        if (resumeMs > 5000) {
+            try {
+                p.seekTo(resumeMs)
+            } catch (_: Exception) {
+            }
+        }
+        resumeMs = 0
 
         playerView.player = p
         playerView.visibility = View.VISIBLE
@@ -556,6 +593,7 @@ class PlayerActivity : Activity() {
     }
 
     override fun onPause() {
+        saveCurrentProgress()
         web?.onPause()
         player?.pause()
         super.onPause()

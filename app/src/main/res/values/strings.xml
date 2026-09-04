@@ -48,6 +48,10 @@
     <string name="profile_deleted">Profilo eliminato</string>
     <string name="favorites_row">I tuoi preferiti</string>
     <string name="recent_row">Visti di recente</string>
+    <string name="continue_row">Continua a guardare</string>
+    <string name="watched_done">Segnato come già visto</string>
+    <string name="mark_watched">Segna come già visto</string>
+    <string name="qr_net_hint">Telefono e TV sullo stesso Wi-Fi (no rete ospiti, no dati mobili)</string>
     <plurals name="episodes_count">
         <item quantity="one">%d episodio</item>
         <item quantity="other">%d episodi</item>

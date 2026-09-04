@@ -233,6 +233,8 @@ class ProfileActivity : Activity() {
         photoSession = session
         val url = "http://$ip:${session.port}/?t=$token"
         val qr = qrBitmap(url)
+        val others = PhotoServer.localIps().filter { it != ip }
+            .joinToString(", ") { "http://$it:${session.port}/" }
 
         val box = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -257,6 +259,20 @@ class ProfileActivity : Activity() {
             setTextColor(0xFFFFFFFF.toInt())
             setPadding(0, dp(8), 0, 0)
         })
+        box.addView(TextView(this).apply {
+            text = getString(R.string.qr_net_hint)
+            textSize = 13f
+            setTextColor(0xFFA0A4B8.toInt())
+            setPadding(0, dp(8), 0, 0)
+        })
+        if (others.isNotEmpty()) {
+            box.addView(TextView(this).apply {
+                text = "Altri IP: $others"
+                textSize = 12f
+                setTextColor(0xFFA0A4B8.toInt())
+                setPadding(0, dp(8), 0, 0)
+            })
+        }
 
         qrDialog = AlertDialog.Builder(this)
             .setTitle(R.string.profile_receive)

@@ -11,6 +11,7 @@ import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 
 class HomeActivity : Activity() {
 
@@ -178,22 +179,48 @@ class HomeActivity : Activity() {
     private var builtVer: String? = null
     private var builtProfile: String? = null
 
-    private fun planRows(all: List<CatalogRepo.Title>): List<Pair<String, List<CatalogRepo.Title>>> {
-        val out = ArrayList<Pair<String, List<CatalogRepo.Title>>>()
+    private data class RowSpec(
+        val title: String,
+        val items: List<CatalogRepo.Title>,
+        val sub: Map<String, String>? = null,
+        val longPress: Boolean = false,
+        val resume: Boolean = false
+    )
+
+    private fun planRows(all: List<CatalogRepo.Title>): List<RowSpec> {
+        val out = ArrayList<RowSpec>()
         val tv = Ui.isTv(this)
         val popN = if (tv) 20 else 25
         val rowN = if (tv) 20 else 30
         try {
             val bySlug = all.associateBy { it.slug }
             val me = Profiles.current(this)
+            val cont = me.progress.entries.mapNotNull { (slug, pr) ->
+                bySlug[slug]?.let { it to pr.label }
+            }
+            if (cont.isNotEmpty()) {
+                out.add(
+                    RowSpec(
+                        getString(R.string.continue_row),
+                        cont.map { it.first },
+                        cont.associate { it.first.slug to it.second },
+                        longPress = true,
+                        resume = true
+                    )
+                )
+            }
             val favs = me.favorites.mapNotNull { bySlug[it] }
-            if (favs.isNotEmpty()) out.add(getString(R.string.favorites_row) to favs)
+            if (favs.isNotEmpty()) {
+                out.add(RowSpec(getString(R.string.favorites_row), favs, longPress = true))
+            }
             val rec = me.recent.mapNotNull { bySlug[it] }
-            if (rec.isNotEmpty()) out.add(getString(R.string.recent_row) to rec)
+            if (rec.isNotEmpty()) {
+                out.add(RowSpec(getString(R.string.recent_row), rec, longPress = true))
+            }
         } catch (_: Exception) {
         }
-        out.add("Popolari ora" to all.shuffled().take(popN))
-        out.add("Aggiunti di recente" to all.sortedByDescending { it.modified }.take(popN))
+        out.add(RowSpec("Popolari ora", all.shuffled().take(popN)))
+        out.add(RowSpec("Aggiunti di recente", all.sortedByDescending { it.modified }.take(popN)))
 
         val preferred = listOf(
             "Anime", "Film Animazione", "Serie Tv", "Shonen", "Azione",
@@ -203,20 +230,58 @@ class HomeActivity : Activity() {
         )
         for (cat in preferred) {
             val items = all.filter { it.cats.contains(cat) }
-            if (items.size >= 8) out.add(cat to items.shuffled().take(rowN))
+            if (items.size >= 8) out.add(RowSpec(cat, items.shuffled().take(rowN)))
         }
         return out
     }
 
     /** Aggiunge le righe a blocchi: la prima si vede subito, il resto segue. */
-    private fun postRows(rows: List<Pair<String, List<CatalogRepo.Title>>>, i: Int, g: Int) {
+    private fun postRows(rows: List<RowSpec>, i: Int, g: Int) {
         if (g != buildGen || isFinishing || isDestroyed) return
         if (i >= rows.size) return
         try {
-            addRow(rows[i].first, rows[i].second)
+            addRow(rows[i])
         } catch (_: Exception) {
         }
         container.post { postRows(rows, i + 1, g) }
+    }
+
+    /** Tieni premuto: segna come gia' visto (sparisce dal Continua). */
+    private fun markWatched(t: CatalogRepo.Title) {
+        try {
+            Profiles.clearProgress(this, t.slug)
+            Toast.makeText(this, "${t.title}: ${getString(R.string.watched_done)}", Toast.LENGTH_SHORT).show()
+            safeBuildSections()
+        } catch (_: Exception) {
+        }
+    }
+
+    /** Apri il player direttamente all'episodio e posizione salvati. */
+    private fun openResume(ctx: android.content.Context, t: CatalogRepo.Title) {
+        try {
+            val pr = Profiles.progressOf(ctx, t.slug)
+            val s = CatalogRepo.titles.firstOrNull { it.slug == t.slug } ?: return
+            if (s.episodes.isEmpty()) return
+            val ep = (pr?.ep ?: 0).coerceIn(0, s.episodes.size - 1)
+            val players = s.episodes[ep].players
+            val pi = if ((pr?.pi ?: 0) in players.indices) pr?.pi ?: 0 else 0
+            val url = players.getOrNull(pi)?.url.orEmpty()
+            if (url.isEmpty()) {
+                startActivity(Intent(ctx, DetailActivity::class.java).putExtra("slug", t.slug))
+                return
+            }
+            startActivity(
+                Intent(ctx, PlayerActivity::class.java)
+                    .putExtra("url", url)
+                    .putExtra("label", s.episodes[ep].label)
+                    .putExtra("slug", t.slug)
+                    .putExtra("ep", ep)
+                    .putExtra("pi", pi)
+                    .putExtra("pos", pr?.pos ?: 0)
+            )
+        } catch (_: Exception) {
+            startActivity(Intent(ctx, DetailActivity::class.java).putExtra("slug", t.slug))
+        }
     }
 
     private fun buildCategories(all: List<CatalogRepo.Title>) {
@@ -272,14 +337,14 @@ class HomeActivity : Activity() {
         return scroll
     }
 
-    private fun addRow(sectionTitle: String, items: List<CatalogRepo.Title>) {
-        if (items.isEmpty()) return
+    private fun addRow(spec: RowSpec) {
+        if (spec.items.isEmpty()) return
 
         val ripple = android.util.TypedValue().apply {
             theme.resolveAttribute(android.R.attr.selectableItemBackground, this, true)
         }
 
-        container.addView(sectionHeader(sectionTitle))
+        container.addView(sectionHeader(spec.title))
 
         val row = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -287,7 +352,7 @@ class HomeActivity : Activity() {
         }
 
         val cards = ArrayList<View>()
-        for (t in items) {
+        for (t in spec.items) {
             val card = LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
                 setPadding(dp(5), 0, dp(5), 0)
@@ -295,7 +360,8 @@ class HomeActivity : Activity() {
                 isFocusable = true
                 setBackgroundResource(ripple.resourceId)
                 setOnClickListener {
-                    startActivity(
+                    if (spec.resume) openResume(context, t)
+                    else startActivity(
                         Intent(context, DetailActivity::class.java).putExtra("slug", t.slug)
                     )
                 }
@@ -326,6 +392,22 @@ class HomeActivity : Activity() {
 
             card.addView(poster)
             card.addView(label)
+            spec.sub?.get(t.slug)?.takeIf { it.isNotEmpty() }?.let { sub ->
+                card.addView(TextView(this).apply {
+                    text = sub
+                    textSize = 12f
+                    setTextColor(0xFF7C5CFC.toInt())
+                    maxLines = 1
+                    ellipsize = android.text.TextUtils.TruncateAt.END
+                    setPadding(dp(2), dp(2), dp(2), dp(4))
+                })
+            }
+            if (spec.longPress) {
+                card.setOnLongClickListener {
+                    markWatched(t)
+                    true
+                }
+            }
             row.addView(card)
             cards.add(card)
         }

@@ -21,8 +21,11 @@ object Profiles {
         var name: String,
         var color: Int,
         val favorites: LinkedHashSet<String> = LinkedHashSet(),
-        val recent: ArrayList<String> = ArrayList()
+        val recent: ArrayList<String> = ArrayList(),
+        val progress: LinkedHashMap<String, Prog> = LinkedHashMap()
     )
+
+    data class Prog(val ep: Int, val pi: Int, val pos: Long, val label: String)
 
     val COLORS = intArrayOf(
         0xFF7C5CFC.toInt(), 0xFF00BFA6.toInt(), 0xFFFF7043.toInt(),
@@ -55,6 +58,18 @@ object Profiles {
                     val s = r.optString(j)
                     if (s.isNotEmpty()) p.recent.add(s)
                 }
+                val g = o.optJSONObject("prog")
+                if (g != null) {
+                    val keys = g.keys()
+                    while (keys.hasNext()) {
+                        val s = keys.next()
+                        val e = g.optJSONObject(s) ?: continue
+                        p.progress[s] = Prog(
+                            e.optInt("e", 0), e.optInt("pi", 0),
+                            e.optLong("pos", 0), e.optString("l", "")
+                        )
+                    }
+                }
                 out.add(p)
             }
         } catch (_: Exception) {
@@ -79,6 +94,16 @@ object Profiles {
                 val r = JSONArray()
                 for (s in p.recent) r.put(s)
                 o.put("recent", r)
+                val g = JSONObject()
+                for ((s, pr) in p.progress) {
+                    val e = JSONObject()
+                    e.put("e", pr.ep)
+                    e.put("pi", pr.pi)
+                    e.put("pos", pr.pos)
+                    e.put("l", pr.label)
+                    g.put(s, e)
+                }
+                o.put("prog", g)
                 arr.put(o)
             }
             prefs(ctx).edit().putString("list", arr.toString()).apply()
@@ -164,6 +189,43 @@ object Profiles {
             while (cur.recent.size > MAX_RECENT) cur.recent.removeAt(cur.recent.size - 1)
             persist(ctx, list)
         } catch (_: Exception) {
+        }
+    }
+
+    /** Salva dove sei arrivato (riprende in testa alla lista). Max 50 show. */
+    fun saveProgress(ctx: Context, slug: String, ep: Int, pi: Int, pos: Long, label: String) {
+        try {
+            val list = all(ctx)
+            val cur = list.firstOrNull { it.id == prefs(ctx).getString("current", null) } ?: list[0]
+            cur.progress.remove(slug)
+            cur.progress[slug] = Prog(ep, pi, pos, label)
+            while (cur.progress.size > 50) {
+                cur.progress.entries.iterator().let {
+                    if (it.hasNext()) {
+                        it.next()
+                        it.remove()
+                    }
+                }
+            }
+            persist(ctx, list)
+        } catch (_: Exception) {
+        }
+    }
+
+    fun clearProgress(ctx: Context, slug: String) {
+        try {
+            val list = all(ctx)
+            val cur = list.firstOrNull { it.id == prefs(ctx).getString("current", null) } ?: list[0]
+            if (cur.progress.remove(slug) != null) persist(ctx, list)
+        } catch (_: Exception) {
+        }
+    }
+
+    fun progressOf(ctx: Context, slug: String): Prog? {
+        return try {
+            current(ctx).progress[slug]
+        } catch (_: Exception) {
+            null
         }
     }
 

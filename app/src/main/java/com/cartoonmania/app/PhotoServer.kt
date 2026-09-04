@@ -61,8 +61,9 @@ object PhotoServer {
         }
 
         private fun handle(s: Socket) {
+            // Timeout lungo: foto da 6MB su Wi-Fi lento ci mettono anche un minuto
             try {
-                s.soTimeout = 15000
+                s.soTimeout = 120000
             } catch (_: Exception) {
             }
             val inp = s.getInputStream()
@@ -161,10 +162,34 @@ object PhotoServer {
             function send(){
               var f=document.getElementById('f').files[0];
               if(!f){document.getElementById('m').textContent='Scegli una foto';return;}
-              document.getElementById('m').textContent='Invio...';
-              fetch('/up',{method:'POST',headers:{'X-Token':'$token','Content-Type':'application/octet-stream'},body:f})
-                .then(r=>r.text().then(t=>{document.getElementById('m').textContent=(t==='ok')?'Fatto! Guarda la TV':'Errore: '+t;}))
-                .catch(e=>{document.getElementById('m').textContent='Errore di rete';});
+              document.getElementById('m').textContent='Preparo...';
+              shrink(f).then(function(blob){
+                document.getElementById('m').textContent='Invio...';
+                var ctrl=new AbortController();
+                var to=setTimeout(function(){ctrl.abort();},110000);
+                fetch('/up',{method:'POST',headers:{'X-Token':'$token','Content-Type':'application/octet-stream'},body:blob,signal:ctrl.signal})
+                  .then(function(r){clearTimeout(to);return r.text().then(function(t){document.getElementById('m').textContent=(t==='ok')?'Fatto! Guarda la TV':'Errore: '+t;});})
+                  .catch(function(e){clearTimeout(to);document.getElementById('m').textContent='Errore di rete: controlla stesso Wi-Fi e riprova';});
+              }).catch(function(e){
+                document.getElementById('m').textContent='Foto non leggibile';
+              });
+            }
+            function shrink(f){
+              return new Promise(function(resolve,reject){
+                if(!window.createImageBitmap){resolve(f);return;}
+                createImageBitmap(f).then(function(bmp){
+                  try{
+                    var scale=Math.min(1,1280/Math.max(bmp.width,bmp.height));
+                    var cv=document.createElement('canvas');
+                    cv.width=Math.max(1,Math.round(bmp.width*scale));
+                    cv.height=Math.max(1,Math.round(bmp.height*scale));
+                    cv.getContext('2d').drawImage(bmp,0,0,cv.width,cv.height);
+                    if(cv.toBlob){
+                      cv.toBlob(function(b){resolve(b||f);},'image/jpeg',0.85);
+                    } else { resolve(f); }
+                  }catch(e){ resolve(f); }
+                }).catch(function(e){ resolve(f); });
+              });
             }
             </script></body></html>
         """.trimIndent()
@@ -182,9 +207,13 @@ object PhotoServer {
     }
 
     /** IP locale della TV (stesso Wi-Fi del telefono). */
-    fun localIp(): String? {
-        return try {
-            val ifs = NetworkInterface.getNetworkInterfaces() ?: return null
+    fun localIp(): String? = localIps().firstOrNull()
+
+    /** Tutti gli IP locali candidati (se il primo non va, provare gli altri). */
+    fun localIps(): List<String> {
+        val out = ArrayList<String>()
+        try {
+            val ifs = NetworkInterface.getNetworkInterfaces() ?: return out
             for (nic in ifs) {
                 try {
                     if (!nic.isUp || nic.isLoopback) continue
@@ -194,13 +223,12 @@ object PhotoServer {
                 for (addr in nic.interfaceAddresses) {
                     val ip = addr.address
                     if (ip is Inet4Address && ip.isSiteLocalAddress) {
-                        return ip.hostAddress
+                        ip.hostAddress?.let { if (it !in out) out.add(it) }
                     }
                 }
             }
-            null
         } catch (_: Exception) {
-            null
         }
+        return out
     }
 }
