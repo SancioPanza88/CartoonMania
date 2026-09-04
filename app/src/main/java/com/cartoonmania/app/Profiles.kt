@@ -41,8 +41,10 @@ object Profiles {
             val arr = JSONArray(prefs(ctx).getString("list", "[]"))
             for (i in 0 until arr.length()) {
                 val o = arr.optJSONObject(i) ?: continue
+                val id = o.optString("id")
+                if (id.isEmpty()) continue
                 val p = Profile(
-                    id = o.optString("id").ifEmpty { continue },
+                    id = id,
                     name = o.optString("name", "?"),
                     color = o.optInt("color", COLORS[0])
                 )
