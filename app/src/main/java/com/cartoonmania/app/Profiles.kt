@@ -239,6 +239,88 @@ object Profiles {
         }
     }
 
+    /** Export del profilo corrente per la sincronizzazione tra dispositivi
+     *  (QR + Wi-Fi locale, nessuna nuvola). */
+    fun exportCurrent(ctx: Context): String {
+        val p = current(ctx)
+        val o = JSONObject()
+        o.put("v", 1)
+        o.put("fav", JSONArray(p.favorites.toList()))
+        o.put("rec", JSONArray(p.recent.toList()))
+        val g = JSONObject()
+        for ((s, pr) in p.progress) {
+            val e = JSONObject()
+            e.put("e", pr.ep)
+            e.put("pi", pr.pi)
+            e.put("pos", pr.pos)
+            e.put("l", pr.label)
+            g.put(s, e)
+        }
+        o.put("prog", g)
+        return o.toString()
+    }
+
+    /** Import con fusione nel profilo corrente: preferiti e recenti uniti,
+     *  i progressi inviati sovrascrivono quelli locali. Ritorna un riepilogo
+     *  ("2 preferiti, 3 recenti, 1 progressi") o null se il JSON non e' valido. */
+    fun importMerge(ctx: Context, json: String): String? {
+        return try {
+            val o = JSONObject(json)
+            if (o.optInt("v", 0) != 1) return null
+            val list = all(ctx)
+            val cur = list.firstOrNull { it.id == prefs(ctx).getString("current", null) } ?: list[0]
+            var fav = 0
+            var rec = 0
+            var prog = 0
+            val f = o.optJSONArray("fav")
+            if (f != null) for (i in 0 until f.length()) {
+                val s = f.optString(i)
+                if (s.isNotEmpty() && cur.favorites.add(s)) fav++
+            }
+            val r = o.optJSONArray("rec")
+            if (r != null) {
+                val merged = ArrayList<String>()
+                for (i in 0 until r.length()) {
+                    val s = r.optString(i)
+                    if (s.isNotEmpty() && s !in merged) {
+                        merged.add(s)
+                        if (s !in cur.recent) rec++
+                    }
+                }
+                for (s in cur.recent) if (s !in merged) merged.add(s)
+                cur.recent.clear()
+                cur.recent.addAll(merged.take(MAX_RECENT))
+            }
+            val g = o.optJSONObject("prog")
+            if (g != null) {
+                val keys = g.keys()
+                while (keys.hasNext()) {
+                    val s = keys.next()
+                    val e = g.optJSONObject(s) ?: continue
+                    val isNew = s !in cur.progress
+                    cur.progress.remove(s)
+                    cur.progress[s] = Prog(
+                        e.optInt("e", 0), e.optInt("pi", 0),
+                        e.optLong("pos", 0), e.optString("l", "")
+                    )
+                    if (isNew) prog++
+                }
+                while (cur.progress.size > 50) {
+                    cur.progress.entries.iterator().let {
+                        if (it.hasNext()) {
+                            it.next()
+                            it.remove()
+                        }
+                    }
+                }
+            }
+            persist(ctx, list)
+            "$fav preferiti, $rec recenti, $prog progressi"
+        } catch (_: Exception) {
+            null
+        }
+    }
+
     fun avatarFile(ctx: Context, id: String): File =
         File(ctx.filesDir, "avatars").apply { mkdirs() }.let { File(it, "$id.jpg") }
 

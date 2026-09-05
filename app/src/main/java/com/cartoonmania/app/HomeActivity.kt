@@ -4,12 +4,10 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.view.Gravity
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -448,13 +446,8 @@ class HomeActivity : Activity() {
             }
             Ui.tvFocus(card)
 
-            val posterWrap = FrameLayout(this).apply {
-                layoutParams = LinearLayout.LayoutParams(dp(102), dp(152))
-            }
             val poster = ImageView(this).apply {
-                layoutParams = FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
-                )
+                layoutParams = LinearLayout.LayoutParams(dp(102), dp(152))
                 scaleType = ImageView.ScaleType.CENTER_CROP
                 setBackgroundColor(0xFF1F1F2B.toInt())
                 clipToOutline = true
@@ -465,33 +458,6 @@ class HomeActivity : Activity() {
                 }
             }
             ImageLoader.display(poster, t.img)
-            posterWrap.addView(poster)
-
-            // Pulsante ⋮ esplicito: su Chromebook il long-press col touchpad
-            // e' scomodo, il click destro non sempre arriva come long-press.
-            // Il pulsante apre lo stesso menu del long-press e si usa con
-            // mouse, tocco, Tab+Invio e D-pad (focus disabilitato su TV dove
-            // il long-press da telecomando resta la via principale).
-            if (spec.longPress) {
-                val tv = Ui.isTv(this)
-                val more = TextView(this).apply {
-                    text = "⋮"
-                    textSize = 16f
-                    setTextColor(0xFFFFFFFF.toInt())
-                    gravity = Gravity.CENTER
-                    contentDescription = getString(R.string.card_options)
-                    setBackgroundColor(0xAA000000.toInt())
-                    isClickable = true
-                    // Su TV evita uno stop di focus in piu': c'e' gia' il long-press
-                    isFocusable = !tv
-                    setPadding(dp(8), dp(2), dp(8), dp(4))
-                    setOnClickListener { showCardMenu(t, spec) }
-                }
-                posterWrap.addView(more, FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
-                    Gravity.TOP or Gravity.END
-                ))
-            }
 
             val label = TextView(this).apply {
                 text = t.title
@@ -502,7 +468,7 @@ class HomeActivity : Activity() {
                 setPadding(dp(2), dp(7), dp(2), dp(4))
             }
 
-            card.addView(posterWrap)
+            card.addView(poster)
             card.addView(label)
             spec.sub?.get(t.slug)?.takeIf { it.isNotEmpty() }?.let { sub ->
                 card.addView(TextView(this).apply {
@@ -515,8 +481,8 @@ class HomeActivity : Activity() {
                 })
             }
             if (spec.longPress) {
-                // TV/telefono: tieni premuto. Chromebook e mouse: apre lo
-                // stesso menu del pulsante ⋮, cosi' ogni device ha una via.
+                // Tieni premuto (touch, mouse, telecomando) apre il menu opzioni.
+                // Chromebook: click destro e tasto Menu aprono lo stesso menu.
                 card.setOnLongClickListener {
                     showCardMenu(t, spec)
                     true

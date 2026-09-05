@@ -316,23 +316,7 @@ class ProfileActivity : Activity() {
         }.start()
     }
 
-    private fun qrBitmap(text: String): Bitmap? {
-        return try {
-            val px = 512
-            val m = com.google.zxing.qrcode.QRCodeWriter().encode(
-                text, com.google.zxing.BarcodeFormat.QR_CODE, px, px
-            )
-            Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888).apply {
-                for (x in 0 until px) {
-                    for (y in 0 until px) {
-                        setPixel(x, y, if (m.get(x, y)) 0xFF000000.toInt() else 0xFFFFFFFF.toInt())
-                    }
-                }
-            }
-        } catch (_: Exception) {
-            null
-        }
-    }
+    private fun qrBitmap(text: String): Bitmap? = Qr.bitmap(text, 512)
 
     private fun dp(v: Int): Int = (v * resources.displayMetrics.density).toInt()
 }
