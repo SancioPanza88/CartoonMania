@@ -161,27 +161,28 @@ class SettingsActivity : Activity() {
 
     private fun showSyncReceive() {
         stopSync()
-        val ip = PhotoServer.localIp()
-        if (ip == null) {
-            Toast.makeText(this, R.string.update_failed, Toast.LENGTH_LONG).show()
+        val ips = PhotoServer.localIps()
+        if (ips.isEmpty()) {
+            Toast.makeText(this, R.string.sync_no_net, Toast.LENGTH_LONG).show()
             return
         }
+        val ip = ips.first()
         val token = (100000 + (Math.random() * 900000).toInt()).toString()
         val inbox = File(File(filesDir, "sync").apply { mkdirs() }, "inbox.tmp")
         val export = try { Profiles.exportCurrent(this) } catch (_: Exception) { "" }
         if (export.isEmpty()) {
-            Toast.makeText(this, R.string.update_failed, Toast.LENGTH_LONG).show()
+            Toast.makeText(this, R.string.sync_failed, Toast.LENGTH_LONG).show()
             return
         }
         val session = SyncServer.open(inbox, token, export)
         if (session == null) {
-            Toast.makeText(this, R.string.update_failed, Toast.LENGTH_LONG).show()
+            Toast.makeText(this, R.string.sync_failed, Toast.LENGTH_LONG).show()
             return
         }
         syncSession = session
         val url = "http://$ip:${session.port}/?t=$token"
         val qr = Qr.bitmap(url)
-        val others = PhotoServer.localIps().filter { it != ip }
+        val others = ips.drop(1)
             .joinToString(", ") { "http://$it:${session.port}/" }
         val dp = fun(v: Int): Int = (v * resources.displayMetrics.density).toInt()
 

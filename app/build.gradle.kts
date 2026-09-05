@@ -11,8 +11,8 @@ android {
         applicationId = "com.cartoonmania.app"
         minSdk = 21
         targetSdk = 34
-        versionCode = 25
-        versionName = "1.23"
+        versionCode = 26
+        versionName = "1.24"
     }
 
     signingConfigs {

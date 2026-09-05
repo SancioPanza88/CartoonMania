@@ -94,6 +94,21 @@ class ProfileActivity : Activity() {
         }
         row.addView(name)
 
+        // Target esplicito per cambiare foto: su Chromebook col mouse
+        // l'avatar da 56dp senza affordance era difficile da scoprire e
+        // da centrare (e si finiva per selezionare il profilo). Il click
+        // sull'avatar resta come scorciatoia.
+        val photo = Button(this).apply {
+            text = getString(R.string.profile_change_photo)
+            textSize = 13f
+            setTextColor(0xFF7C5CFC.toInt())
+            background = null
+            isFocusable = true
+            isClickable = true
+            setOnClickListener { editAvatar(p) }
+        }
+        row.addView(photo)
+
         if (canDelete) {
             val del = Button(this).apply {
                 text = "✕"

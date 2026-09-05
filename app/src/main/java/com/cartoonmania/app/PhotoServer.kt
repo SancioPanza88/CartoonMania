@@ -263,11 +263,16 @@ object PhotoServer {
     /** IP locale della TV (stesso Wi-Fi del telefono). */
     fun localIp(): String? = localIps().firstOrNull()
 
-    /** Tutti gli IP locali candidati (se il primo non va, provare gli altri). */
+    /** Tutti gli IP locali candidati (se il primo non va, provare gli altri).
+     *  Prima i site-local (192.168/10/172.16), poi gli altri IPv4 non loopback
+     *  (es. 100.115.x.x del container Android su Chromebook), per ultimi i
+     *  link-local 169.254.x.x. */
     fun localIps(): List<String> {
-        val out = ArrayList<String>()
+        val site = ArrayList<String>()
+        val other = ArrayList<String>()
+        val link = ArrayList<String>()
         try {
-            val ifs = NetworkInterface.getNetworkInterfaces() ?: return out
+            val ifs = NetworkInterface.getNetworkInterfaces() ?: return site
             for (nic in ifs) {
                 try {
                     if (!nic.isUp || nic.isLoopback) continue
@@ -276,13 +281,18 @@ object PhotoServer {
                 }
                 for (addr in nic.interfaceAddresses) {
                     val ip = addr.address
-                    if (ip is Inet4Address && ip.isSiteLocalAddress) {
-                        ip.hostAddress?.let { if (it !in out) out.add(it) }
+                    if (ip is Inet4Address && !ip.isLoopbackAddress) {
+                        val h = ip.hostAddress ?: continue
+                        when {
+                            ip.isSiteLocalAddress -> if (h !in site) site.add(h)
+                            h.startsWith("169.254.") -> if (h !in link) link.add(h)
+                            else -> if (h !in other) other.add(h)
+                        }
                     }
                 }
             }
         } catch (_: Exception) {
         }
-        return out
+        return site + other + link
     }
 }

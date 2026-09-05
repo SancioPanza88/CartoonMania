@@ -46,6 +46,7 @@
     <string name="profile_avatar">Foto profilo</string>
     <string name="profile_gallery">Scegli dalla galleria</string>
     <string name="profile_color">Cambia colore</string>
+    <string name="profile_change_photo">Cambia foto</string>
     <string name="profile_receive">Ricevi dal telefono (QR)</string>
     <string name="profile_qr_hint">Inquadra col telefono (stesso Wi-Fi), scegli la foto e invia</string>
     <string name="profile_timeout">Tempo scaduto, riprova</string>
@@ -70,6 +71,7 @@
     <string name="sync_imported">Importato: %1$s</string>
     <string name="sync_failed">Sincronizzazione fallita: controlla IP, porta, codice e Wi-Fi</string>
     <string name="sync_bad">Dati ricevuti non validi</string>
+    <string name="sync_no_net">Nessuna rete locale: connetti il dispositivo allo stesso Wi-Fi e riprova</string>
     <string name="sync_profile">Profilo corrente: %1$s</string>
     <string name="card_details">Apri dettagli</string>
     <string name="remove_continue">Rimuovi da Continua a guardare</string>
