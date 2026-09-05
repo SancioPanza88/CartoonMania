@@ -55,6 +55,13 @@
     <string name="continue_row">Continua a guardare</string>
     <string name="watched_done">Segnato come già visto</string>
     <string name="mark_watched">Segna come già visto</string>
+    <string name="card_options">Opzioni</string>
+    <string name="card_details">Apri dettagli</string>
+    <string name="remove_continue">Rimuovi da Continua a guardare</string>
+    <string name="remove_recent">Rimuovi dai recenti</string>
+    <string name="remove_favorite">Rimuovi dai preferiti</string>
+    <string name="removed_continue">Rimosso da Continua a guardare</string>
+    <string name="removed_recent">Rimosso dai recenti</string>
     <string name="qr_net_hint">Telefono e TV sullo stesso Wi-Fi (no rete ospiti, no dati mobili)</string>
     <plurals name="episodes_count">
         <item quantity="one">%d episodio</item>

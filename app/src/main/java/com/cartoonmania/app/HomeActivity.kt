@@ -1,12 +1,15 @@
 package com.cartoonmania.app
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.view.Gravity
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -188,12 +191,15 @@ class HomeActivity : Activity() {
 
     private var builtSig: String? = null
 
+    private enum class RowKind { CONTINUE, FAVORITES, RECENT, NORMAL }
+
     private data class RowSpec(
         val title: String,
         val items: List<CatalogRepo.Title>,
         val sub: Map<String, String>? = null,
         val longPress: Boolean = false,
-        val resume: Boolean = false
+        val resume: Boolean = false,
+        val kind: RowKind = RowKind.NORMAL
     )
 
     private fun planRows(all: List<CatalogRepo.Title>): List<RowSpec> {
@@ -214,17 +220,18 @@ class HomeActivity : Activity() {
                         cont.map { it.first },
                         cont.associate { it.first.slug to it.second },
                         longPress = true,
-                        resume = true
+                        resume = true,
+                        kind = RowKind.CONTINUE
                     )
                 )
             }
             val favs = me.favorites.mapNotNull { bySlug[it] }
             if (favs.isNotEmpty()) {
-                out.add(RowSpec(getString(R.string.favorites_row), favs, longPress = true))
+                out.add(RowSpec(getString(R.string.favorites_row), favs, longPress = true, kind = RowKind.FAVORITES))
             }
             val rec = me.recent.mapNotNull { bySlug[it] }
             if (rec.isNotEmpty()) {
-                out.add(RowSpec(getString(R.string.recent_row), rec, longPress = true))
+                out.add(RowSpec(getString(R.string.recent_row), rec, longPress = true, kind = RowKind.RECENT))
             }
         } catch (_: Exception) {
         }
@@ -262,6 +269,69 @@ class HomeActivity : Activity() {
             Profiles.removeRecent(this, t.slug)
             Toast.makeText(this, "${t.title}: ${getString(R.string.watched_done)}", Toast.LENGTH_SHORT).show()
             safeBuildSections()
+        } catch (_: Exception) {
+        }
+    }
+
+    /** Menu opzioni della card: alternativa al long-press per mouse/tastiera
+     *  (Chromebook) e touchpad. Il long-press resta per TV e telefono. */
+    private fun showCardMenu(t: CatalogRepo.Title, spec: RowSpec) {
+        try {
+            val labels = ArrayList<String>()
+            val actions = ArrayList<() -> Unit>()
+            when (spec.kind) {
+                RowKind.CONTINUE -> {
+                    labels.add(getString(R.string.mark_watched))
+                    actions.add { markWatched(t) }
+                    labels.add(getString(R.string.remove_continue))
+                    actions.add {
+                        Profiles.clearProgress(this, t.slug)
+                        Toast.makeText(this, getString(R.string.removed_continue), Toast.LENGTH_SHORT).show()
+                        safeBuildSections()
+                    }
+                    labels.add(getString(R.string.remove_recent))
+                    actions.add {
+                        Profiles.removeRecent(this, t.slug)
+                        Toast.makeText(this, getString(R.string.removed_recent), Toast.LENGTH_SHORT).show()
+                        safeBuildSections()
+                    }
+                }
+                RowKind.FAVORITES -> {
+                    labels.add(getString(R.string.remove_favorite))
+                    actions.add {
+                        // toggleFavorite lo toglie se era dentro
+                        if (Profiles.isFavorite(this, t.slug)) Profiles.toggleFavorite(this, t.slug)
+                        Toast.makeText(this, getString(R.string.fav_removed), Toast.LENGTH_SHORT).show()
+                        safeBuildSections()
+                    }
+                    labels.add(getString(R.string.mark_watched))
+                    actions.add { markWatched(t) }
+                }
+                RowKind.RECENT -> {
+                    labels.add(getString(R.string.remove_recent))
+                    actions.add {
+                        Profiles.removeRecent(this, t.slug)
+                        Toast.makeText(this, getString(R.string.removed_recent), Toast.LENGTH_SHORT).show()
+                        safeBuildSections()
+                    }
+                    labels.add(getString(R.string.mark_watched))
+                    actions.add { markWatched(t) }
+                }
+                RowKind.NORMAL -> {
+                    // Nessuna azione di rimozione: solo dettagli
+                }
+            }
+            labels.add(getString(R.string.card_details))
+            actions.add {
+                startActivity(Intent(this, DetailActivity::class.java).putExtra("slug", t.slug))
+            }
+            AlertDialog.Builder(this)
+                .setTitle(t.title)
+                .setItems(labels.toTypedArray()) { _, which ->
+                    try { actions.getOrNull(which)?.invoke() } catch (_: Exception) { }
+                }
+                .setNegativeButton(android.R.string.cancel, null)
+                .show()
         } catch (_: Exception) {
         }
     }
@@ -378,8 +448,13 @@ class HomeActivity : Activity() {
             }
             Ui.tvFocus(card)
 
-            val poster = ImageView(this).apply {
+            val posterWrap = FrameLayout(this).apply {
                 layoutParams = LinearLayout.LayoutParams(dp(102), dp(152))
+            }
+            val poster = ImageView(this).apply {
+                layoutParams = FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
+                )
                 scaleType = ImageView.ScaleType.CENTER_CROP
                 setBackgroundColor(0xFF1F1F2B.toInt())
                 clipToOutline = true
@@ -390,6 +465,33 @@ class HomeActivity : Activity() {
                 }
             }
             ImageLoader.display(poster, t.img)
+            posterWrap.addView(poster)
+
+            // Pulsante ⋮ esplicito: su Chromebook il long-press col touchpad
+            // e' scomodo, il click destro non sempre arriva come long-press.
+            // Il pulsante apre lo stesso menu del long-press e si usa con
+            // mouse, tocco, Tab+Invio e D-pad (focus disabilitato su TV dove
+            // il long-press da telecomando resta la via principale).
+            if (spec.longPress) {
+                val tv = Ui.isTv(this)
+                val more = TextView(this).apply {
+                    text = "⋮"
+                    textSize = 16f
+                    setTextColor(0xFFFFFFFF.toInt())
+                    gravity = Gravity.CENTER
+                    contentDescription = getString(R.string.card_options)
+                    setBackgroundColor(0xAA000000.toInt())
+                    isClickable = true
+                    // Su TV evita uno stop di focus in piu': c'e' gia' il long-press
+                    isFocusable = !tv
+                    setPadding(dp(8), dp(2), dp(8), dp(4))
+                    setOnClickListener { showCardMenu(t, spec) }
+                }
+                posterWrap.addView(more, FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+                    Gravity.TOP or Gravity.END
+                ))
+            }
 
             val label = TextView(this).apply {
                 text = t.title
@@ -400,7 +502,7 @@ class HomeActivity : Activity() {
                 setPadding(dp(2), dp(7), dp(2), dp(4))
             }
 
-            card.addView(poster)
+            card.addView(posterWrap)
             card.addView(label)
             spec.sub?.get(t.slug)?.takeIf { it.isNotEmpty() }?.let { sub ->
                 card.addView(TextView(this).apply {
@@ -413,9 +515,29 @@ class HomeActivity : Activity() {
                 })
             }
             if (spec.longPress) {
+                // TV/telefono: tieni premuto. Chromebook e mouse: apre lo
+                // stesso menu del pulsante ⋮, cosi' ogni device ha una via.
                 card.setOnLongClickListener {
-                    markWatched(t)
+                    showCardMenu(t, spec)
                     true
+                }
+                // Click destro del mouse (Chromebook): BUTTON_SECONDARY.
+                card.setOnGenericMotionListener { _, e ->
+                    if (e.action == MotionEvent.ACTION_BUTTON_PRESS &&
+                        (e.buttonState and MotionEvent.BUTTON_SECONDARY) != 0
+                    ) {
+                        showCardMenu(t, spec)
+                        true
+                    } else false
+                }
+                // Tasto Menu della tastiera (o Shift+F10 su Chromebook).
+                card.setOnKeyListener { _, keyCode, event ->
+                    if (keyCode == KeyEvent.KEYCODE_MENU &&
+                        event.action == KeyEvent.ACTION_UP
+                    ) {
+                        showCardMenu(t, spec)
+                        true
+                    } else false
                 }
             }
             row.addView(card)
