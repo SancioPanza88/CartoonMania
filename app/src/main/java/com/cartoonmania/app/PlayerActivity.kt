@@ -472,10 +472,12 @@ class PlayerActivity : Activity() {
         if (headerMode == 1) return m
         val uri = Uri.parse(embedUrl)
         var origin = "${uri.scheme ?: "https"}://${uri.host ?: ""}"
-        // videoserver.loonex.eu ha hotlink protection: accetta solo Referer dal
-        // sito, senza (o col Referer del videoserver stesso) risponde 403
-        if ("loonex" in (uri.host ?: "")) origin = "https://loonex.eu"
-        m["Referer"] = "$origin/"
+        // videoserver.loonex.eu ha hotlink protection: accetta solo il Referer
+        // di una pagina del sito, con la sola origin (https://loonex.eu/) le
+        // directory nuove rispondono 403
+        val isLoonex = "loonex" in (uri.host ?: "")
+        if (isLoonex) origin = "https://loonex.eu"
+        m["Referer"] = if (isLoonex) "https://loonex.eu/guarda/" else "$origin/"
         m["Origin"] = origin
         try {
             CookieManager.getInstance().apply { setAcceptCookie(true); flush() }

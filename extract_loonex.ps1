@@ -137,7 +137,9 @@ foreach ($s in $series) {
             $seen[$guarda] = $true
 
             $m3u8 = Resolve-GuardaUrl $guarda
-            $playerUrl = if ($m3u8) { [uri]::EscapeUriString($m3u8) } else { $guarda }
+            # Normalizza la codifica: alcune pagine danno URL gia' escaped
+            # (%20) e riescaparli darebbe %2520 -> 404 sul videoserver
+            $playerUrl = if ($m3u8) { [uri]::EscapeUriString([uri]::UnescapeDataString($m3u8)) } else { $guarda }
             if (-not $m3u8) { Write-Host "[WARN] fallback pagina guarda per: $label" }
 
             $episodes.Add([pscustomobject]@{
