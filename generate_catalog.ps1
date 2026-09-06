@@ -11,22 +11,23 @@ if (-not (Test-Path $streamingPath)) {
 }
 $src = Get-Content -Raw -Encoding UTF8 $streamingPath | ConvertFrom-Json
 
-# Serie extra (loonex ecc.): file separato, unione senza duplicati di slug
-$extraPath = Join-Path $dataDir "loonex_links.json"
+# Serie extra (loonex, archive.org, ecc.): file separati, unione senza duplicati di slug
+$slugs = @{}
+foreach ($t in $src) { $slugs[$t.slug] = $true }
+foreach ($extraPath in @((Join-Path $dataDir "loonex_links.json"), (Join-Path $dataDir "archive_links.json"))) {
 if (Test-Path $extraPath) {
     try {
         $extra = @(Get-Content -Raw -Encoding UTF8 $extraPath | ConvertFrom-Json)
         if ($extra.Count -gt 0) {
-            $slugs = @{}
-            foreach ($t in $src) { $slugs[$t.slug] = $true }
             foreach ($e in $extra) {
-                if (-not $slugs.ContainsKey($e.slug)) { $src = @($src) + $e }
+                if (-not $slugs.ContainsKey($e.slug)) { $src = @($src) + $e; $slugs[$e.slug] = $true }
             }
-            Write-Host "Serie extra integrate: $($extra.Count)"
+            Write-Host "Serie extra integrate da $(Split-Path $extraPath -Leaf): $($extra.Count)"
         }
     } catch {
-        Write-Host "[WARN] loonex_links.json non valido, ignorato: $($_.Exception.Message)"
+        Write-Host "[WARN] $(Split-Path $extraPath -Leaf) non valido, ignorato: $($_.Exception.Message)"
     }
+}
 }
 
 # Guardia: non pubblicare catalogi vuoti o drasticamente ridotti

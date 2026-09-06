@@ -1,5 +1,5 @@
 $ErrorActionPreference = 'Stop'
-$path = "app\src\main\assets\catalog.json.gz"
+$path = "app\src\main\assets\catalog.cm"
 
 # Decomprime e carica come testo (validazione sintattica fatta da ConvertFrom-Json)
 $tmp = Join-Path $env:TEMP "catalog_check.json"

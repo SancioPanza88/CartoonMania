@@ -11,6 +11,69 @@ $series = @(
         categorie = @('Bambini', 'ITA')
         modified  = '2026-08-25T12:00:00'
         id        = 9000001
+    },
+    @{
+        slug      = 'geronimo-stilton'
+        titolo    = 'Geronimo Stilton'
+        pagina    = 'https://loonex.eu/cartoni/index.php?cartone=geronimo-stilton-1778423136'
+        copertina = 'https://loonex.eu/cartoni/covers/346-geronimo-stilton-1778423136-cover.jpg'
+        categorie = @('Bambini', 'Avventura', 'ITA')
+        modified  = '2026-09-05T12:00:00'
+        id        = 9000002
+    },
+    @{
+        slug      = 'cuccioli'
+        titolo    = 'Cuccioli'
+        pagina    = 'https://loonex.eu/cartoni/index.php?cartone=cuccioli-1786102718'
+        copertina = 'https://loonex.eu/cartoni/uploads/covers/cover_cuccioli_1786102718.png'
+        categorie = @('Bambini', 'ITA')
+        modified  = '2026-09-05T12:00:00'
+        id        = 9000003
+    },
+    @{
+        slug      = 'gli-antenati-i-flintstones'
+        titolo    = 'Gli Antenati - I Flintstones'
+        pagina    = 'https://loonex.eu/cartoni/index.php?cartone=gli-antenati---i-flintstones-1787859582'
+        copertina = 'https://loonex.eu/cartoni/uploads/covers/cover_gliantenati-iflintstones_1787859582.jpg'
+        categorie = @('Bambini', 'Commedia', 'ITA')
+        modified  = '2026-09-05T12:00:00'
+        id        = 9000004
+    },
+    @{
+        slug      = 'sabrina-amiche-per-sempre'
+        titolo    = 'Sabrina - Amiche per sempre'
+        pagina    = 'https://loonex.eu/cartoni/index.php?cartone=sabrina---amiche-per-sempre-1775992920'
+        copertina = 'https://loonex.eu/cartoni/covers/275-sabrina-amiche-per-sempre-1775992920-cover.jpg'
+        categorie = @('Bambini', 'ITA')
+        modified  = '2026-09-05T12:00:00'
+        id        = 9000005
+    },
+    @{
+        slug      = 'rekkit-rabbit'
+        titolo    = 'Rekkit Rabbit'
+        pagina    = 'https://loonex.eu/cartoni/index.php?cartone=rekkit-rabbit-1772300435'
+        copertina = 'https://loonex.eu/cartoni/covers/193-rekkit-rabbit-1772300435-cover.png'
+        categorie = @('Bambini', 'Commedia', 'ITA')
+        modified  = '2026-09-05T12:00:00'
+        id        = 9000006
+    },
+    @{
+        slug      = 'the-looney-tunes-show'
+        titolo    = 'The Looney Tunes Show'
+        pagina    = 'https://loonex.eu/cartoni/index.php?cartone=the-looney-tunes-show-1769796646'
+        copertina = 'https://loonex.eu/tls/ltstitle.jpg'
+        categorie = @('Bambini', 'Commedia', 'ITA')
+        modified  = '2026-09-05T12:00:00'
+        id        = 9000007
+    },
+    @{
+        slug      = 'titeuf'
+        titolo    = 'Titeuf'
+        pagina    = 'https://loonex.eu/cartoni/index.php?cartone=titeuf-1775760641'
+        copertina = 'https://loonex.eu/cartoni/covers/271-titeuf-1775760641-cover.jpg'
+        categorie = @('Bambini', 'Commedia', 'ITA')
+        modified  = '2026-09-05T12:00:00'
+        id        = 9000008
     }
 )
 
@@ -59,6 +122,10 @@ foreach ($s in $series) {
         if (-not $page) { throw "pagina serie non raggiungibile" }
 
         $rows = [regex]::Matches($page, '<div class="episode-row[^"]*"\s+data-ep-label="(?<label>[^"]+)"[\s\S]*?href="(?<g>https://loonex\.eu/guarda/\?id=[^"]+)"')
+        if ($rows.Count -eq 0) {
+            # Fallback: pagine film/special con card qualità invece di righe episodio
+            $rows = [regex]::Matches($page, 'data-ep-label="(?<label>[^"]+)"[\s\S]{0,4000}?href="(?<g>https://loonex\.eu/guarda/\?id=[^"]+)"')
+        }
         if ($rows.Count -eq 0) { throw "nessun episodio trovato nella pagina" }
 
         $seen = @{}
