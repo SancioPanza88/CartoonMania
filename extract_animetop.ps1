@@ -3,16 +3,8 @@ $ErrorActionPreference = 'Stop'
 
 # Serie extra da AnimeTop: tabelle stagioni con link streaming uprot/MaxStream.
 # (player embed con JS: l'app li apre in WebView e cattura il flusso.)
+# RIMOSSO Mr. Bean 2026-09-06: captcha+popup uprot non fruibili in app.
 $series = @(
-    @{
-        slug      = 'mr-bean-la-serie-animata'
-        titolo    = 'Mr. Bean - La serie animata'
-        pagina    = 'https://animetop.net/anime-e-cartoni/mr-bean-la-serie-animata/'
-        copertina = 'https://animetop.net/wp-content/uploads/2023/09/1V2PSez4pNZ9a4Bbomm7KZiQJ44-compress.jpg'
-        categorie = @('Bambini', 'Commedia', 'ITA')
-        modified  = '2026-09-06T12:00:00'
-        id        = 9200001
-    }
 )
 
 $ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36'
