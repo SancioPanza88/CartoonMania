@@ -24,7 +24,8 @@ object Profiles {
         val recent: ArrayList<String> = ArrayList(),
         val progress: LinkedHashMap<String, Prog> = LinkedHashMap(),
         val watch: LinkedHashMap<String, Long> = LinkedHashMap(),
-        val done: LinkedHashMap<String, Int> = LinkedHashMap()
+        val done: LinkedHashMap<String, Int> = LinkedHashMap(),
+        val watchDay: LinkedHashMap<String, Long> = LinkedHashMap()
     )
 
     data class Prog(val ep: Int, val pi: Int, val pos: Long, val label: String)
@@ -90,6 +91,15 @@ object Profiles {
                         if (s.isNotEmpty() && n > 0) p.done[s] = n
                     }
                 }
+                val wd = o.optJSONObject("wd")
+                if (wd != null) {
+                    val keys = wd.keys()
+                    while (keys.hasNext()) {
+                        val s = keys.next()
+                        val sec = wd.optLong(s, 0)
+                        if (s.isNotEmpty() && sec > 0) p.watchDay[s] = sec
+                    }
+                }
                 out.add(p)
             }
         } catch (_: Exception) {
@@ -130,6 +140,9 @@ object Profiles {
                 val d = JSONObject()
                 for ((s, n) in p.done) d.put(s, n)
                 o.put("done", d)
+                val wd = JSONObject()
+                for ((s, sec) in p.watchDay) wd.put(s, sec)
+                o.put("wd", wd)
                 arr.put(o)
             }
             prefs(ctx).edit().putString("list", arr.toString()).apply()
@@ -303,6 +316,20 @@ object Profiles {
                         it.remove()
                     }
                 }
+            }
+            try {
+                val day = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
+                    .format(java.util.Date())
+                cur.watchDay[day] = (cur.watchDay[day] ?: 0L) + secs
+                while (cur.watchDay.size > 120) {
+                    cur.watchDay.entries.iterator().let {
+                        if (it.hasNext()) {
+                            it.next()
+                            it.remove()
+                        }
+                    }
+                }
+            } catch (_: Exception) {
             }
             persist(ctx, list)
         } catch (_: Exception) {
