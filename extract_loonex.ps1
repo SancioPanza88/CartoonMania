@@ -121,10 +121,10 @@ foreach ($s in $series) {
         $page = Get-Http $s.pagina
         if (-not $page) { throw "pagina serie non raggiungibile" }
 
-        $rows = [regex]::Matches($page, '<div class="episode-row[^"]*"\s+data-ep-label="(?<label>[^"]+)"[\s\S]*?href="(?<g>https://loonex\.eu/guarda/\?id=[^"]+)"')
+        $rows = [regex]::Matches($page, '<div class="episode-row[^"]*"\s+data-ep-label="(?<label>[^"]+)"[\s\S]*?href="(?<g>https://loonex\.eu/guarda/\?[^"]+)"')
         if ($rows.Count -eq 0) {
             # Fallback: pagine film/special con card qualità invece di righe episodio
-            $rows = [regex]::Matches($page, 'data-ep-label="(?<label>[^"]+)"[\s\S]{0,4000}?href="(?<g>https://loonex\.eu/guarda/\?id=[^"]+)"')
+            $rows = [regex]::Matches($page, 'data-ep-label="(?<label>[^"]+)"[\s\S]{0,4000}?href="(?<g>https://loonex\.eu/guarda/\?[^"]+)"')
         }
         if ($rows.Count -eq 0) { throw "nessun episodio trovato nella pagina" }
 
