@@ -59,10 +59,20 @@ foreach ($s in $series) {
     }
 }
 
-if ($results.Count -gt 0) {
-    $json = $results | ConvertTo-Json -Depth 8
+# Unione col file precedente (stessa guardia di extract_loonex.ps1)
+$prev = @()
+if (Test-Path $outPath) {
+    try { $prev = @(Get-Content -Raw -Encoding UTF8 $outPath | ConvertFrom-Json) } catch { $prev = @() }
+}
+$bySlug = @{}
+foreach ($p in $prev) { if ($p.slug) { $bySlug[$p.slug] = $p } }
+foreach ($r in $results) { $bySlug[$r.slug] = $r }
+$merged = @($bySlug.Values)
+
+if ($merged.Count -gt 0) {
+    $json = $merged | ConvertTo-Json -Depth 8
     [System.IO.File]::WriteAllText($outPath, $json, (New-Object System.Text.UTF8Encoding($false)))
-    Write-Host "archive_links.json aggiornato: $($results.Count) serie"
+    Write-Host "archive_links.json aggiornato: $($merged.Count) serie (fresche: $($results.Count))"
 } else {
     Write-Host "Nessuna serie archive estratta: mantengo il file precedente"
 }

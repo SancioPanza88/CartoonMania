@@ -170,10 +170,25 @@ foreach ($s in $series) {
     }
 }
 
-if ($results.Count -gt 0) {
-    $json = $results | ConvertTo-Json -Depth 8
+# Unione col file precedente: le serie fallite in questo run (es. WAF/403
+# dagli IP datacenter GitHub) mantengono i dati vecchi invece di sparire
+# dal catalogo. Senza questa guardia un run parziale clobberava tutto.
+$prev = @()
+if (Test-Path $outPath) {
+    try { $prev = @(Get-Content -Raw -Encoding UTF8 $outPath | ConvertFrom-Json) } catch { $prev = @() }
+}
+$bySlug = @{}
+foreach ($p in $prev) { if ($p.slug) { $bySlug[$p.slug] = $p } }
+foreach ($r in $results) { $bySlug[$r.slug] = $r }
+$merged = @($bySlug.Values)
+$expected = @($series | ForEach-Object { $_.slug })
+$missing = @($expected | Where-Object { -not $bySlug.ContainsKey($_) })
+if ($missing.Count -gt 0) { Write-Host "[WARN] serie senza dati (mai estratte): $($missing -join ', ')" }
+
+if ($merged.Count -gt 0) {
+    $json = $merged | ConvertTo-Json -Depth 8
     [System.IO.File]::WriteAllText($outPath, $json, (New-Object System.Text.UTF8Encoding($false)))
-    Write-Host "loonex_links.json aggiornato: $($results.Count) serie"
+    Write-Host "loonex_links.json aggiornato: $($merged.Count) serie (fresche: $($results.Count))"
 } else {
     Write-Host "Nessuna serie loonex estratta: mantengo il file precedente"
 }
