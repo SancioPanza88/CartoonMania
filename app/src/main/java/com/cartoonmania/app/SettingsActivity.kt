@@ -36,6 +36,7 @@ class SettingsActivity : Activity() {
         findViewById<View>(R.id.btn_stats).setOnClickListener {
             startActivity(Intent(this, StatsActivity::class.java))
         }
+        findViewById<View>(R.id.btn_clear_lists).setOnClickListener { showClearLists() }
         findViewById<View>(R.id.btn_tab_home).setOnClickListener { finish() }
         findViewById<View>(R.id.btn_tab_search).setOnClickListener {
             startActivity(android.content.Intent(this, SearchActivity::class.java))
@@ -50,6 +51,7 @@ class SettingsActivity : Activity() {
             findViewById<View>(R.id.btn_clear_cache).setBackgroundResource(R.drawable.bg_episode_focus)
             findViewById<View>(R.id.btn_sync).setBackgroundResource(R.drawable.bg_episode_focus)
             findViewById<View>(R.id.btn_stats).setBackgroundResource(R.drawable.bg_episode_focus)
+            findViewById<View>(R.id.btn_clear_lists).setBackgroundResource(R.drawable.bg_episode_focus)
         }
 
         val appVer = try {
@@ -416,8 +418,33 @@ class SettingsActivity : Activity() {
         }.start()
     }
 
-    private fun pickSyncFile() {
-        try {
+    /** Svuota in blocco le liste del profilo (niente piu' uno a uno). */
+    private fun showClearLists() {
+        val labels = arrayOf(
+            getString(R.string.favorites_row),
+            getString(R.string.recent_row),
+            getString(R.string.continue_row)
+        )
+        val checked = booleanArrayOf(true, true, true)
+        AlertDialog.Builder(this)
+            .setTitle(R.string.clear_lists)
+            .setMultiChoiceItems(labels, checked) { _, which, isChecked ->
+                checked[which] = isChecked
+            }
+            .setPositiveButton(R.string.clear_lists) { _, _ ->
+                val n = Profiles.clearLists(this, checked[0], checked[1], checked[2])
+                Toast.makeText(
+                    this,
+                    if (n > 0) getString(R.string.clear_lists_done, n)
+                    else getString(R.string.clear_lists_empty),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun pickSyncFile() {        try {
             startActivityForResult(
                 Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                     type = "application/json"

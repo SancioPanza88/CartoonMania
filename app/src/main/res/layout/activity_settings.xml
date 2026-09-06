@@ -238,6 +238,38 @@
                     android:textSize="15sp"
                     android:textColor="@color/text_primary" />
             </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btn_clear_lists"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_episode_item"
+                android:clickable="true"
+                android:focusable="true"
+                android:layout_marginTop="10dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_settings"
+                    android:tint="@color/text_secondary"
+                    android:contentDescription="@null" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="12dp"
+                    android:text="@string/clear_lists"
+                    android:textSize="15sp"
+                    android:textColor="@color/text_primary" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 

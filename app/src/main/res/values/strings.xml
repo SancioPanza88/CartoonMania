@@ -76,6 +76,9 @@
     <string name="stats_title">Le tue statistiche</string>
     <string name="stats_empty">Nessuna statistica: guarda qualcosa e torna qui</string>
     <string name="stats_total">Totale %1$s · %2$d serie</string>
+    <string name="clear_lists">Svuota liste profilo</string>
+    <string name="clear_lists_done">Svuotate %1$d voci</string>
+    <string name="clear_lists_empty">Niente da svuotare</string>
     <string name="card_details">Apri dettagli</string>
     <string name="remove_continue">Rimuovi da Continua a guardare</string>
     <string name="remove_recent">Rimuovi dai recenti</string>

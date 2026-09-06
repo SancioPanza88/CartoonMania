@@ -265,6 +265,30 @@ object Profiles {
         }
     }
 
+    /** Svuota in blocco le liste del profilo corrente. Ritorna quante voci tolte. */
+    fun clearLists(ctx: Context, fav: Boolean, rec: Boolean, prog: Boolean): Int {
+        return try {
+            val list = all(ctx)
+            val cur = list.firstOrNull { it.id == prefs(ctx).getString("current", null) } ?: list[0]
+            var n = 0
+            if (fav) {
+                n += cur.favorites.size
+                cur.favorites.clear()
+            }
+            if (rec) {
+                n += cur.recent.size
+                cur.recent.clear()
+            }
+            if (prog) {
+                n += cur.progress.size
+                cur.progress.clear()
+            }
+            if (n > 0) persist(ctx, list)
+            n
+        } catch (_: Exception) {
+            0
+        }
+    }
     /** Accumula secondi di visione per le statistiche (max 500 serie). */
     fun addWatch(ctx: Context, slug: String, secs: Long) {
         if (secs <= 0) return
