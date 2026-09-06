@@ -120,10 +120,21 @@ class HomeActivity : Activity() {
     private var refreshing = false
 
     /** Controllo rete al massimo ogni 6h: gli avvii ravvicinati usano i dati
-     *  locali e partono subito (l'aggiornamento manuale resta sempre). */
+     *  locali e partono subito (l'aggiornamento manuale resta sempre).
+     *  Dopo un aggiornamento dell'app ricontrolla subito: cache e versione
+     *  in filesDir sopravvivono all'update e senza questo la home
+     *  mostrerebbe il catalogo vecchio fino al prossimo giro delle 6h. */
     private fun shouldAutoRefresh(): Boolean {
         return try {
             val p = getSharedPreferences("cm", MODE_PRIVATE)
+            val appVer = try {
+                packageManager.getPackageInfo(packageName, 0).versionName ?: "?"
+            } catch (_: Exception) { "?" }
+            if (p.getString("last_app_ver", null) != appVer) {
+                p.edit().putString("last_app_ver", appVer)
+                    .putLong("last_refresh", System.currentTimeMillis()).apply()
+                return true
+            }
             val last = p.getLong("last_refresh", 0)
             if (System.currentTimeMillis() - last < 6 * 60 * 60 * 1000L) return false
             p.edit().putLong("last_refresh", System.currentTimeMillis()).apply()
