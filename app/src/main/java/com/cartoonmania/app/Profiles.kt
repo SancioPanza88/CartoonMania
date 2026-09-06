@@ -22,7 +22,9 @@ object Profiles {
         var color: Int,
         val favorites: LinkedHashSet<String> = LinkedHashSet(),
         val recent: ArrayList<String> = ArrayList(),
-        val progress: LinkedHashMap<String, Prog> = LinkedHashMap()
+        val progress: LinkedHashMap<String, Prog> = LinkedHashMap(),
+        val watch: LinkedHashMap<String, Long> = LinkedHashMap(),
+        val done: LinkedHashMap<String, Int> = LinkedHashMap()
     )
 
     data class Prog(val ep: Int, val pi: Int, val pos: Long, val label: String)
@@ -70,6 +72,24 @@ object Profiles {
                         )
                     }
                 }
+                val w = o.optJSONObject("watch")
+                if (w != null) {
+                    val keys = w.keys()
+                    while (keys.hasNext()) {
+                        val s = keys.next()
+                        val sec = w.optLong(s, 0)
+                        if (s.isNotEmpty() && sec > 0) p.watch[s] = sec
+                    }
+                }
+                val d = o.optJSONObject("done")
+                if (d != null) {
+                    val keys = d.keys()
+                    while (keys.hasNext()) {
+                        val s = keys.next()
+                        val n = d.optInt(s, 0)
+                        if (s.isNotEmpty() && n > 0) p.done[s] = n
+                    }
+                }
                 out.add(p)
             }
         } catch (_: Exception) {
@@ -104,6 +124,12 @@ object Profiles {
                     g.put(s, e)
                 }
                 o.put("prog", g)
+                val w = JSONObject()
+                for ((s, sec) in p.watch) w.put(s, sec)
+                o.put("watch", w)
+                val d = JSONObject()
+                for ((s, n) in p.done) d.put(s, n)
+                o.put("done", d)
                 arr.put(o)
             }
             prefs(ctx).edit().putString("list", arr.toString()).apply()
@@ -236,6 +262,37 @@ object Profiles {
             current(ctx).progress[slug]
         } catch (_: Exception) {
             null
+        }
+    }
+
+    /** Accumula secondi di visione per le statistiche (max 500 serie). */
+    fun addWatch(ctx: Context, slug: String, secs: Long) {
+        if (secs <= 0) return
+        try {
+            val list = all(ctx)
+            val cur = list.firstOrNull { it.id == prefs(ctx).getString("current", null) } ?: list[0]
+            cur.watch[slug] = (cur.watch[slug] ?: 0L) + secs
+            while (cur.watch.size > 500) {
+                cur.watch.entries.iterator().let {
+                    if (it.hasNext()) {
+                        it.next()
+                        it.remove()
+                    }
+                }
+            }
+            persist(ctx, list)
+        } catch (_: Exception) {
+        }
+    }
+
+    /** Un episodio visto fino alla fine (statistiche). */
+    fun addEpDone(ctx: Context, slug: String) {
+        try {
+            val list = all(ctx)
+            val cur = list.firstOrNull { it.id == prefs(ctx).getString("current", null) } ?: list[0]
+            cur.done[slug] = (cur.done[slug] ?: 0) + 1
+            persist(ctx, list)
+        } catch (_: Exception) {
         }
     }
 

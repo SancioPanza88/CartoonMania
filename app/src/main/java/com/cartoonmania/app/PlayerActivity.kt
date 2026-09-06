@@ -61,6 +61,9 @@ class PlayerActivity : Activity() {
     private var epIndex = 0
     private var playerIndex = 0
     private var resumeMs = 0L
+    // Statistiche: pareggio del wall-clock mentre il nativo sta suonando
+    private var watchAnchorMs = 0L
+    private var watchSlug: String? = null
 
     // Generazione di caricamento: invalida i callback in ritardo dell'episodio precedente
     private var sessionId = 0
@@ -231,6 +234,7 @@ class PlayerActivity : Activity() {
         sessionId++
         // Salva dove eri arrivato nell'episodio precedente
         if (player != null) saveCurrentProgress()
+        flushWatch()
 
         epIndex = index
         val ep = s.episodes[index]
@@ -272,13 +276,31 @@ class PlayerActivity : Activity() {
 
     /** Autoplay diretto: finito un episodio parte subito il successivo. */
     private fun onEpisodeEnded() {
+        flushWatch()
         if (hasNext()) goNext()
         else {
             try {
-                series?.let { Profiles.clearProgress(this, it.slug) }
+                series?.let {
+                    Profiles.clearProgress(this, it.slug)
+                    Profiles.addEpDone(this, it.slug)
+                }
             } catch (_: Exception) {
             }
             Toast.makeText(this, R.string.end_of_series, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /** Versa nel profilo i secondi visti dall'ultimo pareggio (statistiche). */
+    private fun flushWatch() {
+        try {
+            val a = watchAnchorMs
+            val slug = watchSlug
+            watchAnchorMs = 0L
+            if (a > 0 && slug != null) {
+                val secs = (System.currentTimeMillis() - a) / 1000
+                if (secs >= 5) Profiles.addWatch(this, slug, secs)
+            }
+        } catch (_: Exception) {
         }
     }
 
@@ -313,6 +335,54 @@ class PlayerActivity : Activity() {
         }
         if (keyCode == KeyEvent.KEYCODE_MEDIA_PREVIOUS) {
             goPrev()
+            return true
+        }
+        // Tastiera (Chromebook/telefono con tastiera): spazio = pausa/play,
+        // frecce = ±10s, J/L idem, N/P = episodio, M = muto. Sulla TV le frecce
+        // restano navigazione del controller (blocchi sotto invariati).
+        if (player != null && (keyCode == KeyEvent.KEYCODE_SPACE || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE)) {
+            try {
+                val p = player ?: return true
+                if (p.isPlaying) p.pause() else p.play()
+                playerView.showController()
+            } catch (_: Exception) {
+            }
+            return true
+        }
+        if (player != null && !Ui.isTv(this) &&
+            (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_J)
+        ) {
+            try {
+                player?.seekBack()
+                playerView.showController()
+            } catch (_: Exception) {
+            }
+            return true
+        }
+        if (player != null && !Ui.isTv(this) &&
+            (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode == KeyEvent.KEYCODE_L)
+        ) {
+            try {
+                player?.seekForward()
+                playerView.showController()
+            } catch (_: Exception) {
+            }
+            return true
+        }
+        if (keyCode == KeyEvent.KEYCODE_N) {
+            goNext()
+            return true
+        }
+        if (keyCode == KeyEvent.KEYCODE_P) {
+            goPrev()
+            return true
+        }
+        if (keyCode == KeyEvent.KEYCODE_M && player != null) {
+            try {
+                val p = player ?: return true
+                p.volume = if (p.volume > 0f) 0f else 1f
+            } catch (_: Exception) {
+            }
             return true
         }
         // Col controller nascosto, OK lo riapre invece di mettere pausa alla cieca
@@ -538,6 +608,14 @@ class PlayerActivity : Activity() {
                 runOnUiThread { onNativeError() }
             }
 
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                if (isPlaying) {
+                    watchAnchorMs = System.currentTimeMillis()
+                } else {
+                    flushWatch()
+                }
+            }
+
             override fun onPlaybackStateChanged(state: Int) {
                 if (state == Player.STATE_ENDED) runOnUiThread { onEpisodeEnded() }
             }
@@ -545,6 +623,8 @@ class PlayerActivity : Activity() {
         p.setMediaItem(MediaItem.fromUri(url))
         p.playWhenReady = true
         p.prepare()
+        watchSlug = series?.slug
+        watchAnchorMs = System.currentTimeMillis()
         if (resumeMs > 5000) {
             try {
                 p.seekTo(resumeMs)
@@ -621,6 +701,7 @@ class PlayerActivity : Activity() {
     }
 
     override fun onPause() {
+        flushWatch()
         saveCurrentProgress()
         web?.onPause()
         player?.pause()
@@ -633,6 +714,7 @@ class PlayerActivity : Activity() {
     }
 
     override fun onDestroy() {
+        flushWatch()
         releasePlayer()
         destroyWeb()
         super.onDestroy()

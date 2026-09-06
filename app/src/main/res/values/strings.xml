@@ -73,6 +73,9 @@
     <string name="sync_bad">Dati ricevuti non validi</string>
     <string name="sync_no_net">Nessuna rete locale: connetti il dispositivo allo stesso Wi-Fi e riprova</string>
     <string name="sync_profile">Profilo corrente: %1$s</string>
+    <string name="stats_title">Le tue statistiche</string>
+    <string name="stats_empty">Nessuna statistica: guarda qualcosa e torna qui</string>
+    <string name="stats_total">Totale %1$s · %2$d serie</string>
     <string name="card_details">Apri dettagli</string>
     <string name="remove_continue">Rimuovi da Continua a guardare</string>
     <string name="remove_recent">Rimuovi dai recenti</string>

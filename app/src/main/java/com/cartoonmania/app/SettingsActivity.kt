@@ -33,6 +33,9 @@ class SettingsActivity : Activity() {
         findViewById<View>(R.id.btn_update).setOnClickListener { manualUpdate() }
         findViewById<View>(R.id.btn_clear_cache).setOnClickListener { clearCache() }
         findViewById<View>(R.id.btn_sync).setOnClickListener { showSyncMenu() }
+        findViewById<View>(R.id.btn_stats).setOnClickListener {
+            startActivity(Intent(this, StatsActivity::class.java))
+        }
         findViewById<View>(R.id.btn_tab_home).setOnClickListener { finish() }
         findViewById<View>(R.id.btn_tab_search).setOnClickListener {
             startActivity(android.content.Intent(this, SearchActivity::class.java))
@@ -46,6 +49,7 @@ class SettingsActivity : Activity() {
             findViewById<View>(R.id.btn_update).setBackgroundResource(R.drawable.bg_episode_focus)
             findViewById<View>(R.id.btn_clear_cache).setBackgroundResource(R.drawable.bg_episode_focus)
             findViewById<View>(R.id.btn_sync).setBackgroundResource(R.drawable.bg_episode_focus)
+            findViewById<View>(R.id.btn_stats).setBackgroundResource(R.drawable.bg_episode_focus)
         }
 
         val appVer = try {
