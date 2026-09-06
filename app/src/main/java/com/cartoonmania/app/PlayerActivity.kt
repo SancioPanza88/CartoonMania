@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.webkit.CookieManager
+import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
@@ -451,9 +452,58 @@ class PlayerActivity : Activity() {
             loadWithOverviewMode = true
             useWideViewPort = true
             builtInZoomControls = false
-            setSupportMultipleWindows(false)
+            setSupportMultipleWindows(true)
+            javaScriptCanOpenWindowsAutomatically = true
             setGeolocationEnabled(false)
             databaseEnabled = false
+        }
+        // Popup (window.open del play su certi host): senza questo il tap
+        // non fa nulla. Il popup lecito finisce nella WebView principale
+        // (e da li' nella cattura nativa), gli altri si scartano.
+        w.webChromeClient = object : WebChromeClient() {
+            override fun onCreateWindow(
+                view: WebView,
+                isDialog: Boolean,
+                isUserGesture: Boolean,
+                resultMsg: android.os.Message
+            ): Boolean {
+                return try {
+                    val popup = WebView(view.context)
+                    popup.settings.javaScriptEnabled = true
+                    popup.settings.domStorageEnabled = true
+                    popup.webViewClient = object : WebViewClient() {
+                        override fun shouldOverrideUrlLoading(
+                            v: WebView,
+                            request: WebResourceRequest
+                        ): Boolean {
+                            val u = request.url.toString()
+                            if (!(u.startsWith("http://") || u.startsWith("https://")) || isAd(u)) {
+                                try { popup.destroy() } catch (_: Exception) { }
+                                return true
+                            }
+                            view.loadUrl(u)
+                            try { popup.destroy() } catch (_: Exception) { }
+                            return true
+                        }
+
+                        @Deprecated("Deprecated in Java")
+                        override fun shouldOverrideUrlLoading(v: WebView, url: String): Boolean {
+                            if (!(url.startsWith("http://") || url.startsWith("https://")) || isAd(url)) {
+                                return true
+                            }
+                            view.loadUrl(url)
+                            return true
+                        }
+                    }
+                    (resultMsg.obj as? WebView.WebViewTransport)?.let {
+                        it.webView = popup
+                        resultMsg.sendToTarget()
+                    }
+                    true
+                } catch (_: Exception) {
+                    false
+                }
+            }
         }
         try { CookieManager.getInstance().setAcceptCookie(true) } catch (_: Exception) { }
         webContainer.addView(w, FrameLayout.LayoutParams(
