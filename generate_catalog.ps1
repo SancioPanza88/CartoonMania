@@ -14,7 +14,7 @@ $src = Get-Content -Raw -Encoding UTF8 $streamingPath | ConvertFrom-Json
 # Serie extra (loonex, archive.org, ecc.): file separati, unione senza duplicati di slug
 $slugs = @{}
 foreach ($t in $src) { $slugs[$t.slug] = $true }
-foreach ($extraPath in @((Join-Path $dataDir "loonex_links.json"), (Join-Path $dataDir "archive_links.json"))) {
+foreach ($extraPath in @((Join-Path $dataDir "loonex_links.json"), (Join-Path $dataDir "archive_links.json"), (Join-Path $dataDir "animetop_links.json"))) {
 if (Test-Path $extraPath) {
     try {
         $extra = @(Get-Content -Raw -Encoding UTF8 $extraPath | ConvertFrom-Json)

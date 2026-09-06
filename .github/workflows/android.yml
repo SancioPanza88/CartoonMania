@@ -45,6 +45,10 @@ jobs:
         shell: pwsh
         run: ./extract_archive.ps1
 
+      - name: Integra serie AnimeTop
+        shell: pwsh
+        run: ./extract_animetop.ps1
+
       - name: Genera catalogo compresso per l'app
         shell: pwsh
         run: ./generate_catalog.ps1
