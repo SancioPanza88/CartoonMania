@@ -103,6 +103,14 @@ class PlayerActivity : Activity() {
         return false
     }
 
+    /** Host con verifica umana (captcha "seleziona le immagini" di uprot):
+     *  niente auto-click (preme a caso e sporca tutto), WebView visibile
+     *  subito cosi' l'utente risolve e preme play a mano. */
+    private fun isManualHost(url: String): Boolean {
+        val host = url.substringAfter("://").substringBefore('/').lowercase()
+        return "uprot.net" in host
+    }
+
     private fun blockedResponse(): WebResourceResponse =
         WebResourceResponse("text/plain", "utf-8", java.io.ByteArrayInputStream(ByteArray(0)))
 
@@ -469,6 +477,7 @@ class PlayerActivity : Activity() {
             w.onResume()
         } catch (_: Exception) { }
         w.settings.userAgentString = if (pageUrl.contains("loonex")) mobileUa else desktopUa
+        val manual = isManualHost(pageUrl)
 
         w.webViewClient = object : WebViewClient() {
 
@@ -478,7 +487,9 @@ class PlayerActivity : Activity() {
             ): WebResourceResponse? {
                 val u = request.url.toString()
                 if (isAd(u)) return blockedResponse()
-                if (!visible && request.method == "GET" && looksLikeVideo(u)) {
+                // Cattura anche a WebView visibile (host manuali): appena parte
+                // il flusso si passa al nativo; il flag captured evita i doppioni
+                if (request.method == "GET" && looksLikeVideo(u)) {
                     synchronized(candidates) {
                         if (u !in candidates) {
                             candidates.add(u)
@@ -507,13 +518,20 @@ class PlayerActivity : Activity() {
             }
 
             override fun onPageFinished(view: WebView, url: String) {
-                view.evaluateJavascript(AUTOPLAY_JS, null)
+                if (!manual) view.evaluateJavascript(AUTOPLAY_JS, null)
             }
         }
 
-        webContainer.visibility = if (visible) View.VISIBLE else View.INVISIBLE
+        if (manual) {
+            // Captcha umano: mostra subito, niente auto-click, niente attesa
+            loading.visibility = View.GONE
+            webContainer.visibility = View.VISIBLE
+            if (series != null) navBar.visibility = View.VISIBLE
+        } else {
+            webContainer.visibility = if (visible) View.VISIBLE else View.INVISIBLE
+        }
 
-        if (!visible) {
+        if (!visible && !manual) {
             val sid = sessionId
             w.postDelayed({
                 if (sid == sessionId && !captured.get() && !isFinishing && !isDestroyed) {
