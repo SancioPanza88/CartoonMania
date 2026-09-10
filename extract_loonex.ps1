@@ -180,13 +180,21 @@ if (Test-Path $outPath) {
 $bySlug = @{}
 foreach ($p in $prev) { if ($p.slug) { $bySlug[$p.slug] = $p } }
 foreach ($r in $results) { $bySlug[$r.slug] = $r }
-$merged = @($bySlug.Values)
+# NB: $bySlug.Values e' una ValueCollection: @($bySlug.Values) in
+# Windows PowerShell 5.1 crea un array con UN solo elemento (la collezione
+# stessa) serializzato come {"value":[...)} e corrompe il json. Enumerare
+# esplicitamente i valori uno a uno.
+$merged = @($bySlug.GetEnumerator() | ForEach-Object { $_.Value })
 $expected = @($series | ForEach-Object { $_.slug })
 $missing = @($expected | Where-Object { -not $bySlug.ContainsKey($_) })
 if ($missing.Count -gt 0) { Write-Host "[WARN] serie senza dati (mai estratte): $($missing -join ', ')" }
 
 if ($merged.Count -gt 0) {
-    $json = $merged | ConvertTo-Json -Depth 8
+    if ($merged.Count -eq 1) {
+        $json = '[' + ($merged[0] | ConvertTo-Json -Depth 8) + ']'
+    } else {
+        $json = $merged | ConvertTo-Json -Depth 8
+    }
     [System.IO.File]::WriteAllText($outPath, $json, (New-Object System.Text.UTF8Encoding($false)))
     Write-Host "loonex_links.json aggiornato: $($merged.Count) serie (fresche: $($results.Count))"
 } else {

@@ -85,10 +85,15 @@ if (Test-Path $outPath) {
 $bySlug = @{}
 foreach ($p in $prev) { if ($p.slug) { $bySlug[$p.slug] = $p } }
 foreach ($r in $results) { $bySlug[$r.slug] = $r }
-$merged = @($bySlug.Values)
+# NB: vedi extract_loonex.ps1 — enumerare i valori uno a uno, mai @($bySlug.Values)
+$merged = @($bySlug.GetEnumerator() | ForEach-Object { $_.Value })
 
 if ($merged.Count -gt 0) {
-    $json = $merged | ConvertTo-Json -Depth 8
+    if ($merged.Count -eq 1) {
+        $json = '[' + ($merged[0] | ConvertTo-Json -Depth 8) + ']'
+    } else {
+        $json = $merged | ConvertTo-Json -Depth 8
+    }
     [System.IO.File]::WriteAllText($outPath, $json, (New-Object System.Text.UTF8Encoding($false)))
     Write-Host "animetop_links.json aggiornato: $($merged.Count) serie (fresche: $($results.Count))"
 } else {

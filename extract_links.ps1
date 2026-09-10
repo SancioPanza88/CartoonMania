@@ -18,14 +18,23 @@ $headers = @{
 # blocca le pagine successive (pagina 1 OK, poi 403 a raffica).
 $wpSession = New-Object Microsoft.PowerShell.Commands.WebRequestSession
 
-# --- 1. Completa download post mancanti ---
+# --- 1. Download/refresh pagine WP ---
+# FIX "Aggiunti di recente" (2026-09-10): prima le pagine gia' scaricate
+# venivano saltate (if Test-Path -> continue). Dato che l'API WP ordina
+# per data DESC, un nuovo post sposta tutti gli altri di una posizione:
+# saltando le pagine esistenti le nuove serie di ToonItalia non entravano
+# MAI nel catalogo. Ora ogni run riscarica tutte le pagine (sovrascrittura)
+# e in fase 2 i post vengono deduplicati per id, cosi' un refresh parziale
+# (blocco 403 a meta' pagine) non crea doppioni e le novita' emergono
+# ordinate per `modificato` nella riga "Aggiunti di recente" dell'app.
 $totalPages = 32
 $consecutiveBlocked = 0
 $abortedByBlock = $false
+$refreshedPages = 0
 for ($p = 1; $p -le $totalPages; $p++) {
     $n = '{0:d3}' -f $p
     $file = Join-Path $outDir "posts_$n.json"
-    if (Test-Path $file) { continue }
+    $tmpFile = "$file.tmp"
     $done = $false
     for ($i = 1; $i -le 5 -and -not $done; $i++) {
         try {
@@ -35,10 +44,12 @@ for ($p = 1; $p -le $totalPages; $p++) {
                 try { $totalPages = [int]($r.Headers['X-WP-TotalPages'] | Select-Object -First 1) } catch {}
             }
             $null = $r.Content | ConvertFrom-Json
-            Set-Content -Path $file -Value $r.Content -Encoding UTF8
-            Write-Host "[OK] posts_$n.json"
+            Set-Content -Path $tmpFile -Value $r.Content -Encoding UTF8
+            Move-Item -Path $tmpFile -Destination $file -Force
+            Write-Host "[OK] posts_$n.json (refresh)"
             $done = $true
             $consecutiveBlocked = 0
+            $refreshedPages++
         } catch {
             $code = ''
             if ($_.Exception.Response) { $code = [int]$_.Exception.Response.StatusCode }
@@ -53,10 +64,14 @@ for ($p = 1; $p -le $totalPages; $p++) {
             else { Write-Host "[RETRY $i] ($code) pagina $p"; Start-Sleep -Seconds (3 * $i) }
         }
     }
+    if (Test-Path $tmpFile) { Remove-Item -Force $tmpFile -ErrorAction SilentlyContinue }
     if ($abortedByBlock) { break }
+    # Se la pagina ha fallito ma esiste una copia vecchia, la teniamo
+    # (sara' deduplicata in fase 2) invece di cancellarla.
     # Pausa anti-rate-limit tra pagine (6-9s con jitter)
     Start-Sleep -Seconds (6 + (Get-Random -Minimum 0 -Maximum 4))
 }
+Write-Host "Pagine aggiornate in questo run: $refreshedPages su $totalPages"
 if ($abortedByBlock) {
     Write-Host "BLOCCO RILEVATO: toonitalia.xyz risponde 403/401/429 in sequenza. Probabile blocco Cloudflare degli IP GitHub Actions. Interrompo i download, uso i dati in cache."
 }
@@ -68,10 +83,19 @@ $results = New-Object System.Collections.Generic.List[object]
 $files = Get-ChildItem $outDir -Filter "posts_*.json" | Sort-Object Name
 $postCount = 0
 $linkCount = 0
+$seenIds = @{}
+$dupCount = 0
 
 foreach ($f in $files) {
     $posts = Get-Content -Raw -Encoding UTF8 $f.FullName | ConvertFrom-Json
     foreach ($post in $posts) {
+        # Deduplica per id: con il refresh di tutte le pagine, un post
+        # spostato dalla pagina N alla N+1 (nuova uscita) comparirebbe in
+        # due file se il run si interrompe a meta' (blocco 403). Senza
+        # questa guardia il catalogo avrebbe doppioni con stesso slug.
+        $postId = [string]$post.id
+        if ($seenIds.ContainsKey($postId)) { $dupCount++; continue }
+        $seenIds[$postId] = $true
         $postCount++
         $content = $post.content.rendered
         $episodes = New-Object System.Collections.Generic.List[object]
@@ -180,7 +204,7 @@ $flat | Export-Csv -Path $csvPath -NoTypeInformation -Encoding UTF8
 
 Write-Host ""
 Write-Host "=== RIEPILOGO ==="
-Write-Host "Post elaborati: $postCount"
+Write-Host "Post elaborati: $postCount (doppioni da shift pagine ignorati: $dupCount)"
 Write-Host "Voci episodio+player: $($flat.Count)"
 Write-Host "JSON: $jsonPath"
 Write-Host "CSV: $csvPath"
