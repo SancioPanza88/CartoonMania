@@ -24,7 +24,6 @@ class SearchActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
-        CrtMode.applyTo(this)
 
         val search = findViewById<EditText>(R.id.search)
         val list = findViewById<ListView>(R.id.list)
@@ -122,7 +121,7 @@ class SearchActivity : Activity() {
                 t.episodes.isEmpty() -> t.cats.joinToString(" · ")
                 else -> "${t.episodes.size} episodi · ${t.cats.take(3).joinToString(" · ")}"
             }
-            Ui.round(poster, 8)
+            Ui.round(poster, 10)
             ImageLoader.display(poster, t.img)
             return v
         }

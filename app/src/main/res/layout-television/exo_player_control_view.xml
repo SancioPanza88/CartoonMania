@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="bottom"
-    android:background="#CC000000"
+    android:background="@drawable/bg_player_controller"
     android:orientation="vertical"
     android:padding="12dp">
 
@@ -41,7 +41,7 @@
             android:id="@+id/c_aspect"
             android:layout_width="76dp"
             android:layout_height="56dp"
-            android:background="?android:attr/selectableItemBackground"
+            android:background="@drawable/bg_player_btn"
             android:contentDescription="@string/aspect_desc"
             android:text="FIT"
             android:textColor="#FFFFFF"

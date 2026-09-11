@@ -19,7 +19,6 @@ class CategoryActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_category)
-        CrtMode.applyTo(this)
 
         val cat = intent.getStringExtra("cat").orEmpty()
         findViewById<TextView>(R.id.c_title).text = cat.ifEmpty { getString(R.string.no_data) }
@@ -85,7 +84,7 @@ class CategoryActivity : Activity() {
                 t.episodes.isEmpty() -> t.cats.joinToString(" · ")
                 else -> "${t.episodes.size} episodi · ${t.cats.take(3).joinToString(" · ")}"
             }
-            Ui.round(poster, 8)
+            Ui.round(poster, 10)
             ImageLoader.display(poster, t.img)
             return v
         }
