@@ -110,7 +110,7 @@ object Profiles {
         return out
     }
 
-    private fun persist(ctx: Context, list: List<Profile>) {
+    private fun persist(ctx: Context, list: List<Profile>, sync: Boolean = false) {
         try {
             val arr = JSONArray()
             for (p in list) {
@@ -145,7 +145,17 @@ object Profiles {
                 o.put("wd", wd)
                 arr.put(o)
             }
-            prefs(ctx).edit().putString("list", arr.toString()).apply()
+            val ed = prefs(ctx).edit().putString("list", arr.toString())
+            if (sync) ed.commit() else ed.apply()
+        } catch (_: Exception) {
+        }
+    }
+
+    /** Scrittura sincrona: lo stato sopravvive anche se il processo muore
+     *  subito dopo (chiusura forzata mentre guardi qualcosa). */
+    fun flushNow(ctx: Context) {
+        try {
+            persist(ctx, all(ctx), sync = true)
         } catch (_: Exception) {
         }
     }

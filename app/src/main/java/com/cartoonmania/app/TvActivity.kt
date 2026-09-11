@@ -148,6 +148,20 @@ class TvActivity : Activity() {
                 )
             }
             adapter.notifyDataSetChanged()
+            try {
+                val st = findViewById<TextView>(R.id.tv_status)
+                val list = findViewById<ListView>(R.id.tv_list)
+                if (rows.isEmpty()) {
+                    list.visibility = View.GONE
+                    st.visibility = View.VISIBLE
+                    st.text = if (CatalogRepo.titles.isEmpty()) getString(R.string.checking_updates)
+                    else getString(R.string.tv_empty)
+                } else {
+                    list.visibility = View.VISIBLE
+                    st.visibility = View.GONE
+                }
+            } catch (_: Exception) {
+            }
         } catch (_: Exception) {
         }
     }
@@ -159,23 +173,14 @@ class TvActivity : Activity() {
 
     /** Sintonia: diretti dal punto in onda, embed dall'inizio. */
     private fun tune(a: TvSchedule.Airing) {
-        try {
-            val pick = TvSchedule.playerFor(a.title, a.epIndex) ?: run {
+        if (TvSchedule.playerFor(a.title, a.epIndex) == null) {
+            try {
                 Toast.makeText(this, getString(R.string.no_episodes), Toast.LENGTH_SHORT).show()
-                return
+            } catch (_: Exception) {
             }
-            val epLabel = a.title.episodes.getOrNull(a.epIndex)?.label.orEmpty()
-            val pos = if (pick.direct) TvSchedule.joinOffset(a) else 0L
-            Ui.openScreen(
-                this,
-                Intent(this, PlayerActivity::class.java)
-                    .putExtra("url", pick.url)
-                    .putExtra("label", a.title.title + if (epLabel.isEmpty()) "" else " — $epLabel")
-                    .putExtra("tv", a.channelId)
-                    .putExtra("pos", pos)
-            )
-        } catch (_: Exception) {
+            return
         }
+        TvSchedule.tuneTo(this, a)
     }
 
     private inner class TvAdapter : BaseAdapter() {
@@ -212,7 +217,12 @@ class TvActivity : Activity() {
                 nextTv.text = if (r.nextTitle.isEmpty()) "" else getString(R.string.tv_next) + ": " + r.nextTitle +
                     if (r.nextStart.isEmpty()) "" else " (" + r.nextStart + ")"
             }
-            Ui.tvFocus(v)
+            // Click diretto sulla riga (touch E telecomando): il focus D-pad
+            // dentro la riga mangiava il click della ListView. Niente tvFocus
+            // qui: l'evidenziazione la fa il listSelector come in Cerca.
+            v.setOnClickListener { rows.getOrNull(position)?.airing?.let { tune(it) } }
+            v.isFocusable = true
+            v.isClickable = true
             return v
         }
     }

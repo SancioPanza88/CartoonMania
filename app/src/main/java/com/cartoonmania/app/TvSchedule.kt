@@ -1,5 +1,7 @@
 package com.cartoonmania.app
 
+import android.content.Context
+import android.content.Intent
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -123,5 +125,57 @@ object TvSchedule {
         SimpleDateFormat("HH:mm", Locale.ITALY).format(Date(ms))
     } catch (_: Exception) {
         ""
+    }
+
+    /** Sintonia condivisa (TvActivity + riga "Riprendi"): diretti dal punto
+     *  in onda, embed dall'inizio. Salva il canale per la continuita'. */
+    fun tuneTo(ctx: Context, a: Airing) {
+        try {
+            val pick = playerFor(a.title, a.epIndex) ?: return
+            val epLabel = a.title.episodes.getOrNull(a.epIndex)?.label.orEmpty()
+            val pos = if (pick.direct) joinOffset(a) else 0L
+            TvResume.save(ctx, a.channelId)
+            Ui.openScreen(
+                ctx,
+                Intent(ctx, PlayerActivity::class.java)
+                    .putExtra("url", pick.url)
+                    .putExtra("label", a.title.title + if (epLabel.isEmpty()) "" else " — $epLabel")
+                    .putExtra("tv", a.channelId)
+                    .putExtra("pos", pos)
+            )
+        } catch (_: Exception) {
+        }
+    }
+}
+
+/** Memoria indipendente della diretta: solo il canale (la posizione si
+ *  ricalcola dall'orologio al rientro). Scrittura sincrona: sopravvive
+ *  alla chiusura forzata. Separata dai progressi episodi: le due
+ *  continuita' non si cancellano a vicenda. */
+object TvResume {
+
+    private const val PREFS = "cm"
+    private const val KEY = "tv_resume"
+
+    fun save(ctx: Context, channelId: String) {
+        try {
+            ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+                .putString(KEY, channelId).commit()
+        } catch (_: Exception) {
+        }
+    }
+
+    fun get(ctx: Context): String? = try {
+        ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY, null)
+    } catch (_: Exception) {
+        null
+    }
+
+    fun clear(ctx: Context) {
+        try {
+            ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+                .remove(KEY).commit()
+        } catch (_: Exception) {
+        }
     }
 }

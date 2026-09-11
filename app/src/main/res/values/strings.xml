@@ -23,6 +23,8 @@
     <string name="tv_title">TV in diretta</string>
     <string name="tv_next">A seguire</string>
     <string name="tv_empty">Palinsesto vuoto, riprova più tardi</string>
+    <string name="resume_tv">Riprendi la diretta</string>
+    <string name="remove_resume">Smetti di proporre</string>
     <string name="aspect_desc">Aspetto video</string>
     <string name="update_catalog">Aggiorna catalogo</string>
     <string name="clear_cache">Svuota cache immagini</string>
