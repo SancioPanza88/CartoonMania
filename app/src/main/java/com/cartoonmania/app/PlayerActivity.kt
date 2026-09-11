@@ -853,6 +853,12 @@ class PlayerActivity : Activity() {
     override fun onPause() {
         flushWatch()
         saveCurrentProgress()
+        // Scrittura sincrona: se l'app viene uccisa ora, al rientro
+        // "Continua a guardare" ritrova tutto (episodi e diretta TV).
+        try {
+            Profiles.flushNow(this)
+        } catch (_: Exception) {
+        }
         web?.onPause()
         player?.pause()
         super.onPause()

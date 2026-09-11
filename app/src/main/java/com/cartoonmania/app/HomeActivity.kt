@@ -111,7 +111,8 @@ class HomeActivity : Activity() {
         return try {
             val me = Profiles.current(this)
             CatalogRepo.currentVersion(this) + "|" + me.id + "|" +
-                me.favorites.size + "|" + me.recent.size + "|" + me.progress.size
+                me.favorites.size + "|" + me.recent.size + "|" + me.progress.size + "|" +
+                (TvResume.get(this) ?: "-")
         } catch (_: Exception) {
             "?"
         }
@@ -212,7 +213,7 @@ class HomeActivity : Activity() {
 
     private var builtSig: String? = null
 
-    private enum class RowKind { CONTINUE, FAVORITES, RECENT, NORMAL }
+    private enum class RowKind { CONTINUE, FAVORITES, RECENT, TVRESUME, NORMAL }
 
     private data class RowSpec(
         val title: String,
@@ -253,6 +254,23 @@ class HomeActivity : Activity() {
             val rec = me.recent.mapNotNull { bySlug[it] }
             if (rec.isNotEmpty()) {
                 out.add(RowSpec(getString(R.string.recent_row), rec, longPress = true, kind = RowKind.RECENT))
+            }
+        } catch (_: Exception) {
+        }
+        // Diretta TV da riprendere: memoria indipendente dai progressi
+        // episodi. Resta finche' non cambi canale o la rimuovi (long-press).
+        try {
+            TvResume.get(this)?.let { chId ->
+                TvSchedule.current(chId, all)?.let { a ->
+                    out.add(
+                        RowSpec(
+                            "▶ " + getString(R.string.resume_tv) + ": " + a.channelName,
+                            listOf(a.title),
+                            longPress = true,
+                            kind = RowKind.TVRESUME
+                        )
+                    )
+                }
             }
         } catch (_: Exception) {
         }
@@ -337,6 +355,13 @@ class HomeActivity : Activity() {
                     }
                     labels.add(getString(R.string.mark_watched))
                     actions.add { markWatched(t) }
+                }
+                RowKind.TVRESUME -> {
+                    labels.add(getString(R.string.remove_resume))
+                    actions.add {
+                        TvResume.clear(this)
+                        safeBuildSections()
+                    }
                 }
                 RowKind.NORMAL -> {
                     // Nessuna azione di rimozione: solo dettagli
@@ -464,7 +489,16 @@ class HomeActivity : Activity() {
                 setBackgroundResource(ripple.resourceId)
                 setOnClickListener {
                     if (spec.resume) openResume(context, t)
-                    else Ui.openDetail(context, t.slug)
+                    else if (spec.kind == RowKind.TVRESUME) {
+                        try {
+                            TvResume.get(context)?.let { chId ->
+                                TvSchedule.current(chId, CatalogRepo.titles)?.let { a ->
+                                    TvSchedule.tuneTo(context, a)
+                                }
+                            }
+                        } catch (_: Exception) {
+                        }
+                    } else Ui.openDetail(context, t.slug)
                 }
             }
             Ui.tvFocus(card)
