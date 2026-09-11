@@ -58,10 +58,6 @@
             android:exported="false" />
 
         <activity
-            android:name=".TvActivity"
-            android:exported="false" />
-
-        <activity
             android:name=".PlayerActivity"
             android:exported="false"
             android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize|keyboard|navigation"

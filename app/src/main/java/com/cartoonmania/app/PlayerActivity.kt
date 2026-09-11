@@ -62,12 +62,18 @@ class PlayerActivity : Activity() {
     private var epIndex = 0
     private var playerIndex = 0
     private var resumeMs = 0L
-    // Canale TV in diretta (modalita' legacy senza contesto serie): a fine
-    // episodio ci si risintonizza sul palinsesto corrente dello stesso canale
-    private var tvChannel: String? = null
     // Statistiche: pareggio del wall-clock mentre il nativo sta suonando
     private var watchAnchorMs = 0L
     private var watchSlug: String? = null
+    // Slug per gli avvii legacy (extra "slug" se presente): attribuisce
+    // tempo e completati anche senza contesto serie
+    private var legacySlug: String? = null
+    // Anti-doppio conteggio "episodio finito" (fine naturale + uscita finale)
+    private var lastDoneKey: String? = null
+    // Timer della visione in WebView (fallback visibile, captcha): parte
+    // quando il web si vede, si versa quando si nasconde
+    private var webAnchorMs = 0L
+    private var webSlug: String? = null
 
     // Generazione di caricamento: invalida i callback in ritardo dell'episodio precedente
     private var sessionId = 0
@@ -173,23 +179,6 @@ class PlayerActivity : Activity() {
         cPrev.setOnClickListener { goPrev() }
         cNext.setOnClickListener { goNext() }
         cEpisodes.setOnClickListener { showEpisodePicker() }
-        // Aspetto video FIT/FILL/ZOOM (utile 16:9 su schermi 4:3 e viceversa)
-        try {
-            findViewById<View>(R.id.c_aspect)?.setOnClickListener {
-                try {
-                    val next = (playerAspect() + 1) % 3
-                    setPlayerAspect(next)
-                    applyAspect()
-                    Toast.makeText(
-                        this,
-                        "${getString(R.string.aspect_desc)}: ${aspectLabel(next)}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } catch (_: Exception) {
-                }
-            }
-        } catch (_: Exception) {
-        }
 
         hideSystemUi()
 
@@ -211,17 +200,15 @@ class PlayerActivity : Activity() {
             )
         } else {
             // Avvio legacy senza contesto serie: nessuna navigazione episodi.
-            // Usato anche dalla TV in diretta (extra "tv" + "pos" per il join).
             navBar.visibility = View.GONE
             embedUrl = startUrl
             resumeMs = intent.getLongExtra("pos", 0)
-            tvChannel = intent.getStringExtra("tv")
+            legacySlug = intent.getStringExtra("slug")
             title = intent.getStringExtra("label") ?: ""
             navTitle.text = title
             cTitle.text = title
             playGuardaSmart(embedUrl, visible = false)
         }
-        applyAspect()
     }
 
     @Suppress("DEPRECATION")
@@ -291,8 +278,12 @@ class PlayerActivity : Activity() {
         // Salva dove eri arrivato nell'episodio precedente
         if (player != null) saveCurrentProgress()
         flushWatch()
+        webFlush()
 
         epIndex = index
+        // Nuovo episodio: il "finito" si puo' ricontare (il guard resta
+        // solo per lo stesso episodio nella stessa sessione)
+        if (lastDoneKey != "${s.slug}:$index") lastDoneKey = null
         val ep = s.episodes[index]
         playerIndex = if (playerIdx in ep.players.indices) playerIdx else 0
         val p = ep.players.getOrNull(playerIndex) ?: return
@@ -365,94 +356,32 @@ class PlayerActivity : Activity() {
             .show()
     }
 
-    /** Aspetto salvato (FIT/FILL/ZOOM) applicato al PlayerView + etichetta. */
-    private fun applyAspect() {
+    /** Segna l'episodio come finito una sola volta (fine naturale o
+     *  uscita finale: senza guard si conterebbe due volte). */
+    private fun markDone(slug: String, ep: Int) {
         try {
-            val mode = playerAspect()
-            playerView.resizeMode = when (mode) {
-                2 -> androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_ZOOM
-                1 -> androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FILL
-                else -> androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIT
-            }
-            findViewById<Button>(R.id.c_aspect)?.text = aspectLabel(mode)
+            val key = "$slug:$ep"
+            if (lastDoneKey == key) return
+            lastDoneKey = key
+            Profiles.addEpDone(this, slug)
         } catch (_: Exception) {
         }
-    }
-
-    private fun playerAspect(): Int = try {
-        getSharedPreferences("cm", MODE_PRIVATE).getInt("player_aspect", 0)
-    } catch (_: Exception) {
-        0
-    }
-
-    private fun setPlayerAspect(v: Int) {
-        try {
-            getSharedPreferences("cm", MODE_PRIVATE).edit()
-                .putInt("player_aspect", v.coerceIn(0, 2)).apply()
-        } catch (_: Exception) {
-        }
-    }
-
-    private fun aspectLabel(v: Int): String = when (v) {
-        1 -> "FILL"
-        2 -> "ZOOM"
-        else -> "FIT"
     }
 
     /** Autoplay diretto: finito un episodio parte subito il successivo. */
     private fun onEpisodeEnded() {
         flushWatch()
-        // TV in diretta: ci si risintonizza sul palinsesto corrente
-        if (series == null && tvChannel != null) {
-            retuneTv()
-            return
-        }
+        webFlush()
         if (hasNext()) goNext()
         else {
             try {
                 series?.let {
                     Profiles.clearProgress(this, it.slug)
-                    Profiles.addEpDone(this, it.slug)
+                    markDone(it.slug, epIndex)
                 }
             } catch (_: Exception) {
             }
             Toast.makeText(this, R.string.end_of_series, Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    /** Risintonizza la diretta sul palinsesto corrente dello stesso canale. */
-    private fun retuneTv() {
-        val ch = tvChannel ?: return
-        try {
-            val a = TvSchedule.current(ch, CatalogRepo.titles) ?: run {
-                Toast.makeText(this, R.string.end_of_series, Toast.LENGTH_SHORT).show()
-                return
-            }
-            val pick = TvSchedule.playerFor(a.title, a.epIndex) ?: run {
-                Toast.makeText(this, R.string.end_of_series, Toast.LENGTH_SHORT).show()
-                return
-            }
-            sessionId++
-            releasePlayer()
-            destroyWeb()
-            synchronized(candidates) { candidates.clear() }
-            candidateIndex = 0
-            captured.set(false)
-            errors = 0
-            headerMode = 0
-            currentUrl = ""
-            resumeMs = if (pick.direct) TvSchedule.joinOffset(a) else 0L
-            embedUrl = pick.url
-            val epLabel = a.title.episodes.getOrNull(a.epIndex)?.label.orEmpty()
-            title = a.title.title + if (epLabel.isEmpty()) "" else " — $epLabel"
-            navTitle.text = title
-            cTitle.text = title
-            loading.visibility = View.VISIBLE
-            playerView.visibility = View.GONE
-            webContainer.visibility = View.GONE
-            navBar.visibility = View.GONE
-            playGuardaSmart(embedUrl, visible = false)
-        } catch (_: Exception) {
         }
     }
 
@@ -470,7 +399,9 @@ class PlayerActivity : Activity() {
         }
     }
 
-    /** Ricorda episodio + posizione per il "Continua a guardare". */
+    /** Ricorda episodio + posizione per il "Continua a guardare".
+     *  Uscita negli ultimi 30s = episodio finito: conta (una sola volta)
+     *  invece di far sparire tutto nel nulla. */
     private fun saveCurrentProgress() {
         val s = series ?: return
         val p = player ?: return
@@ -479,6 +410,7 @@ class PlayerActivity : Activity() {
             val dur = p.duration
             if (dur > 0 && pos >= dur - 30000) {
                 Profiles.clearProgress(this, s.slug)
+                markDone(s.slug, epIndex)
                 return
             }
             val ep = s.episodes.getOrNull(epIndex)
@@ -551,15 +483,6 @@ class PlayerActivity : Activity() {
             }
             return true
         }
-        // Zapping canali in diretta: solo TV (niente contesto serie)
-        if (keyCode == KeyEvent.KEYCODE_CHANNEL_UP) {
-            zap(1)
-            return true
-        }
-        if (keyCode == KeyEvent.KEYCODE_CHANNEL_DOWN) {
-            zap(-1)
-            return true
-        }
         // Col controller nascosto, OK lo riapre invece di mettere pausa alla cieca
         if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER && player != null &&
             !playerView.isControllerFullyVisible
@@ -579,20 +502,6 @@ class PlayerActivity : Activity() {
             return true
         }
         return super.onKeyDown(keyCode, event)
-    }
-
-    /** Zapping: canale successivo/precedente nel palinsesto. */
-    private fun zap(dir: Int) {
-        if (series != null) return
-        val cur = tvChannel ?: return
-        try {
-            val ids = TvSchedule.channels.map { it.id }
-            val i = ids.indexOf(cur)
-            if (i < 0) return
-            tvChannel = ids[(i + dir + ids.size) % ids.size]
-            retuneTv()
-        } catch (_: Exception) {
-        }
     }
 
     /** OK prolungato = mostra/nascondi controlli in modo deterministico. */
@@ -781,8 +690,10 @@ class PlayerActivity : Activity() {
             loading.visibility = View.GONE
             webContainer.visibility = View.VISIBLE
             if (series != null) navBar.visibility = View.VISIBLE
+            webAnchor()
         } else {
             webContainer.visibility = if (visible) View.VISIBLE else View.INVISIBLE
+            if (visible) webAnchor()
         }
 
         if (!visible && !manual) {
@@ -794,12 +705,36 @@ class PlayerActivity : Activity() {
                     // Senza player nativo non c'e' il controller: mostra la barra di riserva
                     if (series != null) navBar.visibility = View.VISIBLE
                     web?.evaluateJavascript(AUTOPLAY_JS, null)
+                    webAnchor()
                 }
             }, 25000)
         }
 
         w.stopLoading()
         w.loadUrl(pageUrl)
+    }
+
+    /** Timer visione WebView (fallback visibile/captcha): il tempo in pagina
+     *  conta come gli altri, attribuito alla serie se nota. */
+    private fun webAnchor() {
+        try {
+            webAnchorMs = System.currentTimeMillis()
+            webSlug = series?.slug ?: legacySlug
+        } catch (_: Exception) {
+        }
+    }
+
+    private fun webFlush() {
+        try {
+            val a = webAnchorMs
+            val slug = webSlug
+            webAnchorMs = 0L
+            if (a > 0 && slug != null) {
+                val secs = (System.currentTimeMillis() - a) / 1000
+                if (secs >= 5) Profiles.addWatch(this, slug, secs)
+            }
+        } catch (_: Exception) {
+        }
     }
 
     private fun looksLikeVideo(u: String): Boolean {
@@ -903,7 +838,7 @@ class PlayerActivity : Activity() {
         )
         p.playWhenReady = true
         p.prepare()
-        watchSlug = series?.slug
+        watchSlug = series?.slug ?: legacySlug
         watchAnchorMs = System.currentTimeMillis()
         if (resumeMs > 5000) {
             try {
@@ -951,6 +886,7 @@ class PlayerActivity : Activity() {
     }
 
     private fun destroyWeb() {
+        webFlush()
         web?.let { w ->
             try {
                 w.loadUrl("about:blank")
@@ -982,9 +918,10 @@ class PlayerActivity : Activity() {
 
     override fun onPause() {
         flushWatch()
+        webFlush()
         saveCurrentProgress()
         // Scrittura sincrona: se l'app viene uccisa ora, al rientro
-        // "Continua a guardare" ritrova tutto (episodi e diretta TV).
+        // "Continua a guardare" ritrova tutto.
         try {
             Profiles.flushNow(this)
         } catch (_: Exception) {

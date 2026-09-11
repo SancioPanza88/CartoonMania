@@ -25,6 +25,10 @@ class BarsView @JvmOverloads constructor(
     var emptyText: String = ""
 
     private val barP = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val gridP = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = 0xFF262633.toInt()
+        strokeWidth = 1f
+    }
     private val txtP = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = 0xFFA0A4B8.toInt()
         textAlign = Paint.Align.CENTER
@@ -35,6 +39,14 @@ class BarsView @JvmOverloads constructor(
     }
 
     private fun dp(v: Float): Float = v * resources.displayMetrics.density
+
+    /** Versione scura del colore per il gradiente delle barre. */
+    private fun darker(c: Int): Int {
+        val r = ((c shr 16) and 0xFF) * 55 / 100
+        val g = ((c shr 8) and 0xFF) * 55 / 100
+        val b = (c and 0xFF) * 55 / 100
+        return -0x1000000 or (r shl 16) or (g shl 8) or b
+    }
 
     override fun onMeasure(wSpec: Int, hSpec: Int) {
         // Altezza fissa 190dp: entra in header senza ricalcoli strani
@@ -56,20 +68,29 @@ class BarsView @JvmOverloads constructor(
             return
         }
         val max = (items.maxOfOrNull { it.second } ?: 0f).coerceAtLeast(0.01f)
-        val topPad = dp(22f)
-        val botPad = dp(22f)
+        val topPad = dp(24f)
+        val botPad = dp(24f)
+        // Linea di base sottile
+        canvas.drawLine(0f, h - botPad, w, h - botPad, gridP)
         val slot = w / items.size
-        val barW = (slot * 0.52f).coerceAtMost(dp(44f))
+        val barW = (slot * 0.52f).coerceAtMost(dp(46f))
         items.forEachIndexed { i, (label, value) ->
             val cx = slot * i + slot / 2f
             val frac = (value / max).coerceIn(0f, 1f)
-            val barH = (h - topPad - botPad) * frac
+            // Altezza minima visibile per valori piccoli ma non nulli
+            var barH = (h - topPad - botPad) * frac
+            if (value > 0f && barH < dp(6f)) barH = dp(6f)
             val left = cx - barW / 2f
             val top = h - botPad - barH
             val bottom = h - botPad
-            barP.color = colors[i % colors.size]
+            val base = colors[i % colors.size]
             if (barH > 0) {
-                canvas.drawRoundRect(left, top, cx + barW / 2f, bottom, dp(6f), dp(6f), barP)
+                barP.shader = android.graphics.LinearGradient(
+                    0f, top, 0f, bottom, base, darker(base),
+                    android.graphics.Shader.TileMode.CLAMP
+                )
+                canvas.drawRoundRect(left, top, cx + barW / 2f, bottom, dp(8f), dp(8f), barP)
+                barP.shader = null
             }
             // Valore sopra solo se significativo (niente zeri a sporcare)
             if (value >= 1f / 60f) {

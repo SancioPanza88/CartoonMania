@@ -11,6 +11,7 @@ import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ListView
+import android.widget.ProgressBar
 import android.widget.TextView
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -89,14 +90,25 @@ class StatsActivity : Activity() {
         return super.onKeyDown(keyCode, event)
     }
 
-    private fun sectionTitle(text: String): TextView =
-        TextView(this).apply {
+    private fun sectionTitle(text: String): View {
+        val wrap = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(0, dp(20), 0, dp(2))
+        }
+        wrap.addView(TextView(this).apply {
             this.text = text
             textSize = 15f
             setTextColor(0xFFFFFFFF.toInt())
             setTypeface(typeface, android.graphics.Typeface.BOLD)
-            setPadding(0, dp(18), 0, dp(6))
-        }
+        })
+        wrap.addView(View(this).apply {
+            layoutParams = LinearLayout.LayoutParams(dp(24), dp(3)).apply {
+                topMargin = dp(6)
+            }
+            setBackgroundResource(R.drawable.bg_section_bar)
+        })
+        return wrap
+    }
 
     private fun buildHead() {
         // Riepilogo 3 numeri
@@ -120,7 +132,7 @@ class StatsActivity : Activity() {
                 layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
             }
             v.apply {
-                textSize = 19f
+                textSize = 22f
                 setTextColor(0xFFFFFFFF.toInt())
                 setTypeface(typeface, android.graphics.Typeface.BOLD)
                 gravity = Gravity.CENTER
@@ -195,6 +207,7 @@ class StatsActivity : Activity() {
             }
             val topCats = byCat.entries.sortedByDescending { it.value }.take(6)
             genreDonut.items = topCats.map { it.key to it.value / 3600f }
+            genreDonut.centerText = fmt(total)
             genreLegend.removeAllViews()
             val totH = total / 3600f
             topCats.forEachIndexed { i, (name, secs) ->
@@ -202,15 +215,15 @@ class StatsActivity : Activity() {
                 val row = LinearLayout(this).apply {
                     orientation = LinearLayout.HORIZONTAL
                     gravity = Gravity.CENTER_VERTICAL
-                    setPadding(0, dp(3), 0, dp(3))
+                    setPadding(0, dp(4), 0, dp(4))
                 }
                 row.addView(View(this).apply {
                     setBackgroundColor(palette[i % palette.size])
-                    layoutParams = LinearLayout.LayoutParams(dp(12), dp(12))
-                    Ui.round(this, 6)
+                    layoutParams = LinearLayout.LayoutParams(dp(14), dp(14))
+                    Ui.round(this, 7)
                 })
                 row.addView(TextView(this).apply {
-                    text = "  $name  $pct%"
+                    text = "  $name · ${fmt(secs)} · $pct%"
                     textSize = 13f
                     setTextColor(0xFFFFFFFF.toInt())
                 })
@@ -244,10 +257,11 @@ class StatsActivity : Activity() {
         override fun getItemId(position: Int) = position.toLong()
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-            val v = convertView ?: layoutInflater.inflate(R.layout.item_title, parent, false)
+            val v = convertView ?: layoutInflater.inflate(R.layout.item_stat, parent, false)
             val title: TextView = v.findViewById(R.id.t_title)
             val sub: TextView = v.findViewById(R.id.t_sub)
             val poster: ImageView = v.findViewById(R.id.t_poster)
+            val bar: ProgressBar = v.findViewById(R.id.t_bar)
             val r = rows[position]
             title.text = r.title
             sub.text = if (r.done > 0) {
@@ -255,7 +269,9 @@ class StatsActivity : Activity() {
             } else {
                 fmt(r.secs)
             }
-            Ui.round(poster, 8)
+            val maxSecs = rows.firstOrNull()?.secs ?: 0L
+            bar.progress = if (maxSecs > 0) ((r.secs * 100 / maxSecs).toInt().coerceIn(0, 100)) else 0
+            Ui.round(poster, 10)
             ImageLoader.display(poster, r.img)
             return v
         }

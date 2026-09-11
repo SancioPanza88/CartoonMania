@@ -26,14 +26,27 @@ class DonutView @JvmOverloads constructor(
         0xFF42A5F5.toInt(), 0xFFEC407A.toInt(), 0xFFFFAB00.toInt()
     )
     var emptyText: String = ""
+    var centerText: String = ""
+    var trackColor: Int = 0xFF262633.toInt()
 
     private val arcP = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
+        strokeCap = Paint.Cap.ROUND
+    }
+    private val trackP = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeCap = Paint.Cap.ROUND
     }
     private val txtP = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = 0xFFA0A4B8.toInt()
         textAlign = Paint.Align.CENTER
         textSize = 13f
+    }
+
+    private val bigP = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = 0xFFFFFFFF.toInt()
+        textAlign = Paint.Align.CENTER
+        isFakeBoldText = true
     }
 
     private fun dp(v: Float): Float = v * resources.displayMetrics.density
@@ -57,18 +70,28 @@ class DonutView @JvmOverloads constructor(
             canvas.drawText(emptyText, w / 2f, h / 2f, txtP)
             return
         }
-        val stroke = dp(34f)
+        val stroke = dp(30f)
         arcP.strokeWidth = stroke
+        trackP.strokeWidth = stroke
+        trackP.color = trackColor
         val pad = stroke / 2f + dp(8f)
         oval.set(pad, pad, w - pad, h - pad)
+        // Anello di fondo + fette con estremita' arrotondate
+        canvas.drawArc(oval, 0f, 360f, false, trackP)
         var start = -90f
         items.forEachIndexed { i, (_, value) ->
             if (value <= 0f) return@forEachIndexed
             val sweep = value / total * 360f
             arcP.color = colors[i % colors.size]
-            // -1.5f di gap tra fette
-            canvas.drawArc(oval, start, (sweep - 1.5f).coerceAtLeast(0.5f), false, arcP)
+            // Gap tra fette (niente gap su fetta unica)
+            val gap = if (items.count { it.second > 0f } > 1) 3f else 0f
+            canvas.drawArc(oval, start + gap / 2f, (sweep - gap).coerceAtLeast(0.5f), false, arcP)
             start += sweep
+        }
+        // Totale al centro
+        if (centerText.isNotEmpty()) {
+            bigP.textSize = dp(22f)
+            canvas.drawText(centerText, w / 2f, h / 2f + dp(3f), bigP)
         }
     }
 }
