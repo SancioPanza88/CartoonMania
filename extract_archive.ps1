@@ -12,6 +12,76 @@ $series = @(
         categorie = @('Bambini', 'Azione', 'ITA')
         modified  = '2026-09-05T12:00:00'
         id        = 9100001
+    },
+    @{
+        slug      = 'i-magicanti-e-i-tre-elementi-2003'
+        titolo    = 'I Magicanti e i Tre Elementi (2003)'
+        item      = 'i-magicanti-e-i-tre-elementi-2003'
+        pagina    = 'https://archive.org/details/i-magicanti-e-i-tre-elementi-2003'
+        copertina = 'https://archive.org/services/img/i-magicanti-e-i-tre-elementi-2003'
+        categorie = @('Bambini', 'Fantasy', 'ITA')
+        modified  = '2026-09-11T12:00:00'
+        id        = 9100002
+    },
+    @{
+        slug      = 'gli-animotosi-nella-terra-di-non-dove-2005'
+        titolo    = 'Gli Animotosi nella Terra di Nondove (2005)'
+        item      = 'gli-animotosi-nella-terra-di-non-dove-2005'
+        pagina    = 'https://archive.org/details/gli-animotosi-nella-terra-di-non-dove-2005'
+        copertina = 'https://archive.org/services/img/gli-animotosi-nella-terra-di-non-dove-2005'
+        categorie = @('Bambini', 'Avventura', 'ITA')
+        modified  = '2026-09-11T12:00:00'
+        id        = 9100003
+    },
+    @{
+        slug      = 'gli-skatenini-e-le-dune-dorate-2007'
+        titolo    = 'Gli Skatenini e le Dune Dorate (2007)'
+        item      = 'gli-skatenini-e-le-dune-dorate-07'
+        pagina    = 'https://archive.org/details/gli-skatenini-e-le-dune-dorate-07'
+        copertina = 'https://archive.org/services/img/gli-skatenini-e-le-dune-dorate-07'
+        categorie = @('Bambini', 'Avventura', 'ITA')
+        modified  = '2026-09-11T12:00:00'
+        id        = 9100004
+    },
+    @{
+        slug      = 'gli-smile-and-go-e-il-braciere-di-fuoco-2007'
+        titolo    = 'Gli Smile and Go e il Braciere di Fuoco (2007)'
+        item      = 'gli-smile-and-go-e-il-braciere-di-fuoco-2007'
+        pagina    = 'https://archive.org/details/gli-smile-and-go-e-il-braciere-di-fuoco-2007'
+        copertina = 'https://archive.org/services/img/gli-smile-and-go-e-il-braciere-di-fuoco-2007'
+        categorie = @('Bambini', 'Avventura', 'ITA')
+        modified  = '2026-09-11T12:00:00'
+        id        = 9100005
+    },
+    @{
+        slug      = 'i-lunes-e-la-sfera-di-lasifer-2002'
+        titolo    = 'I Lunes e la Sfera di Lasifer (2002)'
+        item      = 'i-lunes-e-la-sfera-di-lasifer_2002'
+        pagina    = 'https://archive.org/details/i-lunes-e-la-sfera-di-lasifer_2002'
+        copertina = 'https://archive.org/services/img/i-lunes-e-la-sfera-di-lasifer_2002'
+        categorie = @('Bambini', 'Fantascienza', 'ITA')
+        modified  = '2026-09-11T12:00:00'
+        id        = 9100006
+    },
+    @{
+        slug      = 'i-lampaclima-e-l-isola-misteriosa-2006'
+        titolo    = "I Lampaclima e l'Isola Misteriosa (2006)"
+        item      = 'i-lampaclima-e-lisola-misteriosa-2006'
+        pagina    = 'https://archive.org/details/i-lampaclima-e-lisola-misteriosa-2006'
+        copertina = 'https://archive.org/services/img/i-lampaclima-e-lisola-misteriosa-2006'
+        categorie = @('Bambini', 'Avventura', 'ITA')
+        modified  = '2026-09-11T12:00:00'
+        id        = 9100007
+    },
+    @{
+        slug      = 'i-magotti-e-la-pentola-magica-2001'
+        titolo    = 'I Magotti e la Pentola Magica (2001)'
+        item      = 'i-magotti-e-la-pentola-magica-2001'
+        pagina    = 'https://archive.org/details/i-magotti-e-la-pentola-magica-2001'
+        copertina = 'https://archive.org/services/img/i-magotti-e-la-pentola-magica-2001'
+        categorie = @('Bambini', 'Fantasy', 'ITA')
+        modified  = '2026-09-11T12:00:00'
+        id        = 9100008
     }
 )
 
@@ -26,7 +96,9 @@ foreach ($s in $series) {
         $meta = Invoke-RestMethod -Uri "https://archive.org/metadata/$($s.item)" -TimeoutSec 120
         if (-not $meta.files) { throw "metadata senza files" }
 
-        $vids = @($meta.files | Where-Object { $_.name -match '\.mp4$' } | Sort-Object name)
+        # Escludi i preview .ia.mp4 (presenti nei film: 1 file reale + 1 preview).
+        # Senza questo filtro ogni film comparirebbe con 2 episodi duplicati.
+        $vids = @($meta.files | Where-Object { $_.name -match '\.mp4$' -and $_.name -notmatch '\.ia\.mp4$' } | Sort-Object name)
         if ($vids.Count -eq 0) { throw "nessun mp4 trovato" }
 
         $episodes = New-Object System.Collections.Generic.List[object]
@@ -59,16 +131,22 @@ foreach ($s in $series) {
     }
 }
 
-# Unione col file precedente (stessa guardia di extract_loonex.ps1)
+# Unione col file precedente (stesso merge deterministico di extract_loonex.ps1:
+# prima i dati freschi, poi i vecchi solo per gli slug mancanti)
 $prev = @()
 if (Test-Path $outPath) {
     try { $prev = @(Get-Content -Raw -Encoding UTF8 $outPath | ConvertFrom-Json) } catch { $prev = @() }
 }
-$bySlug = @{}
-foreach ($p in $prev) { if ($p.slug) { $bySlug[$p.slug] = $p } }
-foreach ($r in $results) { $bySlug[$r.slug] = $r }
-# NB: vedi extract_loonex.ps1 — enumerare i valori uno a uno, mai @($bySlug.Values)
-$merged = @($bySlug.GetEnumerator() | ForEach-Object { $_.Value })
+$merged = New-Object System.Collections.Generic.List[object]
+$have = @{}
+foreach ($r in $results) {
+    $k = [string]$r.slug
+    if ($k -and -not $have.ContainsKey($k)) { $merged.Add($r); $have[$k] = $true }
+}
+foreach ($p in $prev) {
+    $k = [string]$p.slug
+    if ($k -and -not $have.ContainsKey($k)) { $merged.Add($p); $have[$k] = $true }
+}
 
 if ($merged.Count -gt 0) {
     if ($merged.Count -eq 1) {

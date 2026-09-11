@@ -74,6 +74,150 @@ $series = @(
         categorie = @('Bambini', 'Commedia', 'ITA')
         modified  = '2026-09-05T12:00:00'
         id        = 9000008
+    },
+    @{
+        slug      = 'tom-and-jerry-cortometraggi-1940-2005'
+        titolo    = 'Tom and Jerry - Cortometraggi (1940-2005)'
+        pagina    = 'https://loonex.eu/cartoni/index.php?cartone=tom-and-jerry---cortometraggi-1940-2005--1788256604'
+        copertina = 'https://loonex.eu/cartoni/uploads/covers/cover_tomandjerry-cortometraggi1940-2005_1788256604.webp'
+        categorie = @('Bambini', 'Commedia', 'ITA')
+        modified  = '2026-09-11T12:00:00'
+        id        = 9000009
+    },
+    @{
+        slug      = 'the-boondocks'
+        titolo    = 'The Boondocks'
+        pagina    = 'https://loonex.eu/cartoni/index.php?cartone=the-boondocks-1774264609'
+        copertina = 'https://loonex.eu/cartoni/covers/238-the-boondocks-1774264609-cover.png'
+        categorie = @('Commedia', 'ITA')
+        modified  = '2026-09-11T12:00:00'
+        id        = 9000010
+    },
+    @{
+        slug      = 'tom-e-jerry-tales'
+        titolo    = 'Tom e Jerry Tales'
+        pagina    = 'https://loonex.eu/cartoni/index.php?cartone=tom-e-jerry-tales-1776085035'
+        copertina = 'https://loonex.eu/cartoni/covers/282-tom-e-jerry-tales-1776085035-cover.png'
+        categorie = @('Bambini', 'Commedia', 'ITA')
+        modified  = '2026-09-11T12:00:00'
+        id        = 9000011
+    },
+    @{
+        slug      = 'topolino-e-il-cervello-in-fuga'
+        titolo    = 'Topolino e il Cervello in Fuga'
+        pagina    = 'https://loonex.eu/cartoni/index.php?cartone=topolino-e-il-cervello-in-fuga-1784930810'
+        copertina = 'https://loonex.eu/cartoni/uploads/covers/cover_topolinoeilcervelloinfuga_1784930810.png'
+        categorie = @('Bambini', 'ITA')
+        modified  = '2026-09-11T12:00:00'
+        id        = 9000012
+    },
+    @{
+        slug      = 'spider-man-the-new-animated-series'
+        titolo    = 'Spider-Man: The New Animated Series'
+        pagina    = 'https://loonex.eu/cartoni/index.php?cartone=spider-man-the-new-animated-series-1771272470'
+        copertina = 'https://loonex.eu/cartoni/covers/136-spider-man-the-new-animated-series-1771272470-cover.jpg'
+        categorie = @('Bambini', 'Azione', 'ITA')
+        modified  = '2026-09-11T12:00:00'
+        id        = 9000013
+    },
+    @{
+        slug      = 'squitto-lo-scoiattolo'
+        titolo    = 'Squitto lo Scoiattolo'
+        pagina    = 'https://loonex.eu/cartoni/index.php?cartone=squitto-lo-scoiattolo-1770388478'
+        copertina = 'https://loonex.eu/cartoni/covers/119-squitto-lo-scoiattolo-1770388478-cover.jpg'
+        categorie = @('Bambini', 'Commedia', 'ITA')
+        modified  = '2026-09-11T12:00:00'
+        id        = 9000014
+    },
+    @{
+        slug      = 't-u-f-f-puppy'
+        titolo    = 'T.U.F.F. Puppy'
+        pagina    = 'https://loonex.eu/cartoni/index.php?cartone=t-u-f-f-puppy-1772141790'
+        copertina = 'https://loonex.eu/cartoni/covers/190-t-u-f-f-puppy-1772141790-cover.png'
+        categorie = @('Bambini', 'Azione', 'Commedia', 'ITA')
+        modified  = '2026-09-11T12:00:00'
+        id        = 9000015
+    },
+    @{
+        slug      = 'sabrina-la-mia-vita-segreta'
+        titolo    = 'Sabrina, la mia vita segreta'
+        pagina    = 'https://loonex.eu/cartoni/index.php?cartone=sabrina-la-mia-vita-segreta-1775908844'
+        copertina = 'https://loonex.eu/cartoni/covers/272-sabrina-la-mia-vita-segreta-1775908844-cover.jpg'
+        categorie = @('Bambini', 'ITA')
+        modified  = '2026-09-11T12:00:00'
+        id        = 9000016
+    },
+    @{
+        slug      = 'ren-and-stimpy'
+        titolo    = 'Ren and Stimpy'
+        pagina    = 'https://loonex.eu/cartoni/index.php?cartone=ren-and-stimpy-1771462295'
+        copertina = 'https://loonex.eu/cartoni/covers/145-ren-and-stimpy-1771462295-cover.jpg'
+        categorie = @('Commedia', 'ITA')
+        modified  = '2026-09-11T12:00:00'
+        id        = 9000017
+    },
+    @{
+        slug      = 'polli-kung-fu'
+        titolo    = 'Polli Kung Fu'
+        pagina    = 'https://loonex.eu/cartoni/index.php?cartone=polli-kung-fu-1785742232'
+        copertina = 'https://loonex.eu/cartoni/uploads/covers/cover_pollikungfu_1785742232.webp'
+        categorie = @('Bambini', 'Azione', 'Commedia', 'ITA')
+        modified  = '2026-09-11T12:00:00'
+        id        = 9000018
+    },
+    @{
+        slug      = 'phineas-e-ferb'
+        titolo    = 'Phineas e Ferb'
+        pagina    = 'https://loonex.eu/cartoni/index.php?cartone=phineas-e-ferb-1773439185'
+        copertina = 'https://loonex.eu/cartoni/covers/216-phineas-e-ferb-1773439185-cover.png'
+        categorie = @('Bambini', 'Commedia', 'ITA')
+        modified  = '2026-09-11T12:00:00'
+        id        = 9000019
+    },
+    @{
+        slug      = 'nome-in-codice-kommando-nuovi-diavoli'
+        titolo    = 'Nome in Codice: Kommando Nuovi Diavoli'
+        pagina    = 'https://loonex.eu/cartoni/index.php?cartone=nome-in-codice-kommando-nuovi-diavoli-1781618224'
+        copertina = 'https://loonex.eu/cartoni/uploads/covers/cover_nomeincodicekommandonuovidiavoli_1781618224.jpg'
+        categorie = @('Bambini', 'Azione', 'ITA')
+        modified  = '2026-09-11T12:00:00'
+        id        = 9000020
+    },
+    @{
+        slug      = 'justice-league-serie-animata-2001'
+        titolo    = 'Justice League (Serie Animata 2001)'
+        pagina    = 'https://loonex.eu/cartoni/index.php?cartone=justice-league-serie-animata-2001-1774988207'
+        copertina = 'https://loonex.eu/cartoni/covers/249-justice-league-serie-animata-2001-1774988207-cover.jpg'
+        categorie = @('Azione', 'ITA')
+        modified  = '2026-09-11T12:00:00'
+        id        = 9000021
+    },
+    @{
+        slug      = 'i-fantaeroi'
+        titolo    = 'I Fantaeroi'
+        pagina    = 'https://loonex.eu/cartoni/index.php?cartone=i-fantaeroi-1783666846'
+        copertina = 'https://loonex.eu/cartoni/uploads/covers/cover_i-fantaeroi-1783666846_1783667035.webp'
+        categorie = @('Bambini', 'Commedia', 'ITA')
+        modified  = '2026-09-11T12:00:00'
+        id        = 9000022
+    },
+    @{
+        slug      = 'i-pronipoti-the-jetsons'
+        titolo    = 'I Pronipoti - The Jetsons'
+        pagina    = 'https://loonex.eu/cartoni/index.php?cartone=i-pronipoti---the-jetsons-1783832695'
+        copertina = 'https://loonex.eu/cartoni/uploads/covers/cover_ipronipoti-thejetsons_1783832695.jpg'
+        categorie = @('Bambini', 'Commedia', 'ITA')
+        modified  = '2026-09-11T12:00:00'
+        id        = 9000023
+    },
+    @{
+        slug      = 'fantomette'
+        titolo    = 'Fantomette'
+        pagina    = 'https://loonex.eu/cartoni/index.php?cartone=fantomette-1788950244'
+        copertina = 'https://loonex.eu/cartoni/uploads/covers/cover_fantomette_1788950244.jpg'
+        categorie = @('Bambini', 'Commedia', 'ITA')
+        modified  = '2026-09-11T12:00:00'
+        id        = 9000024
     }
 )
 
@@ -173,20 +317,25 @@ foreach ($s in $series) {
 # Unione col file precedente: le serie fallite in questo run (es. WAF/403
 # dagli IP datacenter GitHub) mantengono i dati vecchi invece di sparire
 # dal catalogo. Senza questa guardia un run parziale clobberava tutto.
+# Merge deterministico: prima i dati freschi, poi i vecchi solo per gli
+# slug mancanti. Deduplica esplicita per slug (fix duplicati visti nel
+# run 2026-09-11: hashtable da sola non e' bastata).
 $prev = @()
 if (Test-Path $outPath) {
     try { $prev = @(Get-Content -Raw -Encoding UTF8 $outPath | ConvertFrom-Json) } catch { $prev = @() }
 }
-$bySlug = @{}
-foreach ($p in $prev) { if ($p.slug) { $bySlug[$p.slug] = $p } }
-foreach ($r in $results) { $bySlug[$r.slug] = $r }
-# NB: $bySlug.Values e' una ValueCollection: @($bySlug.Values) in
-# Windows PowerShell 5.1 crea un array con UN solo elemento (la collezione
-# stessa) serializzato come {"value":[...)} e corrompe il json. Enumerare
-# esplicitamente i valori uno a uno.
-$merged = @($bySlug.GetEnumerator() | ForEach-Object { $_.Value })
+$merged = New-Object System.Collections.Generic.List[object]
+$have = @{}
+foreach ($r in $results) {
+    $k = [string]$r.slug
+    if ($k -and -not $have.ContainsKey($k)) { $merged.Add($r); $have[$k] = $true }
+}
+foreach ($p in $prev) {
+    $k = [string]$p.slug
+    if ($k -and -not $have.ContainsKey($k)) { $merged.Add($p); $have[$k] = $true }
+}
 $expected = @($series | ForEach-Object { $_.slug })
-$missing = @($expected | Where-Object { -not $bySlug.ContainsKey($_) })
+$missing = @($expected | Where-Object { -not $have.ContainsKey([string]$_) })
 if ($missing.Count -gt 0) { Write-Host "[WARN] serie senza dati (mai estratte): $($missing -join ', ')" }
 
 if ($merged.Count -gt 0) {

@@ -11,24 +11,46 @@ if (-not (Test-Path $streamingPath)) {
 }
 $src = Get-Content -Raw -Encoding UTF8 $streamingPath | ConvertFrom-Json
 
-# Serie extra (loonex, archive.org, ecc.): file separati, unione senza duplicati di slug
-$slugs = @{}
-foreach ($t in $src) { $slugs[$t.slug] = $true }
+# Serie extra (loonex, archive.org, ecc.): file separati, unione senza duplicati di slug.
+# NB: niente hashtable per gli slug (in Windows PowerShell 5.1 ConvertFrom-Json
+# emette l'array come singolo oggetto non enumerato e il lookup hashtable salta
+# le collisioni: run 2026-09-11 produsse un duplicato 't-u-f-f-puppy').
+# Confronto stringa esplicito; a parita' di slug VINCE l'extra (fonte diretta,
+# piu' fresca: es. T.U.F.F. Puppy loonex 2026/57ep vs toonitalia 2024/54ep).
+$srcList = New-Object System.Collections.Generic.List[object]
+foreach ($t in $src) {
+    if ($t -is [array]) { foreach ($x in $t) { $srcList.Add($x) } }
+    else { $srcList.Add($t) }
+}
 foreach ($extraPath in @((Join-Path $dataDir "loonex_links.json"), (Join-Path $dataDir "archive_links.json"), (Join-Path $dataDir "animetop_links.json"))) {
 if (Test-Path $extraPath) {
     try {
-        $extra = @(Get-Content -Raw -Encoding UTF8 $extraPath | ConvertFrom-Json)
+        $extraRaw = @(Get-Content -Raw -Encoding UTF8 $extraPath | ConvertFrom-Json)
+        # Appiattisci: se un elemento e' a sua volta un array (non enumerato), srotolalo
+        $extra = New-Object System.Collections.Generic.List[object]
+        foreach ($er in $extraRaw) {
+            if ($er -is [array]) { foreach ($x in $er) { $extra.Add($x) } }
+            else { $extra.Add($er) }
+        }
+        $added = 0; $replaced = 0
         if ($extra.Count -gt 0) {
             foreach ($e in $extra) {
-                if (-not $slugs.ContainsKey($e.slug)) { $src = @($src) + $e; $slugs[$e.slug] = $true }
+                $eslug = [string]$e.slug
+                $idx = -1
+                for ($i = 0; $i -lt $srcList.Count; $i++) {
+                    if ([string]$srcList[$i].slug -eq $eslug) { $idx = $i; break }
+                }
+                if ($idx -ge 0) { $srcList[$idx] = $e; $replaced++ }
+                else { $srcList.Add($e); $added++ }
             }
-            Write-Host "Serie extra integrate da $(Split-Path $extraPath -Leaf): $($extra.Count)"
+            Write-Host "Serie extra integrate da $(Split-Path $extraPath -Leaf): $($extra.Count) (nuove: $added, sostituite: $replaced)"
         }
     } catch {
         Write-Host "[WARN] $(Split-Path $extraPath -Leaf) non valido, ignorato: $($_.Exception.Message)"
     }
 }
 }
+$src = $srcList
 
 # Guardia: non pubblicare catalogi vuoti o drasticamente ridotti
 $prevCount = 0
@@ -43,7 +65,7 @@ if (Test-Path $assetPath) {
         $prevCount = @($prev.s).Count
     } catch { $prevCount = 0 }
 }
-$newCount = @($src).Count
+$newCount = $srcList.Count
 if ($newCount -eq 0 -or ($prevCount -gt 100 -and $newCount -lt [int]($prevCount * 0.7))) {
     # Protezione attiva per scelta: con scrape parziale (es. blocco Cloudflare
     # 403 dopo pagina 1) non sovrascrivere mai il catalogo buono. Esco 0

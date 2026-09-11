@@ -1,968 +1,1166 @@
 [
-  {
-    "id": 9100001,
-    "titolo": "Jackie Chan Adventures",
-    "slug": "jackie-chan-adventures",
-    "url_pagina": "https://archive.org/details/jackie-chan-adventures-1080p-ai-upscale",
-    "immagine": "https://archive.org/services/img/jackie-chan-adventures-1080p-ai-upscale",
-    "categorie": [],
-    "categorie_nomi": [
-      "Bambini",
-      "Azione",
-      "ITA"
-    ],
-    "modificato": "2026-09-05T12:00:00",
-    "episodi": [
-      {
-        "episodio": "1x01 - The Dark Hand",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%201%20(2000-01)/Jackie%20Chan%20Adventures%20-%201x01%20-%20The%20Dark%20Hand.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "1x02 - The Power Within",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%201%20(2000-01)/Jackie%20Chan%20Adventures%20-%201x02%20-%20The%20Power%20Within.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "1x03 - The Mask of El Toro Fuerte",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%201%20(2000-01)/Jackie%20Chan%20Adventures%20-%201x03%20-%20The%20Mask%20of%20El%20Toro%20Fuerte.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "1x04 - Enter the Viper",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%201%20(2000-01)/Jackie%20Chan%20Adventures%20-%201x04%20-%20Enter%20the%20Viper.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "1x05 - Shell Game",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%201%20(2000-01)/Jackie%20Chan%20Adventures%20-%201x05%20-%20Shell%20Game.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "1x06 - Project A, for Astral",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%201%20(2000-01)/Jackie%20Chan%20Adventures%20-%201x06%20-%20Project%20A,%20for%20Astral.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "1x07 - Bullies",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%201%20(2000-01)/Jackie%20Chan%20Adventures%20-%201x07%20-%20Bullies.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "1x08 - Tough Break",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%201%20(2000-01)/Jackie%20Chan%20Adventures%20-%201x08%20-%20Tough%20Break.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "1x09 - The Rock",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%201%20(2000-01)/Jackie%20Chan%20Adventures%20-%201x09%20-%20The%20Rock.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "1x10 - The Jade Monkey",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%201%20(2000-01)/Jackie%20Chan%20Adventures%20-%201x10%20-%20The%20Jade%20Monkey.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "1x11 - The Dog and Piggy Show",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%201%20(2000-01)/Jackie%20Chan%20Adventures%20-%201x11%20-%20The%20Dog%20and%20Piggy%20Show.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "1x12 - The Tiger and the Pussycat",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%201%20(2000-01)/Jackie%20Chan%20Adventures%20-%201x12%20-%20The%20Tiger%20and%20the%20Pussycat.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "1x13 - Day of the Dragon",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%201%20(2000-01)/Jackie%20Chan%20Adventures%20-%201x13%20-%20Day%20of%20the%20Dragon.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x01 - The Stronger Evil",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x01%20-%20The%20Stronger%20Evil.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x02 - The J-Team",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x02%20-%20The%20J-Team.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x03 - Jade Times Jade",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x03%20-%20Jade%20Times%20Jade.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x04 - Rumble In The Big House",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x04%20-%20Rumble%20In%20The%20Big%20House.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x05 - And He Does His Own Stunts",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x05%20-%20And%20He%20Does%20His%20Own%20Stunts.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x06 - Queen Of The Shadowkhan",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x06%20-%20Queen%20Of%20The%20Shadowkhan.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x07 - Shanghai Moon",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x07%20-%20Shanghai%20Moon.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x08 - Armor Of The Gods",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x08%20-%20Armor%20Of%20The%20Gods.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x09 - Tale Of The Demon Tail",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x09%20-%20Tale%20Of%20The%20Demon%20Tail.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x10 - The New Atlantis",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x10%20-%20The%20New%20Atlantis.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x11 - The Eighth Door",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x11%20-%20The%20Eighth%20Door.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x12 - Demon World, Part 1 Of 2",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x12%20-%20Demon%20World,%20Part%201%20Of%202.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x13 - Demon World, Part 2 Of 2",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x13%20-%20Demon%20World,%20Part%202%20Of%202.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x14 - Mother Of All Battles",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x14%20-%20Mother%20Of%20All%20Battles.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x15 - Danger In The Deep Freeze",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x15%20-%20Danger%20In%20The%20Deep%20Freeze.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x16 - Into The Mouth Of Evil",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x16%20-%20Into%20The%20Mouth%20Of%20Evil.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x17 - Lost City Of The Muntabs",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x17%20-%20Lost%20City%20Of%20The%20Muntabs.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x18 - The Lotus Temple",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x18%20-%20The%20Lotus%20Temple.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x19 - The Curse Of El Chupacabra",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x19%20-%20The%20Curse%20Of%20El%20Chupacabra.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x20 - Showdown In The Old West",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x20%20-%20Showdown%20In%20The%20Old%20West.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x21 - Origami",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x21%20-%20Origami.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x22 - Agent Tag",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x22%20-%20Agent%20Tag.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x23 - The Return Of The Pussycat",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x23%20-%20The%20Return%20Of%20The%20Pussycat.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x24 - Scouts Honor",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x24%20-%20Scouts%20Honor.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x25 - The King And Jade",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x25%20-%20The%20King%20And%20Jade.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x26 - Enter The Cat",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x26%20-%20Enter%20The%20Cat.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x27 - Pleasure Cruise",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x27%20-%20Pleasure%20Cruise.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x28- The Chosen One",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x28-%20The%20Chosen%20One.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x29 - Glove Story",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x29%20-%20Glove%20Story.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x30 - Tough Luck",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x30%20-%20Tough%20Luck.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x31 - The Amazing T-Girl",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x31%20-%20The%20Amazing%20T-Girl.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x32 - The Chan Who Knew Too Much",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x32%20-%20The%20Chan%20Who%20Knew%20Too%20Much.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x33 - Shrink Rap",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x33%20-%20Shrink%20Rap.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x34 - I_ll Be A Monkey_s Puppet",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x34%20-%20I_ll%20Be%20A%20Monkey_s%20Puppet.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x35 - Chi Of The Vampire",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x35%20-%20Chi%20Of%20The%20Vampire.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x36 - The Good, The Bad, The Blind, The Deaf And The Mute",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x36%20-%20The%20Good,%20The%20Bad,%20The%20Blind,%20The%20Deaf%20And%20The%20Mute.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x37 - The Warrior Incarnate",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x37%20-%20The%20Warrior%20Incarnate.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x38 - Snake Hunt",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x38%20-%20Snake%20Hunt.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "2x39 - Through The Rabbit Hole",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x39%20-%20Through%20The%20Rabbit%20Hole.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "3x01 - Re-Enter the J Team",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x01%20-%20Re-Enter%20the%20J%20Team.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "3x02 - The Powers Unleashed",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x02%20-%20The%20Powers%20Unleashed.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "3x03 - Viva Las Jackies",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x03%20-%20Viva%20Las%20Jackies.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "3x04 - Aztec Rat Race",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x04%20-%20Aztec%20Rat%20Race.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "3x05 - Monkey a Go-Go",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x05%20-%20Monkey%20a%20Go-Go.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "3x06 - When Pigs Fly",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x06%20-%20When%20Pigs%20Fly.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "3x07 - Rabbit Run",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x07%20-%20Rabbit%20Run.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "3x08 - Sheep in, Sheep Out",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x08%20-%20Sheep%20in,%20Sheep%20Out.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "3x09 - The Invisible Mom",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x09%20-%20The%20Invisible%20Mom.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "3x10 - A Jolly J-Team Xmas",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x10%20-%20A%20Jolly%20J-Team%20Xmas.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "3x11 - Little Valmont, Big Jade",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x11%20-%20Little%20Valmont,%20Big%20Jade.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "3x12 - The Ox-Head Incident",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x12%20-%20The%20Ox-Head%20Incident.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "3x13 - Animal Crackers",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x13%20-%20Animal%20Crackers.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "3x14 - Tohru Who",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x14%20-%20Tohru%20Who.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "3x15 - Re-Enter the Dragon",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x15%20-%20Re-Enter%20the%20Dragon.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "3x16 - A Night at the Opera",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x16%20-%20A%20Night%20at%20the%20Opera.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "3x17 - Attack of the J-Clones",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x17%20-%20Attack%20of%20the%20J-Clones.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "4x01 - The Masks of the Shadowkhan",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%204%20(2003-04)/Jackie%20Chan%20Adventures%20-%204x01%20-%20The%20Masks%20of%20the%20Shadowkhan.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "4x02 - Samurai Ratso",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%204%20(2003-04)/Jackie%20Chan%20Adventures%20-%204x02%20-%20Samurai%20Ratso.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "4x03 - The Amazing T-Troop",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%204%20(2003-04)/Jackie%20Chan%20Adventures%20-%204x03%20-%20The%20Amazing%20T-Troop.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "4x04 - Black Magic",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%204%20(2003-04)/Jackie%20Chan%20Adventures%20-%204x04%20-%20Black%20Magic.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "4x05 - The Demon Behind",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%204%20(2003-04)/Jackie%20Chan%20Adventures%20-%204x05%20-%20The%20Demon%20Behind.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "4x06 - Fright Fight Night",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%204%20(2003-04)/Jackie%20Chan%20Adventures%20-%204x06%20-%20Fright%20Fight%20Night.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "4x07 - Half a Mask of Kung-Fu",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%204%20(2003-04)/Jackie%20Chan%20Adventures%20-%204x07%20-%20Half%20a%20Mask%20of%20Kung-Fu.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "4x08 - The Shadow Eaters",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%204%20(2003-04)/Jackie%20Chan%20Adventures%20-%204x08%20-%20The%20Shadow%20Eaters.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "4x09 - The Good Guys",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%204%20(2003-04)/Jackie%20Chan%20Adventures%20-%204x09%20-%20The%20Good%20Guys.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "4x10 - J2 Rise of the Dragons",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%204%20(2003-04)/Jackie%20Chan%20Adventures%20-%204x10%20-%20J2%20Rise%20of%20the%20Dragons.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "4x11 - The J-Tots",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%204%20(2003-04)/Jackie%20Chan%20Adventures%20-%204x11%20-%20The%20J-Tots.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "4x12 - Déjà Vu",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%204%20(2003-04)/Jackie%20Chan%20Adventures%20-%204x12%20-%20D%C3%A9j%C3%A0%20Vu.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "4x13 - Ninja Twilight",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%204%20(2003-04)/Jackie%20Chan%20Adventures%20-%204x13%20-%20Ninja%20Twilight.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "5x01 - Relics of Demons Past",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%205%20(2004-05)/Jackie%20Chan%20Adventures%20-%205x01%20-%20Relics%20of%20Demons%20Past.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "5x02 - It_s All in the Game",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%205%20(2004-05)/Jackie%20Chan%20Adventures%20-%205x02%20-%20It_s%20All%20in%20the%20Game.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "5x03 - Black and White and Chi All Over",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%205%20(2004-05)/Jackie%20Chan%20Adventures%20-%205x03%20-%20Black%20and%20White%20and%20Chi%20All%20Over.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "5x04 - Dragon Scouts",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%205%20(2004-05)/Jackie%20Chan%20Adventures%20-%205x04%20-%20Dragon%20Scouts.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "5x05 - The Demon Beneath My Wings",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%205%20(2004-05)/Jackie%20Chan%20Adventures%20-%205x05%20-%20The%20Demon%20Beneath%20My%20Wings.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "5x06 - Mirror, Mirror",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%205%20(2004-05)/Jackie%20Chan%20Adventures%20-%205x06%20-%20Mirror,%20Mirror.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "5x07 - Antler Action",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%205%20(2004-05)/Jackie%20Chan%20Adventures%20-%205x07%20-%20Antler%20Action.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "5x08 - Clash of the Titanics",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%205%20(2004-05)/Jackie%20Chan%20Adventures%20-%205x08%20-%20Clash%20of%20the%20Titanics.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "5x09 - Stealing Thunder",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%205%20(2004-05)/Jackie%20Chan%20Adventures%20-%205x09%20-%20Stealing%20Thunder.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "5x10 - Weight and See",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%205%20(2004-05)/Jackie%20Chan%20Adventures%20-%205x10%20-%20Weight%20and%20See.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "5x11 - J2 Revisited",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%205%20(2004-05)/Jackie%20Chan%20Adventures%20-%205x11%20-%20J2%20Revisited.mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "5x12 - The Powers That Be (1)",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%205%20(2004-05)/Jackie%20Chan%20Adventures%20-%205x12%20-%20The%20Powers%20That%20Be%20(1).mp4"
-          }
-        ]
-      },
-      {
-        "episodio": "5x13 - The Powers That Be (2)",
-        "player": [
-          {
-            "nome": "Archive.org",
-            "dominio": "archive.org",
-            "url": "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%205%20(2004-05)/Jackie%20Chan%20Adventures%20-%205x13%20-%20The%20Powers%20That%20Be%20(2).mp4"
-          }
-        ]
-      }
-    ]
-  }
+    {
+        "id":  9100007,
+        "titolo":  "I Lampaclima e l\u0027Isola Misteriosa (2006)",
+        "slug":  "i-lampaclima-e-l-isola-misteriosa-2006",
+        "url_pagina":  "https://archive.org/details/i-lampaclima-e-lisola-misteriosa-2006",
+        "immagine":  "https://archive.org/services/img/i-lampaclima-e-lisola-misteriosa-2006",
+        "categorie":  [
+
+                      ],
+        "categorie_nomi":  [
+                               "Bambini",
+                               "Avventura",
+                               "ITA"
+                           ],
+        "modificato":  "2026-09-11T12:00:00",
+        "episodi":  [
+                        {
+                            "episodio":  "I Lampaclima e l\u0027isola misteriosa (2006)",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/i-lampaclima-e-lisola-misteriosa-2006/I%20Lampaclima%20e%20l\u0027isola%20misteriosa%20(2006).mp4"
+                                           }
+                                       ]
+                        }
+                    ]
+    },
+    {
+        "id":  9100003,
+        "titolo":  "Gli Animotosi nella Terra di Nondove (2005)",
+        "slug":  "gli-animotosi-nella-terra-di-non-dove-2005",
+        "url_pagina":  "https://archive.org/details/gli-animotosi-nella-terra-di-non-dove-2005",
+        "immagine":  "https://archive.org/services/img/gli-animotosi-nella-terra-di-non-dove-2005",
+        "categorie":  [
+
+                      ],
+        "categorie_nomi":  [
+                               "Bambini",
+                               "Avventura",
+                               "ITA"
+                           ],
+        "modificato":  "2026-09-11T12:00:00",
+        "episodi":  [
+                        {
+                            "episodio":  "Gli Animotosi nella terra di Nondove",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/gli-animotosi-nella-terra-di-non-dove-2005/Gli%20Animotosi%20nella%20terra%20di%20Nondove.mp4"
+                                           }
+                                       ]
+                        }
+                    ]
+    },
+    {
+        "id":  9100005,
+        "titolo":  "Gli Smile and Go e il Braciere di Fuoco (2007)",
+        "slug":  "gli-smile-and-go-e-il-braciere-di-fuoco-2007",
+        "url_pagina":  "https://archive.org/details/gli-smile-and-go-e-il-braciere-di-fuoco-2007",
+        "immagine":  "https://archive.org/services/img/gli-smile-and-go-e-il-braciere-di-fuoco-2007",
+        "categorie":  [
+
+                      ],
+        "categorie_nomi":  [
+                               "Bambini",
+                               "Avventura",
+                               "ITA"
+                           ],
+        "modificato":  "2026-09-11T12:00:00",
+        "episodi":  [
+                        {
+                            "episodio":  "Smile and Go",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/gli-smile-and-go-e-il-braciere-di-fuoco-2007/Smile%20and%20Go.mp4"
+                                           }
+                                       ]
+                        }
+                    ]
+    },
+    {
+        "id":  9100002,
+        "titolo":  "I Magicanti e i Tre Elementi (2003)",
+        "slug":  "i-magicanti-e-i-tre-elementi-2003",
+        "url_pagina":  "https://archive.org/details/i-magicanti-e-i-tre-elementi-2003",
+        "immagine":  "https://archive.org/services/img/i-magicanti-e-i-tre-elementi-2003",
+        "categorie":  [
+
+                      ],
+        "categorie_nomi":  [
+                               "Bambini",
+                               "Fantasy",
+                               "ITA"
+                           ],
+        "modificato":  "2026-09-11T12:00:00",
+        "episodi":  [
+                        {
+                            "episodio":  "I Magicanti e i tre elementi",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/i-magicanti-e-i-tre-elementi-2003/I%20Magicanti%20e%20i%20tre%20elementi.mp4"
+                                           }
+                                       ]
+                        }
+                    ]
+    },
+    {
+        "id":  9100006,
+        "titolo":  "I Lunes e la Sfera di Lasifer (2002)",
+        "slug":  "i-lunes-e-la-sfera-di-lasifer-2002",
+        "url_pagina":  "https://archive.org/details/i-lunes-e-la-sfera-di-lasifer_2002",
+        "immagine":  "https://archive.org/services/img/i-lunes-e-la-sfera-di-lasifer_2002",
+        "categorie":  [
+
+                      ],
+        "categorie_nomi":  [
+                               "Bambini",
+                               "Fantascienza",
+                               "ITA"
+                           ],
+        "modificato":  "2026-09-11T12:00:00",
+        "episodi":  [
+                        {
+                            "episodio":  "I Lunes e la sfera di Lasifer",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/i-lunes-e-la-sfera-di-lasifer_2002/I%20Lunes%20e%20la%20sfera%20di%20Lasifer.mp4"
+                                           }
+                                       ]
+                        }
+                    ]
+    },
+    {
+        "id":  9100001,
+        "titolo":  "Jackie Chan Adventures",
+        "slug":  "jackie-chan-adventures",
+        "url_pagina":  "https://archive.org/details/jackie-chan-adventures-1080p-ai-upscale",
+        "immagine":  "https://archive.org/services/img/jackie-chan-adventures-1080p-ai-upscale",
+        "categorie":  [
+
+                      ],
+        "categorie_nomi":  [
+                               "Bambini",
+                               "Azione",
+                               "ITA"
+                           ],
+        "modificato":  "2026-09-05T12:00:00",
+        "episodi":  [
+                        {
+                            "episodio":  "1x01 - The Dark Hand",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%201%20(2000-01)/Jackie%20Chan%20Adventures%20-%201x01%20-%20The%20Dark%20Hand.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "1x02 - The Power Within",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%201%20(2000-01)/Jackie%20Chan%20Adventures%20-%201x02%20-%20The%20Power%20Within.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "1x03 - The Mask of El Toro Fuerte",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%201%20(2000-01)/Jackie%20Chan%20Adventures%20-%201x03%20-%20The%20Mask%20of%20El%20Toro%20Fuerte.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "1x04 - Enter the Viper",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%201%20(2000-01)/Jackie%20Chan%20Adventures%20-%201x04%20-%20Enter%20the%20Viper.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "1x05 - Shell Game",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%201%20(2000-01)/Jackie%20Chan%20Adventures%20-%201x05%20-%20Shell%20Game.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "1x06 - Project A, for Astral",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%201%20(2000-01)/Jackie%20Chan%20Adventures%20-%201x06%20-%20Project%20A,%20for%20Astral.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "1x07 - Bullies",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%201%20(2000-01)/Jackie%20Chan%20Adventures%20-%201x07%20-%20Bullies.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "1x08 - Tough Break",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%201%20(2000-01)/Jackie%20Chan%20Adventures%20-%201x08%20-%20Tough%20Break.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "1x09 - The Rock",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%201%20(2000-01)/Jackie%20Chan%20Adventures%20-%201x09%20-%20The%20Rock.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "1x10 - The Jade Monkey",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%201%20(2000-01)/Jackie%20Chan%20Adventures%20-%201x10%20-%20The%20Jade%20Monkey.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "1x11 - The Dog and Piggy Show",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%201%20(2000-01)/Jackie%20Chan%20Adventures%20-%201x11%20-%20The%20Dog%20and%20Piggy%20Show.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "1x12 - The Tiger and the Pussycat",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%201%20(2000-01)/Jackie%20Chan%20Adventures%20-%201x12%20-%20The%20Tiger%20and%20the%20Pussycat.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "1x13 - Day of the Dragon",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%201%20(2000-01)/Jackie%20Chan%20Adventures%20-%201x13%20-%20Day%20of%20the%20Dragon.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x01 - The Stronger Evil",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x01%20-%20The%20Stronger%20Evil.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x02 - The J-Team",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x02%20-%20The%20J-Team.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x03 - Jade Times Jade",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x03%20-%20Jade%20Times%20Jade.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x04 - Rumble In The Big House",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x04%20-%20Rumble%20In%20The%20Big%20House.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x05 - And He Does His Own Stunts",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x05%20-%20And%20He%20Does%20His%20Own%20Stunts.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x06 - Queen Of The Shadowkhan",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x06%20-%20Queen%20Of%20The%20Shadowkhan.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x07 - Shanghai Moon",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x07%20-%20Shanghai%20Moon.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x08 - Armor Of The Gods",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x08%20-%20Armor%20Of%20The%20Gods.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x09 - Tale Of The Demon Tail",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x09%20-%20Tale%20Of%20The%20Demon%20Tail.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x10 - The New Atlantis",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x10%20-%20The%20New%20Atlantis.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x11 - The Eighth Door",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x11%20-%20The%20Eighth%20Door.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x12 - Demon World, Part 1 Of 2",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x12%20-%20Demon%20World,%20Part%201%20Of%202.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x13 - Demon World, Part 2 Of 2",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x13%20-%20Demon%20World,%20Part%202%20Of%202.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x14 - Mother Of All Battles",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x14%20-%20Mother%20Of%20All%20Battles.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x15 - Danger In The Deep Freeze",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x15%20-%20Danger%20In%20The%20Deep%20Freeze.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x16 - Into The Mouth Of Evil",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x16%20-%20Into%20The%20Mouth%20Of%20Evil.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x17 - Lost City Of The Muntabs",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x17%20-%20Lost%20City%20Of%20The%20Muntabs.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x18 - The Lotus Temple",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x18%20-%20The%20Lotus%20Temple.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x19 - The Curse Of El Chupacabra",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x19%20-%20The%20Curse%20Of%20El%20Chupacabra.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x20 - Showdown In The Old West",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x20%20-%20Showdown%20In%20The%20Old%20West.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x21 - Origami",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x21%20-%20Origami.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x22 - Agent Tag",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x22%20-%20Agent%20Tag.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x23 - The Return Of The Pussycat",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x23%20-%20The%20Return%20Of%20The%20Pussycat.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x24 - Scouts Honor",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x24%20-%20Scouts%20Honor.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x25 - The King And Jade",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x25%20-%20The%20King%20And%20Jade.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x26 - Enter The Cat",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x26%20-%20Enter%20The%20Cat.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x27 - Pleasure Cruise",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x27%20-%20Pleasure%20Cruise.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x28- The Chosen One",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x28-%20The%20Chosen%20One.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x29 - Glove Story",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x29%20-%20Glove%20Story.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x30 - Tough Luck",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x30%20-%20Tough%20Luck.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x31 - The Amazing T-Girl",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x31%20-%20The%20Amazing%20T-Girl.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x32 - The Chan Who Knew Too Much",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x32%20-%20The%20Chan%20Who%20Knew%20Too%20Much.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x33 - Shrink Rap",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x33%20-%20Shrink%20Rap.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x34 - I_ll Be A Monkey_s Puppet",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x34%20-%20I_ll%20Be%20A%20Monkey_s%20Puppet.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x35 - Chi Of The Vampire",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x35%20-%20Chi%20Of%20The%20Vampire.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x36 - The Good, The Bad, The Blind, The Deaf And The Mute",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x36%20-%20The%20Good,%20The%20Bad,%20The%20Blind,%20The%20Deaf%20And%20The%20Mute.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x37 - The Warrior Incarnate",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x37%20-%20The%20Warrior%20Incarnate.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x38 - Snake Hunt",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x38%20-%20Snake%20Hunt.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "2x39 - Through The Rabbit Hole",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%202%20(2001-02)/Jackie%20Chan%20Adventures%20-%20%202x39%20-%20Through%20The%20Rabbit%20Hole.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "3x01 - Re-Enter the J Team",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x01%20-%20Re-Enter%20the%20J%20Team.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "3x02 - The Powers Unleashed",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x02%20-%20The%20Powers%20Unleashed.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "3x03 - Viva Las Jackies",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x03%20-%20Viva%20Las%20Jackies.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "3x04 - Aztec Rat Race",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x04%20-%20Aztec%20Rat%20Race.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "3x05 - Monkey a Go-Go",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x05%20-%20Monkey%20a%20Go-Go.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "3x06 - When Pigs Fly",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x06%20-%20When%20Pigs%20Fly.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "3x07 - Rabbit Run",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x07%20-%20Rabbit%20Run.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "3x08 - Sheep in, Sheep Out",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x08%20-%20Sheep%20in,%20Sheep%20Out.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "3x09 - The Invisible Mom",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x09%20-%20The%20Invisible%20Mom.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "3x10 - A Jolly J-Team Xmas",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x10%20-%20A%20Jolly%20J-Team%20Xmas.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "3x11 - Little Valmont, Big Jade",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x11%20-%20Little%20Valmont,%20Big%20Jade.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "3x12 - The Ox-Head Incident",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x12%20-%20The%20Ox-Head%20Incident.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "3x13 - Animal Crackers",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x13%20-%20Animal%20Crackers.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "3x14 - Tohru Who",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x14%20-%20Tohru%20Who.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "3x15 - Re-Enter the Dragon",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x15%20-%20Re-Enter%20the%20Dragon.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "3x16 - A Night at the Opera",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x16%20-%20A%20Night%20at%20the%20Opera.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "3x17 - Attack of the J-Clones",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%203%20(2002-03)/Jackie%20Chan%20Adventures%20-%203x17%20-%20Attack%20of%20the%20J-Clones.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "4x01 - The Masks of the Shadowkhan",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%204%20(2003-04)/Jackie%20Chan%20Adventures%20-%204x01%20-%20The%20Masks%20of%20the%20Shadowkhan.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "4x02 - Samurai Ratso",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%204%20(2003-04)/Jackie%20Chan%20Adventures%20-%204x02%20-%20Samurai%20Ratso.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "4x03 - The Amazing T-Troop",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%204%20(2003-04)/Jackie%20Chan%20Adventures%20-%204x03%20-%20The%20Amazing%20T-Troop.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "4x04 - Black Magic",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%204%20(2003-04)/Jackie%20Chan%20Adventures%20-%204x04%20-%20Black%20Magic.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "4x05 - The Demon Behind",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%204%20(2003-04)/Jackie%20Chan%20Adventures%20-%204x05%20-%20The%20Demon%20Behind.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "4x06 - Fright Fight Night",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%204%20(2003-04)/Jackie%20Chan%20Adventures%20-%204x06%20-%20Fright%20Fight%20Night.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "4x07 - Half a Mask of Kung-Fu",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%204%20(2003-04)/Jackie%20Chan%20Adventures%20-%204x07%20-%20Half%20a%20Mask%20of%20Kung-Fu.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "4x08 - The Shadow Eaters",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%204%20(2003-04)/Jackie%20Chan%20Adventures%20-%204x08%20-%20The%20Shadow%20Eaters.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "4x09 - The Good Guys",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%204%20(2003-04)/Jackie%20Chan%20Adventures%20-%204x09%20-%20The%20Good%20Guys.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "4x10 - J2 Rise of the Dragons",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%204%20(2003-04)/Jackie%20Chan%20Adventures%20-%204x10%20-%20J2%20Rise%20of%20the%20Dragons.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "4x11 - The J-Tots",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%204%20(2003-04)/Jackie%20Chan%20Adventures%20-%204x11%20-%20The%20J-Tots.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "4x12 - Déjà Vu",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%204%20(2003-04)/Jackie%20Chan%20Adventures%20-%204x12%20-%20D%C3%A9j%C3%A0%20Vu.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "4x13 - Ninja Twilight",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%204%20(2003-04)/Jackie%20Chan%20Adventures%20-%204x13%20-%20Ninja%20Twilight.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "5x01 - Relics of Demons Past",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%205%20(2004-05)/Jackie%20Chan%20Adventures%20-%205x01%20-%20Relics%20of%20Demons%20Past.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "5x02 - It_s All in the Game",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%205%20(2004-05)/Jackie%20Chan%20Adventures%20-%205x02%20-%20It_s%20All%20in%20the%20Game.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "5x03 - Black and White and Chi All Over",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%205%20(2004-05)/Jackie%20Chan%20Adventures%20-%205x03%20-%20Black%20and%20White%20and%20Chi%20All%20Over.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "5x04 - Dragon Scouts",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%205%20(2004-05)/Jackie%20Chan%20Adventures%20-%205x04%20-%20Dragon%20Scouts.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "5x05 - The Demon Beneath My Wings",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%205%20(2004-05)/Jackie%20Chan%20Adventures%20-%205x05%20-%20The%20Demon%20Beneath%20My%20Wings.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "5x06 - Mirror, Mirror",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%205%20(2004-05)/Jackie%20Chan%20Adventures%20-%205x06%20-%20Mirror,%20Mirror.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "5x07 - Antler Action",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%205%20(2004-05)/Jackie%20Chan%20Adventures%20-%205x07%20-%20Antler%20Action.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "5x08 - Clash of the Titanics",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%205%20(2004-05)/Jackie%20Chan%20Adventures%20-%205x08%20-%20Clash%20of%20the%20Titanics.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "5x09 - Stealing Thunder",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%205%20(2004-05)/Jackie%20Chan%20Adventures%20-%205x09%20-%20Stealing%20Thunder.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "5x10 - Weight and See",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%205%20(2004-05)/Jackie%20Chan%20Adventures%20-%205x10%20-%20Weight%20and%20See.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "5x11 - J2 Revisited",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%205%20(2004-05)/Jackie%20Chan%20Adventures%20-%205x11%20-%20J2%20Revisited.mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "5x12 - The Powers That Be (1)",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%205%20(2004-05)/Jackie%20Chan%20Adventures%20-%205x12%20-%20The%20Powers%20That%20Be%20(1).mp4"
+                                           }
+                                       ]
+                        },
+                        {
+                            "episodio":  "5x13 - The Powers That Be (2)",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/jackie-chan-adventures-1080p-ai-upscale/Season%205%20(2004-05)/Jackie%20Chan%20Adventures%20-%205x13%20-%20The%20Powers%20That%20Be%20(2).mp4"
+                                           }
+                                       ]
+                        }
+                    ]
+    },
+    {
+        "id":  9100004,
+        "titolo":  "Gli Skatenini e le Dune Dorate (2007)",
+        "slug":  "gli-skatenini-e-le-dune-dorate-2007",
+        "url_pagina":  "https://archive.org/details/gli-skatenini-e-le-dune-dorate-07",
+        "immagine":  "https://archive.org/services/img/gli-skatenini-e-le-dune-dorate-07",
+        "categorie":  [
+
+                      ],
+        "categorie_nomi":  [
+                               "Bambini",
+                               "Avventura",
+                               "ITA"
+                           ],
+        "modificato":  "2026-09-11T12:00:00",
+        "episodi":  [
+                        {
+                            "episodio":  "Gli Skatenini e le dune dorate",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/gli-skatenini-e-le-dune-dorate-07/Gli%20Skatenini%20e%20le%20dune%20dorate.mp4"
+                                           }
+                                       ]
+                        }
+                    ]
+    },
+    {
+        "id":  9100008,
+        "titolo":  "I Magotti e la Pentola Magica (2001)",
+        "slug":  "i-magotti-e-la-pentola-magica-2001",
+        "url_pagina":  "https://archive.org/details/i-magotti-e-la-pentola-magica-2001",
+        "immagine":  "https://archive.org/services/img/i-magotti-e-la-pentola-magica-2001",
+        "categorie":  [
+
+                      ],
+        "categorie_nomi":  [
+                               "Bambini",
+                               "Fantasy",
+                               "ITA"
+                           ],
+        "modificato":  "2026-09-11T12:00:00",
+        "episodi":  [
+                        {
+                            "episodio":  "I Magotti e la pentola magica",
+                            "player":  [
+                                           {
+                                               "nome":  "Archive.org",
+                                               "dominio":  "archive.org",
+                                               "url":  "https://archive.org/download/i-magotti-e-la-pentola-magica-2001/I%20Magotti%20e%20la%20pentola%20magica.mp4"
+                                           }
+                                       ]
+                        }
+                    ]
+    }
 ]
