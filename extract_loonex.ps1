@@ -218,6 +218,15 @@ $series = @(
         categorie = @('Bambini', 'Commedia', 'ITA')
         modified  = '2026-09-11T12:00:00'
         id        = 9000024
+    },
+    @{
+        slug      = 'la-pantera-rosa'
+        titolo    = 'La Pantera Rosa & Co.'
+        pagina    = 'https://loonex.eu/cartoni/index.php?cartone=la-pantera-rosa-co--1769536948'
+        copertina = 'https://loonex.eu/cartoni/covers/16-la-pantera-rosa-co-1769536948-cover.jpg'
+        categorie = @('Bambini', 'Commedia', 'ITA')
+        modified  = '2026-09-11T12:00:00'
+        id        = 9000025
     }
 )
 
@@ -270,9 +279,17 @@ function Resolve-GuardaUrl([string]$guardaUrl) {
     $html = Get-Http $guardaUrl
     if (-not $html) { return $null }
     $key = [regex]::Match($html, 'decryptionKey\s*=\s*"([^"]+)"').Groups[1].Value
-    # 1) schema nuovo (packed)
-    $packed = [regex]::Match($html, 'guardaUnpackSrc\("([^"]+)",\s*decryptionKey\)').Groups[1].Value
+    # 1) schema nuovo (packed). Prende il PRIMO blob valido: le pagine
+    # contengono anche l'esempio 'guardaUnpackSrc("...", ...)' da scartare.
+    $packed = ""
+    foreach ($mm in [regex]::Matches($html, 'guardaUnpackSrc\("([^"]+)",\s*decryptionKey\)')) {
+        $cand = $mm.Groups[1].Value
+        if ($cand.Length -gt 16 -and $cand -match '^[A-Za-z0-9\-_]+$') { $packed = $cand; break }
+    }
     $url = ConvertFrom-LoonexPacked $packed $key
+    # boot.mp4 e' un segnaposto generico uguale per tutti gli episodi
+    # (non il contenuto): mai immagazzinarlo, meglio la pagina guarda.
+    if ($url -match 'boot\.mp4') { $url = $null }
     # Episodi hostati su OK.ru (isOkru): URL con expires+srcIp legati a
     # sessione/IP, muoiono in ore. Non immagazzinarli: meglio la pagina
     # guarda (il player del sito li risolve freschi a ogni visita).
@@ -281,6 +298,7 @@ function Resolve-GuardaUrl([string]$guardaUrl) {
     # 2) fallback schema vecchio (XOR): alcune pagine potrebbero usarlo ancora
     $enc = [regex]::Match($html, 'encodedStr\s*=\s*"([0-9a-fA-F]+)"').Groups[1].Value
     $url = ConvertFrom-LoonexUrl $enc $key
+    if ($url -match 'boot\.mp4') { return $null }
     if ($url -and $url.StartsWith('http') -and $url -match '\.(m3u8|mp4)(\?|$)') { return $url }
     return $null
 }
@@ -356,7 +374,7 @@ foreach ($s in $series) {
                 episodio = $label
                 player   = @([pscustomobject]@{ nome = 'Loonex'; dominio = 'loonex.eu'; url = $playerUrl })
             })
-            Start-Sleep -Milliseconds 300
+            Start-Sleep -Milliseconds 600
         }
 
         if ($episodes.Count -gt 0) {
@@ -378,6 +396,23 @@ foreach ($s in $series) {
     } catch {
         Write-Host "[WARN] $($s.titolo): $($_.Exception.Message)"
     }
+}
+
+# Guardia qualita': se quasi tutto risolve in fallback guarda (es. WAF che
+# serve pagine senza player dopo troppe richieste), NON sovrascrivere il
+# file buono con link degradati: meglio riprovare al prossimo run.
+# (I fallback legittimi — OK.ru, placeholder — restano ~15%.)
+$totEp = 0
+$fbEp = 0
+foreach ($r in $results) {
+    foreach ($ep in $r.episodi) {
+        $totEp++
+        if ($ep.player[0].url -match 'loonex\.eu/guarda') { $fbEp++ }
+    }
+}
+if ($totEp -gt 0 -and ([double]$fbEp / $totEp) -gt 0.6) {
+    Write-Host "TROPPI FALLBACK (guarda $fbEp/$totEp episodi): probabile blocco temporaneo, mantengo il file precedente"
+    exit 0
 }
 
 # Unione col file precedente: le serie fallite in questo run (es. WAF/403
