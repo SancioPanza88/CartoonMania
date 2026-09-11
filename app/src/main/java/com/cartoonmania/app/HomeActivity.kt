@@ -23,6 +23,7 @@ class HomeActivity : Activity() {
         super.onCreate(savedInstanceState)
         CrashGuard.install(applicationContext)
         setContentView(R.layout.activity_home)
+        CrtMode.applyTo(this)
 
         val profBtn = findViewById<ImageView>(R.id.home_profile)
         Ui.tvFocus(profBtn)
@@ -51,6 +52,11 @@ class HomeActivity : Activity() {
         }
         Ui.tvFocus(findViewById(R.id.btn_tab_home))
         Ui.pressPop(findViewById(R.id.btn_tab_home))
+        findViewById<View>(R.id.btn_tab_tv).setOnClickListener {
+            Ui.openScreen(this, Intent(this, TvActivity::class.java))
+        }
+        Ui.tvFocus(findViewById(R.id.btn_tab_tv))
+        Ui.pressPop(findViewById(R.id.btn_tab_tv))
 
         Thread {
             val loadError = try {
@@ -413,7 +419,7 @@ class HomeActivity : Activity() {
     private fun sectionHeader(text: String): TextView =
         TextView(this).apply {
             this.text = text
-            textSize = 17f
+            textSize = CrtMode.bigText(this@HomeActivity, 17f)
             setTextColor(0xFFFFFFFF.toInt())
             setPadding(dp(20), dp(24), dp(20), dp(12))
             setTypeface(typeface, android.graphics.Typeface.BOLD)
@@ -479,7 +485,7 @@ class HomeActivity : Activity() {
 
             val label = TextView(this).apply {
                 text = t.title
-                textSize = 12f
+                textSize = CrtMode.bigText(this@HomeActivity, 12f)
                 setTextColor(0xFFA0A4B8.toInt())
                 maxLines = 2
                 ellipsize = android.text.TextUtils.TruncateAt.END

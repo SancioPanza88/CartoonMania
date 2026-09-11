@@ -26,6 +26,7 @@ class SettingsActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+        CrtMode.applyTo(this)
 
         status = findViewById(R.id.s_status)
         infoCatalog = findViewById(R.id.s_info_catalog)
@@ -43,6 +44,11 @@ class SettingsActivity : Activity() {
         }
         Ui.tvFocus(findViewById(R.id.btn_tab_home))
         Ui.tvFocus(findViewById(R.id.btn_tab_search))
+        findViewById<View>(R.id.btn_tab_tv).setOnClickListener {
+            startActivity(android.content.Intent(this, TvActivity::class.java))
+        }
+        Ui.tvFocus(findViewById(R.id.btn_tab_tv))
+        Ui.pressPop(findViewById(R.id.btn_tab_tv))
         // Niente zoom sui pulsanti larghi: con lo ScrollView lo zoom li spinge
         // fuori schermo; l'evidenziazione la fa gia' lo sfondo sulla TV.
         // Sulla TV il ripple non evidenzia il focus: sfondo bordato
@@ -52,7 +58,26 @@ class SettingsActivity : Activity() {
             findViewById<View>(R.id.btn_sync).setBackgroundResource(R.drawable.bg_episode_focus)
             findViewById<View>(R.id.btn_stats).setBackgroundResource(R.drawable.bg_episode_focus)
             findViewById<View>(R.id.btn_clear_lists).setBackgroundResource(R.drawable.bg_episode_focus)
+            findViewById<View>(R.id.btn_crt).setBackgroundResource(R.drawable.bg_episode_focus)
+            findViewById<View>(R.id.btn_crt_minus).setBackgroundResource(R.drawable.bg_episode_focus)
+            findViewById<View>(R.id.btn_crt_plus).setBackgroundResource(R.drawable.bg_episode_focus)
         }
+        Ui.tvFocus(findViewById(R.id.btn_crt))
+        Ui.pressPop(findViewById(R.id.btn_crt))
+        Ui.tvFocus(findViewById(R.id.btn_crt_minus))
+        Ui.tvFocus(findViewById(R.id.btn_crt_plus))
+        findViewById<View>(R.id.btn_crt).setOnClickListener {
+            CrtMode.setEnabled(this, !CrtMode.isEnabled(this))
+        }
+        findViewById<View>(R.id.btn_crt_minus).setOnClickListener {
+            CrtMode.addOverscan(this, -1)
+            refreshCrt()
+        }
+        findViewById<View>(R.id.btn_crt_plus).setOnClickListener {
+            CrtMode.addOverscan(this, 1)
+            refreshCrt()
+        }
+        refreshCrt()
 
         val appVer = try {
             packageManager.getPackageInfo(packageName, 0).versionName ?: "?"
@@ -85,6 +110,25 @@ class SettingsActivity : Activity() {
     private fun refreshInfo() {
         infoCatalog.text =
             "${CatalogRepo.titles.size} titoli caricati · catalogo v${CatalogRepo.currentVersion(this)}"
+        refreshCrt()
+    }
+
+    /** Voce tubo catodico: stato ON/OFF + valore overscan correnti. */
+    private fun refreshCrt() {
+        try {
+            val on = CrtMode.isEnabled(this)
+            val state = findViewById<TextView>(R.id.crt_state)
+            val over = findViewById<TextView>(R.id.crt_overscan_val)
+            if (on) {
+                state.text = getString(R.string.crt_on) + " · " + CrtMode.overscanDp(this) + "dp"
+                state.setTextColor(0xFFFFC94D.toInt())
+            } else {
+                state.text = getString(R.string.crt_off)
+                state.setTextColor(0xFFA0A4B8.toInt())
+            }
+            over.text = CrtMode.overscanDp(this).toString() + "dp"
+        } catch (_: Exception) {
+        }
     }
 
     private fun manualUpdate() {
