@@ -275,9 +275,62 @@ function ConvertFrom-LoonexPacked([string]$packed, [string]$key) {
     try { return [System.Uri]::UnescapeDataString($sb.ToString()) } catch { return $sb.ToString() }
 }
 
+# Schema reale corrente (2026-09): _lxStreamUnpack RC4 con seed e chiave
+# FNV-1a legata all'hostname. Replicazione esatta del JS del sito
+# (verificata: stesso URL del reference su Pantera Rosa).
+function ConvertFrom-LxStream([string]$packed, [string]$seed) {
+    if (-not $packed -or -not $seed) { return $null }
+    $MASK32 = [uint64]4294967295
+    $FNV = [uint64]16777619
+    $GOLD = [uint64]2654435769
+    $base = $seed + '!' + 'loonex.eu' + '!L00n3x_P14y3r_K3y_'
+    [uint64]$hash = [uint64]2166136261
+    foreach ($ch in $base.ToCharArray()) {
+        $hash = (($hash -bxor [uint64][int]$ch) -band $MASK32)
+        $hash = (($hash * $FNV) -band $MASK32)
+    }
+    $k = New-Object System.Text.StringBuilder
+    for ($i = 0; $i -lt 32; $i++) {
+        [uint64]$tt = (([uint64]$i * $GOLD) -band $MASK32)
+        $hash = ((($hash -bxor $tt) * $FNV) -band $MASK32)
+        [uint64]$shift = ($i % 4) * 8
+        $byteVal = ($hash -shr $shift) -band [uint64]255
+        [void]$k.Append(([int]$byteVal).ToString('x2'))
+    }
+    $key = $k.ToString()
+    $b64 = $packed.Replace('-', '+').Replace('_', '/')
+    while ($b64.Length % 4) { $b64 += '=' }
+    try { $bytes = [Convert]::FromBase64String($b64) } catch { return $null }
+    $s = 0..255
+    $j = 0
+    for ($i = 0; $i -lt 256; $i++) {
+        $j = ($j + $s[$i] + [int]$key[$i % $key.Length]) % 256
+        $tmp = $s[$i]; $s[$i] = $s[$j]; $s[$j] = $tmp
+    }
+    $sb = New-Object System.Text.StringBuilder
+    $ii = 0; $jj = 0
+    foreach ($b in $bytes) {
+        $ii = ($ii + 1) % 256
+        $jj = ($jj + $s[$ii]) % 256
+        $tmp = $s[$ii]; $s[$ii] = $s[$jj]; $s[$jj] = $tmp
+        [void]$sb.Append([char]($b -bxor $s[($s[$ii] + $s[$jj]) % 256]))
+    }
+    $dec = $sb.ToString()
+    if (-not $dec.StartsWith('LX1:')) { return $null }
+    try { return [System.Uri]::UnescapeDataString($dec.Substring(4)) } catch { return $dec.Substring(4) }
+}
+
 function Resolve-GuardaUrl([string]$guardaUrl) {
     $html = Get-Http $guardaUrl
     if (-not $html) { return $null }
+    # 0) schema reale corrente (2026-09): _lxStreamUnpack RC4 con seed,
+    # chiave legata all'hostname. Ancorato all'assegnazione di
+    # originalVideoSrc (altre chiamate _lxStreamUnpack servono OK.ru).
+    $lx = [regex]::Match($html, 'originalVideoSrc\s*=\s*guardaResolveInitialVideoSrc\(_lxStreamUnpack\("([^"]+)",\s*"([^"]+)"\)')
+    $url = ConvertFrom-LxStream $lx.Groups[1].Value $lx.Groups[2].Value
+    if ($url -match 'boot\.mp4') { $url = $null }
+    if ($url -match 'okcdn\.ru|ok\.ru') { return $null }
+    if ($url -and $url.StartsWith('http') -and $url -match '\.(m3u8|mp4)(\?|$)') { return $url }
     $key = [regex]::Match($html, 'decryptionKey\s*=\s*"([^"]+)"').Groups[1].Value
     # 1) schema nuovo (packed). Prende il PRIMO blob valido: le pagine
     # contengono anche l'esempio 'guardaUnpackSrc("...", ...)' da scartare.

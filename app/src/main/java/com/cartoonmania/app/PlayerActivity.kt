@@ -107,6 +107,26 @@ class PlayerActivity : Activity() {
         return false
     }
 
+    /** Solo reti popup/popunder aggressive: bloccarle come sottorisorse e'
+     *  sicuro. Bloccare anche gli ad-server normali (doubleclick, analytics,
+     *  ...) fa scattare i muri anti-adblock degli embed ("software non
+     *  autorizzato" al posto del video). Le navigazioni verso ad-host restano
+     *  comunque bloccate in shouldOverrideUrlLoading. */
+    private fun isPopupHost(url: String): Boolean {
+        val host = url.substringAfter("://").substringBefore('/').lowercase()
+        if (host.isEmpty()) return false
+        for (bad in popupHosts) if (bad in host) return true
+        return false
+    }
+
+    private val popupHosts = arrayOf(
+        "popads", "popcash", "popunder", "popmycdn",
+        "onclickalgo", "onclckds", "onclickperformance",
+        "propellerads", "propellerclick", "monetag", "zeropark",
+        "exoclick", "exosrv", "hilltopads", "clickadu",
+        "adcash", "galaksion", "juicyads"
+    )
+
     /** Host con verifica umana (captcha "seleziona le immagini" di uprot):
      *  niente auto-click (preme a caso e sporca tutto), WebView visibile
      *  subito cosi' l'utente risolve e preme play a mano. */
@@ -588,6 +608,12 @@ class PlayerActivity : Activity() {
             }
         }
         try { CookieManager.getInstance().setAcceptCookie(true) } catch (_: Exception) { }
+        // Embed tipo OK.ru senza cookie di terze parti: sessione rotta e
+        // muri anti-adblock. API 21+, la minSdk e' 21.
+        try {
+            CookieManager.getInstance().setAcceptThirdPartyCookies(w, true)
+        } catch (_: Exception) {
+        }
         webContainer.addView(w, FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT
@@ -618,7 +644,9 @@ class PlayerActivity : Activity() {
                 request: WebResourceRequest
             ): WebResourceResponse? {
                 val u = request.url.toString()
-                if (isAd(u)) return blockedResponse()
+                // Solo popup: gli ad-server normali devono caricarsi o gli
+                // embed mostrano il muro anti-adblock ("software non autorizzato")
+                if (isPopupHost(u)) return blockedResponse()
                 // Cattura anche a WebView visibile (host manuali): appena parte
                 // il flusso si passa al nativo; il flag captured evita i doppioni
                 if (request.method == "GET" && looksLikeVideo(u)) {
