@@ -24,6 +24,7 @@ class SearchActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+        CrtMode.applyTo(this)
 
         val search = findViewById<EditText>(R.id.search)
         val list = findViewById<ListView>(R.id.list)
@@ -36,6 +37,11 @@ class SearchActivity : Activity() {
         }
         Ui.tvFocus(findViewById(R.id.btn_tab_settings))
         Ui.pressPop(findViewById(R.id.btn_tab_settings))
+        findViewById<View>(R.id.btn_tab_tv).setOnClickListener {
+            Ui.openScreen(this, Intent(this, TvActivity::class.java))
+        }
+        Ui.tvFocus(findViewById(R.id.btn_tab_tv))
+        Ui.pressPop(findViewById(R.id.btn_tab_tv))
         adapter = TitleAdapter()
         list.adapter = adapter
         list.setOnItemClickListener { _, _, pos, _ ->

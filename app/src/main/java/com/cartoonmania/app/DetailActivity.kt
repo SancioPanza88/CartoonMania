@@ -23,6 +23,7 @@ class DetailActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
+        CrtMode.applyTo(this)
 
         val slug = intent.getStringExtra("slug").orEmpty()
         val t = CatalogRepo.titles.firstOrNull { it.slug == slug } ?: run {
@@ -58,6 +59,7 @@ class DetailActivity : Activity() {
         }
 
         header.findViewById<TextView>(R.id.d_title).text = t.title
+        header.findViewById<TextView>(R.id.d_title).textSize = CrtMode.bigText(this, 19f)
         header.findViewById<TextView>(R.id.d_count).text =
             if (t.episodes.isEmpty()) t.cats.take(2).joinToString(" · ")
             else resources.getQuantityString(R.plurals.episodes_count, t.episodes.size, t.episodes.size)

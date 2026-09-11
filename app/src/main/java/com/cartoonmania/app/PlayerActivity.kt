@@ -62,6 +62,9 @@ class PlayerActivity : Activity() {
     private var epIndex = 0
     private var playerIndex = 0
     private var resumeMs = 0L
+    // Canale TV in diretta (modalita' legacy senza contesto serie): a fine
+    // episodio ci si risintonizza sul palinsesto corrente dello stesso canale
+    private var tvChannel: String? = null
     // Statistiche: pareggio del wall-clock mentre il nativo sta suonando
     private var watchAnchorMs = 0L
     private var watchSlug: String? = null
@@ -149,6 +152,23 @@ class PlayerActivity : Activity() {
         cPrev.setOnClickListener { goPrev() }
         cNext.setOnClickListener { goNext() }
         cEpisodes.setOnClickListener { showEpisodePicker() }
+        // Aspetto video FIT/FILL/ZOOM (utile su tubo 4:3, comodo ovunque)
+        try {
+            findViewById<View>(R.id.c_aspect)?.setOnClickListener {
+                try {
+                    val next = (CrtMode.aspect(this) + 1) % 3
+                    CrtMode.setAspect(this, next)
+                    applyAspect()
+                    Toast.makeText(
+                        this,
+                        "${getString(R.string.aspect_desc)}: ${CrtMode.aspectLabel(next)}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } catch (_: Exception) {
+                }
+            }
+        } catch (_: Exception) {
+        }
 
         hideSystemUi()
 
@@ -169,12 +189,19 @@ class PlayerActivity : Activity() {
                 intent.getIntExtra("pi", 0)
             )
         } else {
-            // Avvio legacy senza contesto serie: nessuna navigazione episodi
+            // Avvio legacy senza contesto serie: nessuna navigazione episodi.
+            // Usato anche dalla TV in diretta (extra "tv" + "pos" per il join).
             navBar.visibility = View.GONE
             embedUrl = startUrl
+            resumeMs = intent.getLongExtra("pos", 0)
+            tvChannel = intent.getStringExtra("tv")
             title = intent.getStringExtra("label") ?: ""
+            navTitle.text = title
+            cTitle.text = title
             captureStream(embedUrl, visible = false)
         }
+        applyAspect()
+        CrtMode.applyTo(this)
     }
 
     @Suppress("DEPRECATION")
@@ -283,9 +310,28 @@ class PlayerActivity : Activity() {
             .show()
     }
 
+    /** Aspetto salvato (FIT/FILL/ZOOM) applicato al PlayerView + etichetta. */
+    private fun applyAspect() {
+        try {
+            val mode = CrtMode.aspect(this)
+            playerView.resizeMode = when (mode) {
+                CrtMode.ASPECT_FILL -> androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FILL
+                CrtMode.ASPECT_ZOOM -> androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+                else -> androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIT
+            }
+            findViewById<Button>(R.id.c_aspect)?.text = CrtMode.aspectLabel(mode)
+        } catch (_: Exception) {
+        }
+    }
+
     /** Autoplay diretto: finito un episodio parte subito il successivo. */
     private fun onEpisodeEnded() {
         flushWatch()
+        // TV in diretta: ci si risintonizza sul palinsesto corrente
+        if (series == null && tvChannel != null) {
+            retuneTv()
+            return
+        }
         if (hasNext()) goNext()
         else {
             try {
@@ -296,6 +342,42 @@ class PlayerActivity : Activity() {
             } catch (_: Exception) {
             }
             Toast.makeText(this, R.string.end_of_series, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /** Risintonizza la diretta sul palinsesto corrente dello stesso canale. */
+    private fun retuneTv() {
+        val ch = tvChannel ?: return
+        try {
+            val a = TvSchedule.current(ch, CatalogRepo.titles) ?: run {
+                Toast.makeText(this, R.string.end_of_series, Toast.LENGTH_SHORT).show()
+                return
+            }
+            val pick = TvSchedule.playerFor(a.title, a.epIndex) ?: run {
+                Toast.makeText(this, R.string.end_of_series, Toast.LENGTH_SHORT).show()
+                return
+            }
+            sessionId++
+            releasePlayer()
+            destroyWeb()
+            synchronized(candidates) { candidates.clear() }
+            candidateIndex = 0
+            captured.set(false)
+            errors = 0
+            headerMode = 0
+            currentUrl = ""
+            resumeMs = if (pick.direct) TvSchedule.joinOffset(a) else 0L
+            embedUrl = pick.url
+            val epLabel = a.title.episodes.getOrNull(a.epIndex)?.label.orEmpty()
+            title = a.title.title + if (epLabel.isEmpty()) "" else " — $epLabel"
+            navTitle.text = title
+            cTitle.text = title
+            loading.visibility = View.VISIBLE
+            playerView.visibility = View.GONE
+            webContainer.visibility = View.GONE
+            navBar.visibility = View.GONE
+            captureStream(embedUrl, visible = false)
+        } catch (_: Exception) {
         }
     }
 
