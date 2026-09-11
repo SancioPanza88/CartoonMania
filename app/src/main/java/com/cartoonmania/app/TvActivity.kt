@@ -53,6 +53,14 @@ class TvActivity : Activity() {
         wireTab(R.id.btn_tab_settings, SettingsActivity::class.java)
         findViewById<View>(R.id.btn_tab_tv).setOnClickListener { refresh() }
         Ui.tvFocus(findViewById(R.id.btn_tab_tv))
+        Ui.clampHorizontalRow(
+            listOf(
+                findViewById(R.id.btn_tab_home),
+                findViewById(R.id.btn_tab_tv),
+                findViewById(R.id.btn_tab_search),
+                findViewById(R.id.btn_tab_settings)
+            )
+        )
 
         val list = findViewById<ListView>(R.id.tv_list)
         adapter = TvAdapter()

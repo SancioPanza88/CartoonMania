@@ -90,6 +90,12 @@
     <string name="stats_l_series">serie</string>
     <string name="stats_l_eps">episodi finiti</string>
     <string name="clear_lists">Svuota liste profilo</string>
+    <string name="crash_title">Ultimo errore</string>
+    <string name="crash_empty">Nessun errore registrato: tutto stabile</string>
+    <string name="crash_copy">Copia</string>
+    <string name="crash_copied">Report copiato</string>
+    <string name="crash_clear">Elimina</string>
+    <string name="crash_cleared">Report eliminato</string>
     <string name="clear_lists_done">Svuotate %1$d voci</string>
     <string name="clear_lists_empty">Niente da svuotare</string>
     <string name="card_details">Apri dettagli</string>

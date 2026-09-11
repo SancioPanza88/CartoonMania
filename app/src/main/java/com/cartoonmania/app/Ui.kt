@@ -75,11 +75,29 @@ object Ui {
         views.last().nextFocusRightId = views.last().id
     }
 
+    /** True sotto ~1.5GB di RAM totale (box economici/Firestick base). */
+    fun lowRam(ctx: Context): Boolean {
+        return try {
+            val am = ctx.getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
+            val mi = android.app.ActivityManager.MemoryInfo()
+            am.getMemoryInfo(mi)
+            mi.totalMem in 1..1_610_612_736L
+        } catch (_: Exception) {
+            false
+        }
+    }
+
     /** Ingresso scaglionato delle righe home: dissolvenza ovunque, scorrimento
-     *  verticale solo su telefono (sulla TV la GPU scarsa scatta). */
+     *  verticale solo su telefono (sulla TV la GPU scarsa scatta). Su TV con
+     *  poca RAM: istantaneo, niente animazioni. */
     fun rowEnter(v: View, index: Int) {
         try {
             val tv = isTv(v.context)
+            if (tv && lowRam(v.context)) {
+                v.alpha = 1f
+                v.translationY = 0f
+                return
+            }
             val density = v.resources.displayMetrics.density
             v.alpha = 0f
             if (!tv) v.translationY = 20f * density
