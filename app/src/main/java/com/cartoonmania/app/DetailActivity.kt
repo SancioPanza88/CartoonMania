@@ -31,7 +31,16 @@ class DetailActivity : Activity() {
         current = t
         Profiles.touchRecent(this, slug)
 
+        // Ingresso morbido della testata (solo alpha sulla TV)
+        try {
+            val root = findViewById<View>(android.R.id.content)
+            root.alpha = 0f
+            root.animate().alpha(1f).setDuration(if (Ui.isTv(this)) 140 else 220).start()
+        } catch (_: Exception) {
+        }
+
         val list = findViewById<ListView>(R.id.d_list)
+        Ui.fadeList(list)
         // Fondamentale per il telecomando: senza, i bottoni nell'header
         // (indietro, preferiti, chip) non ricevono mai il focus/D-pad
         // perche' la ListView se lo tiene tutto per la selezione righe.
@@ -55,11 +64,25 @@ class DetailActivity : Activity() {
 
         val poster = header.findViewById<ImageView>(R.id.d_poster)
         ImageLoader.display(poster, t.img)
-        Ui.round(poster, 12)
+        Ui.round(poster, 14)
+        // Zoom d'ingresso del poster solo su telefono
+        try {
+            if (!Ui.isTv(this)) {
+                poster.scaleX = 0.94f
+                poster.scaleY = 0.94f
+                poster.animate().scaleX(1f).scaleY(1f).setDuration(260).start()
+            }
+        } catch (_: Exception) {
+        }
         ImageLoader.display(header.findViewById(R.id.d_backdrop), t.img)
-        header.findViewById<View>(R.id.d_back).setOnClickListener { finish() }
+        val backBtn = header.findViewById<View>(R.id.d_back)
+        backBtn.setOnClickListener { finish() }
+        Ui.tvFocus(backBtn)
+        Ui.pressPop(backBtn)
 
         val favBtn = header.findViewById<Button>(R.id.d_fav)
+        Ui.tvFocus(favBtn)
+        Ui.pressPop(favBtn)
         fun refreshFav() {
             favBtn.text = if (Profiles.isFavorite(this, slug)) getString(R.string.fav_remove)
             else getString(R.string.fav_add)
@@ -124,6 +147,11 @@ class DetailActivity : Activity() {
             return true
         }
         return super.onKeyDown(keyCode, event)
+    }
+
+    override fun finish() {
+        super.finish()
+        Ui.applyCloseTransition(this)
     }
 
     private fun openPlayer(pos: Int, playerIdx: Int) {

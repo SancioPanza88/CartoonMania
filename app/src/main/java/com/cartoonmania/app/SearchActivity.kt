@@ -19,6 +19,7 @@ class SearchActivity : Activity() {
     private lateinit var adapter: TitleAdapter
     private val shown = ArrayList<CatalogRepo.Title>()
     private lateinit var status: TextView
+    private var listAnimDone = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,15 +30,17 @@ class SearchActivity : Activity() {
         status = findViewById(R.id.status)
         findViewById<View>(R.id.btn_tab_home).setOnClickListener { finish() }
         Ui.tvFocus(findViewById(R.id.btn_tab_home))
+        Ui.pressPop(findViewById(R.id.btn_tab_home))
         findViewById<View>(R.id.btn_tab_settings).setOnClickListener {
-            startActivity(Intent(this, SettingsActivity::class.java))
+            Ui.openScreen(this, Intent(this, SettingsActivity::class.java))
         }
         Ui.tvFocus(findViewById(R.id.btn_tab_settings))
+        Ui.pressPop(findViewById(R.id.btn_tab_settings))
         adapter = TitleAdapter()
         list.adapter = adapter
         list.setOnItemClickListener { _, _, pos, _ ->
             val t = shown.getOrNull(pos) ?: return@setOnItemClickListener
-            startActivity(Intent(this, DetailActivity::class.java).putExtra("slug", t.slug))
+            Ui.openDetail(this, t.slug)
         }
         search.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) = refilter(s?.toString().orEmpty())
@@ -64,6 +67,11 @@ class SearchActivity : Activity() {
         return super.onKeyDown(keyCode, event)
     }
 
+    override fun finish() {
+        super.finish()
+        Ui.applyCloseTransition(this)
+    }
+
     private fun refilter(qRaw: String) {
         val q = qRaw.trim().lowercase()
         shown.clear()
@@ -81,6 +89,15 @@ class SearchActivity : Activity() {
             status.text = "${shown.size} risultati per \"$qRaw\""
         }
         adapter.notifyDataSetChanged()
+        // Animazione d'ingresso una sola volta (non a ogni lettera digitata)
+        if (!listAnimDone) {
+            listAnimDone = true
+            try {
+                Ui.fadeList(findViewById(R.id.list))
+                findViewById<ListView>(R.id.list).scheduleLayoutAnimation()
+            } catch (_: Exception) {
+            }
+        }
     }
 
     private inner class TitleAdapter : BaseAdapter() {

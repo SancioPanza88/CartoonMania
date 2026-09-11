@@ -26,8 +26,9 @@ class HomeActivity : Activity() {
 
         val profBtn = findViewById<ImageView>(R.id.home_profile)
         Ui.tvFocus(profBtn)
+        Ui.pressPop(profBtn)
         profBtn.setOnClickListener {
-            startActivity(Intent(this, ProfileActivity::class.java))
+            Ui.openScreen(this, Intent(this, ProfileActivity::class.java))
         }
         renderProfile()
         // Popup di aggiornamento a ogni avvio se c'e' una release piu' nuova
@@ -36,17 +37,20 @@ class HomeActivity : Activity() {
         container = findViewById(R.id.home_container)
         status = findViewById(R.id.home_status)
         findViewById<View>(R.id.btn_tab_search).setOnClickListener {
-            startActivity(Intent(this, SearchActivity::class.java))
+            Ui.openScreen(this, Intent(this, SearchActivity::class.java))
         }
         Ui.tvFocus(findViewById(R.id.btn_tab_search))
+        Ui.pressPop(findViewById(R.id.btn_tab_search))
         findViewById<View>(R.id.btn_tab_settings).setOnClickListener {
-            startActivity(Intent(this, SettingsActivity::class.java))
+            Ui.openScreen(this, Intent(this, SettingsActivity::class.java))
         }
         Ui.tvFocus(findViewById(R.id.btn_tab_settings))
+        Ui.pressPop(findViewById(R.id.btn_tab_settings))
         findViewById<View>(R.id.btn_tab_home).setOnClickListener {
             findViewById<android.widget.ScrollView>(R.id.home_scroll).smoothScrollTo(0, 0)
         }
         Ui.tvFocus(findViewById(R.id.btn_tab_home))
+        Ui.pressPop(findViewById(R.id.btn_tab_home))
 
         Thread {
             val loadError = try {
@@ -177,10 +181,12 @@ class HomeActivity : Activity() {
     }
 
     private var buildGen = 0
+    private var rowAnimIdx = 0
 
     private fun safeBuildSections() {
         try {
             buildGen++
+            rowAnimIdx = 0
             val g = buildGen
             container.removeAllViews()
             val all = CatalogRepo.titles
@@ -332,7 +338,7 @@ class HomeActivity : Activity() {
             }
             labels.add(getString(R.string.card_details))
             actions.add {
-                startActivity(Intent(this, DetailActivity::class.java).putExtra("slug", t.slug))
+                Ui.openDetail(this, t.slug)
             }
             AlertDialog.Builder(this)
                 .setTitle(t.title)
@@ -356,7 +362,7 @@ class HomeActivity : Activity() {
             val pi = if ((pr?.pi ?: 0) in players.indices) pr?.pi ?: 0 else 0
             val url = players.getOrNull(pi)?.url.orEmpty()
             if (url.isEmpty()) {
-                startActivity(Intent(ctx, DetailActivity::class.java).putExtra("slug", t.slug))
+                Ui.openDetail(ctx, t.slug)
                 return
             }
             startActivity(
@@ -433,7 +439,9 @@ class HomeActivity : Activity() {
             theme.resolveAttribute(android.R.attr.selectableItemBackground, this, true)
         }
 
-        container.addView(sectionHeader(spec.title))
+        val header = sectionHeader(spec.title)
+        container.addView(header)
+        Ui.rowEnter(header, rowAnimIdx)
 
         val row = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -450,21 +458,20 @@ class HomeActivity : Activity() {
                 setBackgroundResource(ripple.resourceId)
                 setOnClickListener {
                     if (spec.resume) openResume(context, t)
-                    else startActivity(
-                        Intent(context, DetailActivity::class.java).putExtra("slug", t.slug)
-                    )
+                    else Ui.openDetail(context, t.slug)
                 }
             }
             Ui.tvFocus(card)
+            Ui.pressPop(card)
 
             val poster = ImageView(this).apply {
-                layoutParams = LinearLayout.LayoutParams(dp(102), dp(152))
+                layoutParams = LinearLayout.LayoutParams(dp(110), dp(164))
                 scaleType = ImageView.ScaleType.CENTER_CROP
-                setBackgroundColor(0xFF1F1F2B.toInt())
+                setBackgroundColor(0xFF20202C.toInt())
                 clipToOutline = true
                 outlineProvider = object : android.view.ViewOutlineProvider() {
                     override fun getOutline(view: View, outline: android.graphics.Outline) {
-                        outline.setRoundRect(0, 0, view.width, view.height, dp(10).toFloat())
+                        outline.setRoundRect(0, 0, view.width, view.height, dp(12).toFloat())
                     }
                 }
             }
@@ -522,7 +529,10 @@ class HomeActivity : Activity() {
         }
         Ui.clampHorizontalRow(cards)
 
-        container.addView(wheelScroll(HorizontalScrollView(this).apply { addView(row) }))
+        val scroller = wheelScroll(HorizontalScrollView(this).apply { addView(row) })
+        container.addView(scroller)
+        Ui.rowEnter(scroller, rowAnimIdx)
+        rowAnimIdx++
     }
 
     private fun dp(v: Int): Int = (v * resources.displayMetrics.density).toInt()

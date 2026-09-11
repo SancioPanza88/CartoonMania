@@ -10,6 +10,14 @@
         <item name="android:textColorPrimary">@color/text_primary</item>
         <item name="android:textColorSecondary">@color/text_secondary</item>
         <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowAnimationStyle">@style/CmAnim.Activity</item>
+    </style>
+
+    <style name="CmAnim.Activity" parent="android:Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/cm_open_enter</item>
+        <item name="android:activityOpenExitAnimation">@anim/cm_open_exit</item>
+        <item name="android:activityCloseEnterAnimation">@anim/cm_close_enter</item>
+        <item name="android:activityCloseExitAnimation">@anim/cm_close_exit</item>
     </style>
 
     <style name="PlayerTheme" parent="android:Theme.Material.NoActionBar.Fullscreen">
