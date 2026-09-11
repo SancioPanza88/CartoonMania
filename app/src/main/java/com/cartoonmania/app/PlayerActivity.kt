@@ -76,6 +76,7 @@ class PlayerActivity : Activity() {
     private var candidateIndex = 0
     private var embedUrl = ""
     private var currentUrl = ""
+    private var currentMime: String? = null
     private var headerMode = 0
 
     private val desktopUa =
@@ -218,7 +219,7 @@ class PlayerActivity : Activity() {
             title = intent.getStringExtra("label") ?: ""
             navTitle.text = title
             cTitle.text = title
-            captureStream(embedUrl, visible = false)
+            playGuardaSmart(embedUrl, visible = false)
         }
         applyAspect()
         CrtMode.applyTo(this)
@@ -314,7 +315,42 @@ class PlayerActivity : Activity() {
         webContainer.visibility = View.GONE
         navBar.visibility = View.GONE
         updateNav()
-        captureStream(embedUrl, visible = false)
+        playGuardaSmart(embedUrl, visible = false)
+    }
+
+    /** Pagine guarda Loonex: prima prova la risoluzione nativa (OK.ru -> HLS
+     *  fresco suonato in ExoPlayer, senza player/embed e senza muri
+     *  anti-adblock); se fallisce, normale cattura WebView. URL non-guarda:
+     *  comportamento invariato. */
+    private fun playGuardaSmart(pageUrl: String, visible: Boolean) {
+        if (!isLoonexGuarda(pageUrl)) {
+            captureStream(pageUrl, visible)
+            return
+        }
+        val sid = sessionId
+        Thread {
+            val hls = try {
+                OkRu.resolveHls(pageUrl)
+            } catch (_: Exception) {
+                null
+            }
+            runOnUiThread {
+                if (sid != sessionId || isFinishing || isDestroyed) return@runOnUiThread
+                if (!hls.isNullOrEmpty()) {
+                    startNative(hls, OkRu.HLS_MIME)
+                } else {
+                    captureStream(pageUrl, visible)
+                }
+            }
+        }.start()
+    }
+
+    private fun isLoonexGuarda(url: String): Boolean {
+        return try {
+            "loonex.eu/guarda" in url.lowercase()
+        } catch (_: Exception) {
+            false
+        }
     }
 
     private fun showEpisodePicker() {
@@ -396,7 +432,7 @@ class PlayerActivity : Activity() {
             playerView.visibility = View.GONE
             webContainer.visibility = View.GONE
             navBar.visibility = View.GONE
-            captureStream(embedUrl, visible = false)
+            playGuardaSmart(embedUrl, visible = false)
         } catch (_: Exception) {
         }
     }
@@ -734,7 +770,7 @@ class PlayerActivity : Activity() {
         return m
     }
 
-    private fun startNative(url: String) {
+    private fun startNative(url: String, mime: String? = null) {
         if (isFinishing || isDestroyed) return
         loading.visibility = View.GONE
         // Libera subito la WebView (50-150MB): su 1GB di RAM tenerla insieme
@@ -743,6 +779,7 @@ class PlayerActivity : Activity() {
         webContainer.visibility = View.GONE
         navBar.visibility = View.GONE
         currentUrl = url
+        currentMime = mime
 
         val dsFactory = DefaultHttpDataSource.Factory()
             .setUserAgent(desktopUa)
@@ -798,7 +835,14 @@ class PlayerActivity : Activity() {
                 if (state == Player.STATE_ENDED) runOnUiThread { onEpisodeEnded() }
             }
         })
-        p.setMediaItem(MediaItem.fromUri(url))
+        p.setMediaItem(
+            if (!mime.isNullOrEmpty()) {
+                // Stream senza estensione riconoscibile (es. HLS di OK.ru)
+                MediaItem.Builder().setUri(url).setMimeType(mime).build()
+            } else {
+                MediaItem.fromUri(url)
+            }
+        )
         p.playWhenReady = true
         p.prepare()
         watchSlug = series?.slug
@@ -823,7 +867,7 @@ class PlayerActivity : Activity() {
         if (headerMode == 0) {
             headerMode = 1
             loading.visibility = View.VISIBLE
-            startNative(currentUrl)
+            startNative(currentUrl, currentMime)
             return
         }
         headerMode = 0
