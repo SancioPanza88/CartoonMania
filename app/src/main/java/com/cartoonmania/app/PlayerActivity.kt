@@ -551,6 +551,15 @@ class PlayerActivity : Activity() {
             }
             return true
         }
+        // Zapping canali in diretta: solo TV (niente contesto serie)
+        if (keyCode == KeyEvent.KEYCODE_CHANNEL_UP) {
+            zap(1)
+            return true
+        }
+        if (keyCode == KeyEvent.KEYCODE_CHANNEL_DOWN) {
+            zap(-1)
+            return true
+        }
         // Col controller nascosto, OK lo riapre invece di mettere pausa alla cieca
         if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER && player != null &&
             !playerView.isControllerFullyVisible
@@ -570,6 +579,36 @@ class PlayerActivity : Activity() {
             return true
         }
         return super.onKeyDown(keyCode, event)
+    }
+
+    /** Zapping: canale successivo/precedente nel palinsesto. */
+    private fun zap(dir: Int) {
+        if (series != null) return
+        val cur = tvChannel ?: return
+        try {
+            val ids = TvSchedule.channels.map { it.id }
+            val i = ids.indexOf(cur)
+            if (i < 0) return
+            tvChannel = ids[(i + dir + ids.size) % ids.size]
+            retuneTv()
+        } catch (_: Exception) {
+        }
+    }
+
+    /** OK prolungato = mostra/nascondi controlli in modo deterministico. */
+    override fun onKeyLongPress(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER && player != null) {
+            try {
+                if (playerView.isControllerFullyVisible) playerView.hideController()
+                else {
+                    playerView.showController()
+                    focusPlayPause()
+                }
+            } catch (_: Exception) {
+            }
+            return true
+        }
+        return super.onKeyLongPress(keyCode, event)
     }
 
     /** Garantisce che frecce/OK abbiano sempre un bersaglio: senza focus

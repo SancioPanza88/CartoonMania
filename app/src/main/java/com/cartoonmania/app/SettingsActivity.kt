@@ -37,6 +37,9 @@ class SettingsActivity : Activity() {
             startActivity(Intent(this, StatsActivity::class.java))
         }
         findViewById<View>(R.id.btn_clear_lists).setOnClickListener { showClearLists() }
+        findViewById<View>(R.id.btn_crash).setOnClickListener { showCrashReport() }
+        Ui.tvFocus(findViewById(R.id.btn_crash))
+        Ui.pressPop(findViewById(R.id.btn_crash))
         findViewById<View>(R.id.btn_tab_home).setOnClickListener { finish() }
         findViewById<View>(R.id.btn_tab_search).setOnClickListener {
             startActivity(android.content.Intent(this, SearchActivity::class.java))
@@ -48,6 +51,14 @@ class SettingsActivity : Activity() {
         }
         Ui.tvFocus(findViewById(R.id.btn_tab_tv))
         Ui.pressPop(findViewById(R.id.btn_tab_tv))
+        Ui.clampHorizontalRow(
+            listOf(
+                findViewById(R.id.btn_tab_home),
+                findViewById(R.id.btn_tab_tv),
+                findViewById(R.id.btn_tab_search),
+                findViewById(R.id.btn_tab_settings)
+            )
+        )
         // Niente zoom sui pulsanti larghi: con lo ScrollView lo zoom li spinge
         // fuori schermo; l'evidenziazione la fa gia' lo sfondo sulla TV.
         // Sulla TV il ripple non evidenzia il focus: sfondo bordato
@@ -57,6 +68,7 @@ class SettingsActivity : Activity() {
             findViewById<View>(R.id.btn_sync).setBackgroundResource(R.drawable.bg_episode_focus)
             findViewById<View>(R.id.btn_stats).setBackgroundResource(R.drawable.bg_episode_focus)
             findViewById<View>(R.id.btn_clear_lists).setBackgroundResource(R.drawable.bg_episode_focus)
+            findViewById<View>(R.id.btn_crash).setBackgroundResource(R.drawable.bg_episode_focus)
         }
 
         val appVer = try {
@@ -444,6 +456,40 @@ class SettingsActivity : Activity() {
                     else getString(R.string.clear_lists_empty),
                     Toast.LENGTH_SHORT
                 ).show()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun showCrashReport() {
+        val report = try {
+            CrashGuard.lastCrashReport(this)
+        } catch (_: Exception) {
+            null
+        }
+        AlertDialog.Builder(this)
+            .setTitle(R.string.crash_title)
+            .setMessage(report ?: getString(R.string.crash_empty))
+            .setPositiveButton(R.string.crash_copy) { _, _ ->
+                try {
+                    val cm =
+                        getSystemService(CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                    cm.setPrimaryClip(
+                        android.content.ClipData.newPlainText(
+                            "cartoonmania-crash",
+                            report ?: getString(R.string.crash_empty)
+                        )
+                    )
+                    Toast.makeText(this, R.string.crash_copied, Toast.LENGTH_SHORT).show()
+                } catch (_: Exception) {
+                }
+            }
+            .setNeutralButton(R.string.crash_clear) { _, _ ->
+                try {
+                    CrashGuard.clear(this)
+                    Toast.makeText(this, R.string.crash_cleared, Toast.LENGTH_SHORT).show()
+                } catch (_: Exception) {
+                }
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()

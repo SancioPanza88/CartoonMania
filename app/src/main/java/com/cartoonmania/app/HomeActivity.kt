@@ -56,6 +56,15 @@ class HomeActivity : Activity() {
         }
         Ui.tvFocus(findViewById(R.id.btn_tab_tv))
         Ui.pressPop(findViewById(R.id.btn_tab_tv))
+        // Frecce oltre gli estremi: resta sulla tab invece di perdersi
+        Ui.clampHorizontalRow(
+            listOf(
+                findViewById(R.id.btn_tab_home),
+                findViewById(R.id.btn_tab_tv),
+                findViewById(R.id.btn_tab_search),
+                findViewById(R.id.btn_tab_settings)
+            )
+        )
 
         Thread {
             val loadError = try {
@@ -188,9 +197,18 @@ class HomeActivity : Activity() {
 
     private var buildGen = 0
     private var rowAnimIdx = 0
+    private var pendingFocusSlug: String? = null
 
     private fun safeBuildSections() {
         try {
+            // Memorizza la card focalizzata prima di ricostruire le righe
+            try {
+                var v: View? = container.findFocus()
+                while (v != null && v.tag !is String) v = v.parent as? View
+                pendingFocusSlug = v?.tag as? String
+            } catch (_: Exception) {
+                pendingFocusSlug = null
+            }
             buildGen++
             rowAnimIdx = 0
             val g = buildGen
@@ -292,12 +310,25 @@ class HomeActivity : Activity() {
     /** Aggiunge le righe a blocchi: la prima si vede subito, il resto segue. */
     private fun postRows(rows: List<RowSpec>, i: Int, g: Int) {
         if (g != buildGen || isFinishing || isDestroyed) return
-        if (i >= rows.size) return
+        if (i >= rows.size) {
+            restoreFocus()
+            return
+        }
         try {
             addRow(rows[i])
         } catch (_: Exception) {
         }
         container.post { postRows(rows, i + 1, g) }
+    }
+
+    /** Rimette il focus dov'era prima del rebuild (solo se esiste ancora). */
+    private fun restoreFocus() {
+        val slug = pendingFocusSlug ?: return
+        pendingFocusSlug = null
+        try {
+            container.findViewWithTag<View>(slug)?.requestFocus()
+        } catch (_: Exception) {
+        }
     }
 
     /** Tieni premuto: segna come gia' visto (sparisce da Continua e Recenti). */
@@ -496,6 +527,7 @@ class HomeActivity : Activity() {
                 setPadding(dp(5), 0, dp(5), 0)
                 isClickable = true
                 isFocusable = true
+                tag = t.slug
                 setBackgroundResource(ripple.resourceId)
                 setOnClickListener {
                     if (spec.resume) openResume(context, t)
