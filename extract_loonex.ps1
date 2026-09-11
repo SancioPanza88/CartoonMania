@@ -247,14 +247,70 @@ function ConvertFrom-LoonexUrl([string]$hex, [string]$key) {
     try { return [System.Uri]::UnescapeDataString($sb.ToString()) } catch { return $sb.ToString() }
 }
 
+# Nuovo schema player (2026-09): l'URL reale viene da
+# guardaUnpackSrc(packed, decryptionKey) — base64url + doppio XOR.
+# Il vecchio encodedStr e' rimasto come esca e punta a path /episodi/_x/
+# inesistenti (404). Replicazione esatta del JS del sito.
+function ConvertFrom-LoonexPacked([string]$packed, [string]$key) {
+    if (-not $packed -or -not $key) { return $null }
+    $b64 = $packed.Replace('-', '+').Replace('_', '/')
+    while ($b64.Length % 4) { $b64 += '=' }
+    try { $bytes = [Convert]::FromBase64String($b64) } catch { return $null }
+    if ($bytes.Length -lt 2) { return $null }
+    $sb = New-Object System.Text.StringBuilder
+    for ($i = 1; $i -lt $bytes.Length; $i++) {
+        $j = $i - 1
+        $c = $bytes[$i] -bxor [int][char]$key[$j % $key.Length] -bxor ((($j * 13 + 7) -band 255))
+        [void]$sb.Append([char]$c)
+    }
+    try { return [System.Uri]::UnescapeDataString($sb.ToString()) } catch { return $sb.ToString() }
+}
+
 function Resolve-GuardaUrl([string]$guardaUrl) {
     $html = Get-Http $guardaUrl
     if (-not $html) { return $null }
-    $enc = [regex]::Match($html, 'encodedStr\s*=\s*"([0-9a-fA-F]+)"').Groups[1].Value
     $key = [regex]::Match($html, 'decryptionKey\s*=\s*"([^"]+)"').Groups[1].Value
+    # 1) schema nuovo (packed)
+    $packed = [regex]::Match($html, 'guardaUnpackSrc\("([^"]+)",\s*decryptionKey\)').Groups[1].Value
+    $url = ConvertFrom-LoonexPacked $packed $key
+    # Episodi hostati su OK.ru (isOkru): URL con expires+srcIp legati a
+    # sessione/IP, muoiono in ore. Non immagazzinarli: meglio la pagina
+    # guarda (il player del sito li risolve freschi a ogni visita).
+    if ($url -match 'okcdn\.ru|ok\.ru') { return $null }
+    if ($url -and $url.StartsWith('http') -and $url -match '\.(m3u8|mp4)(\?|$)') { return $url }
+    # 2) fallback schema vecchio (XOR): alcune pagine potrebbero usarlo ancora
+    $enc = [regex]::Match($html, 'encodedStr\s*=\s*"([0-9a-fA-F]+)"').Groups[1].Value
     $url = ConvertFrom-LoonexUrl $enc $key
     if ($url -and $url.StartsWith('http') -and $url -match '\.(m3u8|mp4)(\?|$)') { return $url }
     return $null
+}
+
+# Verifica l'URL risolto: 'ok' | 'dead' (404: path inesistente per chiunque)
+# | 'unknown' (403/timeout: possibile filtro anti-datacenter, tengo il link).
+# Senza questo controllo un cambio schema del sito spedisce in catalogo
+# centinaia di link morti senza che nessuno se ne accorga (run 2026-09-11).
+function Test-VideoUrl([string]$url) {
+    try {
+        $req = [System.Net.HttpWebRequest]::Create($url)
+        $req.Method = 'HEAD'
+        $req.Timeout = 15000
+        $req.UserAgent = $ua
+        $req.Referer = 'https://loonex.eu/guarda/'
+        $resp = $req.GetResponse()
+        $code = [int]$resp.StatusCode
+        $resp.Close()
+        if ($code -ge 200 -and $code -lt 400) { return 'ok' }
+        if ($code -eq 404) { return 'dead' }
+        return 'unknown'
+    } catch [System.Net.WebException] {
+        $r = $_.Exception.Response
+        if ($r) {
+            try { $c = [int]$r.StatusCode } catch { $c = 0 }
+            try { $r.Close() } catch { }
+            if ($c -eq 404) { return 'dead' }
+        }
+        return 'unknown'
+    } catch { return 'unknown' }
 }
 
 $results = New-Object System.Collections.Generic.List[object]
@@ -284,7 +340,17 @@ foreach ($s in $series) {
             # Normalizza la codifica: alcune pagine danno URL gia' escaped
             # (%20) e riescaparli darebbe %2520 -> 404 sul videoserver
             $playerUrl = if ($m3u8) { [uri]::EscapeUriString([uri]::UnescapeDataString($m3u8)) } else { $guarda }
-            if (-not $m3u8) { Write-Host "[WARN] fallback pagina guarda per: $label" }
+            if (-not $m3u8) {
+                Write-Host "[WARN] fallback pagina guarda per: $label"
+            } else {
+                # Link morto (404)? Meglio la pagina guarda (il player del sito
+                # funziona sempre) che un m3u8 inesistente.
+                $check = Test-VideoUrl $playerUrl
+                if ($check -eq 'dead') {
+                    Write-Host "[WARN] link morto (404), uso pagina guarda per: $label"
+                    $playerUrl = $guarda
+                }
+            }
 
             $episodes.Add([pscustomobject]@{
                 episodio = $label
@@ -318,22 +384,24 @@ foreach ($s in $series) {
 # dagli IP datacenter GitHub) mantengono i dati vecchi invece di sparire
 # dal catalogo. Senza questa guardia un run parziale clobberava tutto.
 # Merge deterministico: prima i dati freschi, poi i vecchi solo per gli
-# slug mancanti. Deduplica esplicita per slug (fix duplicati visti nel
-# run 2026-09-11: hashtable da sola non e' bastata).
+# slug mancanti. Solo voci CON slug (scarta eventuali oggetti spuri) e
+# appiattimento esplicito: in PS 5.1 ConvertFrom-Json puo' emettere l'array
+# come singolo oggetto non enumerato (visto garbage {"value","Count"} nel
+# run 2026-09-11 contro i 404 di Loonex).
 $prev = @()
 if (Test-Path $outPath) {
     try { $prev = @(Get-Content -Raw -Encoding UTF8 $outPath | ConvertFrom-Json) } catch { $prev = @() }
 }
+function Add-MergedItem($obj) {
+    if ($obj -is [array]) { foreach ($x in $obj) { Add-MergedItem $x }; return }
+    $k = [string]$obj.slug
+    if (-not $k) { return }
+    if (-not $have.ContainsKey($k)) { $merged.Add($obj); $have[$k] = $true }
+}
 $merged = New-Object System.Collections.Generic.List[object]
 $have = @{}
-foreach ($r in $results) {
-    $k = [string]$r.slug
-    if ($k -and -not $have.ContainsKey($k)) { $merged.Add($r); $have[$k] = $true }
-}
-foreach ($p in $prev) {
-    $k = [string]$p.slug
-    if ($k -and -not $have.ContainsKey($k)) { $merged.Add($p); $have[$k] = $true }
-}
+foreach ($r in $results) { Add-MergedItem $r }
+foreach ($p in $prev) { Add-MergedItem $p }
 $expected = @($series | ForEach-Object { $_.slug })
 $missing = @($expected | Where-Object { -not $have.ContainsKey([string]$_) })
 if ($missing.Count -gt 0) { Write-Host "[WARN] serie senza dati (mai estratte): $($missing -join ', ')" }

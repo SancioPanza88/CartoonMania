@@ -131,22 +131,22 @@ foreach ($s in $series) {
     }
 }
 
-# Unione col file precedente (stesso merge deterministico di extract_loonex.ps1:
-# prima i dati freschi, poi i vecchi solo per gli slug mancanti)
+# Unione col file precedente (stesso merge deterministico e anti-spuri
+# di extract_loonex.ps1: solo voci con slug, array appiattiti)
 $prev = @()
 if (Test-Path $outPath) {
     try { $prev = @(Get-Content -Raw -Encoding UTF8 $outPath | ConvertFrom-Json) } catch { $prev = @() }
 }
+function Add-MergedItem($obj) {
+    if ($obj -is [array]) { foreach ($x in $obj) { Add-MergedItem $x }; return }
+    $k = [string]$obj.slug
+    if (-not $k) { return }
+    if (-not $have.ContainsKey($k)) { $merged.Add($obj); $have[$k] = $true }
+}
 $merged = New-Object System.Collections.Generic.List[object]
 $have = @{}
-foreach ($r in $results) {
-    $k = [string]$r.slug
-    if ($k -and -not $have.ContainsKey($k)) { $merged.Add($r); $have[$k] = $true }
-}
-foreach ($p in $prev) {
-    $k = [string]$p.slug
-    if ($k -and -not $have.ContainsKey($k)) { $merged.Add($p); $have[$k] = $true }
-}
+foreach ($r in $results) { Add-MergedItem $r }
+foreach ($p in $prev) { Add-MergedItem $p }
 
 if ($merged.Count -gt 0) {
     if ($merged.Count -eq 1) {
