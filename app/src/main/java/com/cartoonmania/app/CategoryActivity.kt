@@ -14,6 +14,7 @@ class CategoryActivity : Activity() {
 
     private lateinit var adapter: CatAdapter
     private val shown = ArrayList<CatalogRepo.Title>()
+    private var listAnimDone = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,14 +22,17 @@ class CategoryActivity : Activity() {
 
         val cat = intent.getStringExtra("cat").orEmpty()
         findViewById<TextView>(R.id.c_title).text = cat.ifEmpty { getString(R.string.no_data) }
-        findViewById<View>(R.id.c_back).setOnClickListener { finish() }
+        val backBtn = findViewById<View>(R.id.c_back)
+        backBtn.setOnClickListener { finish() }
+        Ui.tvFocus(backBtn)
+        Ui.pressPop(backBtn)
 
         val list = findViewById<ListView>(R.id.c_list)
         adapter = CatAdapter()
         list.adapter = adapter
         list.setOnItemClickListener { _, _, pos, _ ->
             val t = shown.getOrNull(pos) ?: return@setOnItemClickListener
-            startActivity(Intent(this, DetailActivity::class.java).putExtra("slug", t.slug))
+            Ui.openDetail(this, t.slug)
         }
 
         refresh()
@@ -48,6 +52,20 @@ class CategoryActivity : Activity() {
         findViewById<TextView>(R.id.c_count).text =
             resources.getQuantityString(R.plurals.titles_count, shown.size, shown.size)
         adapter.notifyDataSetChanged()
+        if (!listAnimDone) {
+            listAnimDone = true
+            try {
+                val list = findViewById<ListView>(R.id.c_list)
+                Ui.fadeList(list)
+                list.scheduleLayoutAnimation()
+            } catch (_: Exception) {
+            }
+        }
+    }
+
+    override fun finish() {
+        super.finish()
+        Ui.applyCloseTransition(this)
     }
 
     private inner class CatAdapter : BaseAdapter() {

@@ -1,9 +1,14 @@
 package com.cartoonmania.app
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.graphics.Outline
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewOutlineProvider
+import android.view.animation.AnimationUtils
+import android.widget.ListView
 import android.widget.TextView
 
 object Ui {
@@ -68,6 +73,87 @@ object Ui {
         for (v in views) if (v.id == View.NO_ID) v.id = View.generateViewId()
         views.first().nextFocusLeftId = views.first().id
         views.last().nextFocusRightId = views.last().id
+    }
+
+    /** Ingresso scaglionato delle righe home: dissolvenza ovunque, scorrimento
+     *  verticale solo su telefono (sulla TV la GPU scarsa scatta). */
+    fun rowEnter(v: View, index: Int) {
+        try {
+            val tv = isTv(v.context)
+            val density = v.resources.displayMetrics.density
+            v.alpha = 0f
+            if (!tv) v.translationY = 20f * density
+            v.animate().alpha(1f).translationY(0f)
+                .setStartDelay(minOf(index * 45, 420).toLong())
+                .setDuration(if (tv) 150 else 260).start()
+        } catch (_: Exception) {
+            try { v.alpha = 1f; v.translationY = 0f } catch (_: Exception) { }
+        }
+    }
+
+    /** Feedback pressione touch: rimbalzo leggero. Non consuma l'evento
+     *  (ritorna false) cosi' click e long-press restano intatti. */
+    fun pressPop(v: View) {
+        try {
+            v.setOnTouchListener { view, e ->
+                try {
+                    when (e.action) {
+                        MotionEvent.ACTION_DOWN ->
+                            view.animate().scaleX(0.95f).scaleY(0.95f).setDuration(80).start()
+                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                            val s = if (view.isFocused) {
+                                if (isTv(view.context)) 1.12f else 1.07f
+                            } else 1f
+                            view.animate().scaleX(s).scaleY(s).setDuration(120).start()
+                        }
+                    }
+                } catch (_: Exception) {
+                }
+                false
+            }
+        } catch (_: Exception) {
+        }
+    }
+
+    /** Dissolvenza a cascata degli elementi di una lista (solo alpha: sicura
+     *  anche sulle TV). Da chiamare una volta, non a ogni refilter. */
+    fun fadeList(lv: ListView) {
+        try {
+            lv.layoutAnimation =
+                AnimationUtils.loadLayoutAnimation(lv.context, R.anim.cm_list_layout)
+        } catch (_: Exception) {
+        }
+    }
+
+    /** Apre i dettagli con transizione di entrata (l'uscita e' gestita dal
+     *  tema + finish() delle activity). */
+    fun openDetail(ctx: Context, slug: String) {
+        try {
+            ctx.startActivity(Intent(ctx, DetailActivity::class.java).putExtra("slug", slug))
+            if (ctx is Activity) {
+                ctx.overridePendingTransition(R.anim.cm_open_enter, R.anim.cm_open_exit)
+            }
+        } catch (_: Exception) {
+        }
+    }
+
+    /** Come openDetail ma con intent gia' pronto (search, settings, ...). */
+    fun openScreen(ctx: Context, intent: Intent) {
+        try {
+            ctx.startActivity(intent)
+            if (ctx is Activity) {
+                ctx.overridePendingTransition(R.anim.cm_open_enter, R.anim.cm_open_exit)
+            }
+        } catch (_: Exception) {
+        }
+    }
+
+    /** Transizione di chiusura da usare in finish() delle activity. */
+    fun applyCloseTransition(a: Activity) {
+        try {
+            a.overridePendingTransition(R.anim.cm_close_enter, R.anim.cm_close_exit)
+        } catch (_: Exception) {
+        }
     }
 
     fun dp(ctx: Context, v: Int): Int =
