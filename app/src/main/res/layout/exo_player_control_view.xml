@@ -38,16 +38,6 @@
             android:paddingEnd="8dp"
             android:textColor="#FFFFFF"
             android:textSize="14sp" />
-
-        <Button
-            android:id="@+id/c_aspect"
-            android:layout_width="64dp"
-            android:layout_height="48dp"
-            android:background="@drawable/bg_player_btn"
-            android:contentDescription="@string/aspect_desc"
-            android:text="FIT"
-            android:textColor="#FFFFFF"
-            android:textSize="12sp" />
     </LinearLayout>
 
     <LinearLayout

@@ -46,15 +46,9 @@ class SettingsActivity : Activity() {
         }
         Ui.tvFocus(findViewById(R.id.btn_tab_home))
         Ui.tvFocus(findViewById(R.id.btn_tab_search))
-        findViewById<View>(R.id.btn_tab_tv).setOnClickListener {
-            startActivity(android.content.Intent(this, TvActivity::class.java))
-        }
-        Ui.tvFocus(findViewById(R.id.btn_tab_tv))
-        Ui.pressPop(findViewById(R.id.btn_tab_tv))
         Ui.clampHorizontalRow(
             listOf(
                 findViewById(R.id.btn_tab_home),
-                findViewById(R.id.btn_tab_tv),
                 findViewById(R.id.btn_tab_search),
                 findViewById(R.id.btn_tab_settings)
             )

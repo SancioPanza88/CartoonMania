@@ -6,13 +6,13 @@
     android:gravity="center_vertical"
     android:paddingStart="16dp"
     android:paddingEnd="16dp"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp">
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp">
 
     <ImageView
-        android:id="@+id/v_poster"
-        android:layout_width="64dp"
-        android:layout_height="96dp"
+        android:id="@+id/t_poster"
+        android:layout_width="56dp"
+        android:layout_height="84dp"
         android:scaleType="centerCrop"
         android:background="@color/surface2"
         android:contentDescription="@string/poster" />
@@ -25,50 +25,32 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/v_channel"
+            android:id="@+id/t_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:textStyle="bold"
-            android:maxLines="1"
+            android:maxLines="2"
             android:ellipsize="end"
             android:textColor="@color/text_primary" />
 
         <TextView
-            android:id="@+id/v_now"
+            android:id="@+id/t_sub"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:textSize="13sp"
+            android:layout_marginTop="3dp"
+            android:textSize="12sp"
             android:maxLines="2"
             android:ellipsize="end"
             android:textColor="@color/text_secondary" />
 
-        <TextView
-            android:id="@+id/v_time"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:textSize="12sp"
-            android:maxLines="1"
-            android:textColor="@color/accent" />
-
         <ProgressBar
-            android:id="@+id/v_progress"
+            android:id="@+id/t_bar"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="4dp"
             android:layout_marginTop="6dp"
-            android:max="100" />
-
-        <TextView
-            android:id="@+id/v_next"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textSize="12sp"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:textColor="@color/text_hint" />
+            android:max="100"
+            android:progressTint="@color/accent" />
     </LinearLayout>
 </LinearLayout>

@@ -340,33 +340,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/btn_tab_tv"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?android:attr/selectableItemBackground">
-
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@drawable/ic_tv"
-                android:tint="@color/text_hint"
-                android:contentDescription="@string/tab_tv" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="@string/tab_tv"
-                android:textSize="11sp"
-                android:textColor="@color/text_hint" />
-        </LinearLayout>
-
-        <LinearLayout
             android:id="@+id/btn_tab_search"
             android:layout_width="0dp"
             android:layout_height="match_parent"
