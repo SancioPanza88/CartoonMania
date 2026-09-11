@@ -13,19 +13,19 @@
         <ImageView
             android:id="@+id/d_backdrop"
             android:layout_width="match_parent"
-            android:layout_height="264dp"
+            android:layout_height="280dp"
             android:scaleType="centerCrop"
             android:contentDescription="@string/poster" />
 
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="264dp"
+            android:layout_height="280dp"
             android:src="@drawable/scrim_bottom"
             android:contentDescription="@null" />
 
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="264dp"
+            android:layout_height="280dp"
             android:src="@drawable/bg_hero_scrim"
             android:contentDescription="@null" />
 

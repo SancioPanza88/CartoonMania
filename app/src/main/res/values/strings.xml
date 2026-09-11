@@ -14,12 +14,6 @@
     <string name="tab_search">Cerca</string>
     <string name="tab_settings">Opzioni</string>
     <string name="settings_title">Impostazioni</string>
-    <string name="section_screen">Schermo</string>
-    <string name="crt_title">Modalità tubo catodico</string>
-    <string name="crt_hint">Bordi sicuri, aspetto video e testi per vecchie TV a tubo</string>
-    <string name="crt_on">ATTIVA</string>
-    <string name="crt_off">DISATTIVA</string>
-    <string name="crt_overscan">Bordi (overscan)</string>
     <string name="tv_title">TV in diretta</string>
     <string name="tv_next">A seguire</string>
     <string name="tv_empty">Palinsesto vuoto, riprova più tardi</string>

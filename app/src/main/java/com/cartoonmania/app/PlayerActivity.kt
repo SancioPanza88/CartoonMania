@@ -173,16 +173,16 @@ class PlayerActivity : Activity() {
         cPrev.setOnClickListener { goPrev() }
         cNext.setOnClickListener { goNext() }
         cEpisodes.setOnClickListener { showEpisodePicker() }
-        // Aspetto video FIT/FILL/ZOOM (utile su tubo 4:3, comodo ovunque)
+        // Aspetto video FIT/FILL/ZOOM (utile 16:9 su schermi 4:3 e viceversa)
         try {
             findViewById<View>(R.id.c_aspect)?.setOnClickListener {
                 try {
-                    val next = (CrtMode.aspect(this) + 1) % 3
-                    CrtMode.setAspect(this, next)
+                    val next = (playerAspect() + 1) % 3
+                    setPlayerAspect(next)
                     applyAspect()
                     Toast.makeText(
                         this,
-                        "${getString(R.string.aspect_desc)}: ${CrtMode.aspectLabel(next)}",
+                        "${getString(R.string.aspect_desc)}: ${aspectLabel(next)}",
                         Toast.LENGTH_SHORT
                     ).show()
                 } catch (_: Exception) {
@@ -222,7 +222,6 @@ class PlayerActivity : Activity() {
             playGuardaSmart(embedUrl, visible = false)
         }
         applyAspect()
-        CrtMode.applyTo(this)
     }
 
     @Suppress("DEPRECATION")
@@ -369,15 +368,35 @@ class PlayerActivity : Activity() {
     /** Aspetto salvato (FIT/FILL/ZOOM) applicato al PlayerView + etichetta. */
     private fun applyAspect() {
         try {
-            val mode = CrtMode.aspect(this)
+            val mode = playerAspect()
             playerView.resizeMode = when (mode) {
-                CrtMode.ASPECT_FILL -> androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FILL
-                CrtMode.ASPECT_ZOOM -> androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+                2 -> androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+                1 -> androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FILL
                 else -> androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIT
             }
-            findViewById<Button>(R.id.c_aspect)?.text = CrtMode.aspectLabel(mode)
+            findViewById<Button>(R.id.c_aspect)?.text = aspectLabel(mode)
         } catch (_: Exception) {
         }
+    }
+
+    private fun playerAspect(): Int = try {
+        getSharedPreferences("cm", MODE_PRIVATE).getInt("player_aspect", 0)
+    } catch (_: Exception) {
+        0
+    }
+
+    private fun setPlayerAspect(v: Int) {
+        try {
+            getSharedPreferences("cm", MODE_PRIVATE).edit()
+                .putInt("player_aspect", v.coerceIn(0, 2)).apply()
+        } catch (_: Exception) {
+        }
+    }
+
+    private fun aspectLabel(v: Int): String = when (v) {
+        1 -> "FILL"
+        2 -> "ZOOM"
+        else -> "FIT"
     }
 
     /** Autoplay diretto: finito un episodio parte subito il successivo. */

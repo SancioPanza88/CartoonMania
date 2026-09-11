@@ -42,7 +42,6 @@ class TvActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tv)
-        CrtMode.applyTo(this)
 
         val backBtn = findViewById<View>(R.id.tv_back)
         backBtn.setOnClickListener { finish() }
@@ -199,7 +198,7 @@ class TvActivity : Activity() {
             val bar = v.findViewById<ProgressBar>(R.id.v_progress)
             val nextTv = v.findViewById<TextView>(R.id.v_next)
             if (a == null) {
-                Ui.round(poster, 8)
+                Ui.round(poster, 10)
                 ImageLoader.display(poster, null)
                 nowTv.text = getString(R.string.tv_empty)
                 timeTv.text = ""
@@ -207,7 +206,7 @@ class TvActivity : Activity() {
                 nextTv.text = ""
             } else {
                 val epLabel = a.title.episodes.getOrNull(a.epIndex)?.label.orEmpty()
-                Ui.round(poster, 8)
+                Ui.round(poster, 10)
                 ImageLoader.display(poster, a.title.img)
                 nowTv.text = a.title.title + if (epLabel.isEmpty()) "" else " — $epLabel"
                 timeTv.text = TvSchedule.fmtTime(a.slotStartMs) + " – " + TvSchedule.fmtTime(a.slotEndMs)

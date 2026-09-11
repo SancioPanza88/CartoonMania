@@ -23,6 +23,12 @@
             android:contentDescription="@null" />
 
         <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:src="@drawable/bg_hero_scrim"
+            android:contentDescription="@null" />
+
+        <ImageView
             android:id="@+id/d_back"
             android:layout_width="56dp"
             android:layout_height="56dp"
@@ -51,7 +57,7 @@
             android:layout_height="210dp"
             android:scaleType="centerCrop"
             android:background="@color/surface2"
-            android:elevation="4dp"
+            android:elevation="6dp"
             android:contentDescription="@string/poster" />
 
         <LinearLayout

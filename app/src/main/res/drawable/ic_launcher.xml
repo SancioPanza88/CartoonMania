@@ -1,21 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Sfondo pieno opaco fino ai bordi: niente trasparenze = niente bordi
-     bianchi quando il launcher la incornicia -->
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="48dp"
-    android:height="48dp"
-    android:viewportWidth="108"
-    android:viewportHeight="108">
-    <path
-        android:pathData="M0,0 h108 v108 h-108 z"
-        android:fillColor="#0B0B10" />
-    <path
-        android:pathData="M44,26 h20 a18,18 0 0 1 18,18 v20 a18,18 0 0 1 -18,18 h-20 a18,18 0 0 1 -18,-18 v-20 a18,18 0 0 1 18,-18 z"
-        android:fillColor="#7C5CFC" />
-    <path
-        android:pathData="M47,41 L68,54 L47,67 Z"
-        android:fillColor="#FFFFFF" />
-    <path
-        android:pathData="M72,30 a6,6 0 1 0 12,0 a6,6 0 1 0 -12,0 z"
-        android:fillColor="#7C5CFC" />
-</vector>
+<!-- Icona: sfondo pieno opaco fino ai bordi (niente trasparenze = niente
+     bordi bianchi quando il launcher la incornicia) -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="45"
+                android:startColor="#8B5CF6"
+                android:centerColor="#5B3DF0"
+                android:endColor="#2A1B6B" />
+        </shape>
+    </item>
+    <item android:drawable="@drawable/ic_launcher_fg" />
+</layer-list>

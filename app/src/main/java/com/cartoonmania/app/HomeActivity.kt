@@ -23,7 +23,6 @@ class HomeActivity : Activity() {
         super.onCreate(savedInstanceState)
         CrashGuard.install(applicationContext)
         setContentView(R.layout.activity_home)
-        CrtMode.applyTo(this)
 
         val profBtn = findViewById<ImageView>(R.id.home_profile)
         Ui.tvFocus(profBtn)
@@ -441,14 +440,25 @@ class HomeActivity : Activity() {
         )
     }
 
-    private fun sectionHeader(text: String): TextView =
-        TextView(this).apply {
-            this.text = text
-            textSize = CrtMode.bigText(this@HomeActivity, 17f)
-            setTextColor(0xFFFFFFFF.toInt())
-            setPadding(dp(20), dp(24), dp(20), dp(12))
-            setTypeface(typeface, android.graphics.Typeface.BOLD)
+    private fun sectionHeader(text: String): View {
+        val wrap = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(20), dp(24), dp(20), dp(4))
         }
+        wrap.addView(TextView(this).apply {
+            this.text = text
+            textSize = 18f
+            setTextColor(0xFFFFFFFF.toInt())
+            setTypeface(typeface, android.graphics.Typeface.BOLD)
+        })
+        wrap.addView(View(this).apply {
+            layoutParams = LinearLayout.LayoutParams(dp(28), dp(3)).apply {
+                topMargin = dp(8)
+            }
+            setBackgroundResource(R.drawable.bg_section_bar)
+        })
+        return wrap
+    }
 
     private fun wheelScroll(scroll: HorizontalScrollView): HorizontalScrollView {
         scroll.isHorizontalScrollBarEnabled = false
@@ -505,13 +515,13 @@ class HomeActivity : Activity() {
             Ui.pressPop(card)
 
             val poster = ImageView(this).apply {
-                layoutParams = LinearLayout.LayoutParams(dp(110), dp(164))
+                layoutParams = LinearLayout.LayoutParams(dp(118), dp(176))
                 scaleType = ImageView.ScaleType.CENTER_CROP
-                setBackgroundColor(0xFF20202C.toInt())
+                setBackgroundColor(0xFF1E1E2A.toInt())
                 clipToOutline = true
                 outlineProvider = object : android.view.ViewOutlineProvider() {
                     override fun getOutline(view: View, outline: android.graphics.Outline) {
-                        outline.setRoundRect(0, 0, view.width, view.height, dp(12).toFloat())
+                        outline.setRoundRect(0, 0, view.width, view.height, dp(14).toFloat())
                     }
                 }
             }
@@ -519,7 +529,7 @@ class HomeActivity : Activity() {
 
             val label = TextView(this).apply {
                 text = t.title
-                textSize = CrtMode.bigText(this@HomeActivity, 12f)
+                textSize = 13f
                 setTextColor(0xFFA0A4B8.toInt())
                 maxLines = 2
                 ellipsize = android.text.TextUtils.TruncateAt.END
